@@ -1,0 +1,50 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Cleanza dishwashing product entity",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "slug": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "volume": { "type": "string" },
+        "price": { "type": "number" },
+        "formattedPrice": { "type": "string" },
+        "rating": { "type": "number" },
+        "reviewsCount": { "type": "number" },
+        "badge": { "type": "string" },
+        "image": { "type": "string" },
+        "description": { "type": "string" },
+        "howToUse": { "type": "string" },
+        "ingredients": { "type": "string" },
+        "concern": { "type": "string" },
+        "isFeatured": { "type": "boolean" }
+      },
+      "required": ["id", "name", "price", "category", "image"]
+    },
+    "CMSConfig": {
+      "title": "CMSConfig",
+      "description": "Website dynamic layout and CMS settings",
+      "type": "object",
+      "properties": {
+        "layoutMode": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "promoText": { "type": "string" },
+        "promoTextId": { "type": "string" }
+      },
+      "required": ["promoText"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Collection of Cleanza products"
+    },
+    "/cmsConfig/{configId}": {
+      "schema": "CMSConfig",
+      "description": "CMS Configuration document"
+    }
+  }
+}

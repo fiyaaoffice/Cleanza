@@ -1,0 +1,6 @@
+{
+  "name": "Cleanza - Cairan Pencuci Piring Premium",
+  "description": "Website resmi Cleanza, cairan pencuci piring konsentrat tinggi dengan varian Jeruk Nipis dan Lemon.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

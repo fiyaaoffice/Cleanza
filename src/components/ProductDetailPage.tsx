@@ -1,0 +1,268 @@
+import React, { useState } from 'react';
+import { useStore } from '../context/StoreContext';
+import { ProductCard } from './ProductCard';
+import { ChevronDown, ChevronUp, ShieldCheck, Truck, RotateCcw, Plus, Minus, CheckCircle2 } from 'lucide-react';
+
+export const ProductDetailPage: React.FC = () => {
+  const { products, selectedProductSlug, addToCart, navigateTo, language } = useStore();
+
+  // Find selected product or fallback
+  const product =
+    products.find((p) => p.slug === selectedProductSlug) ||
+    products.find((p) => p.slug === 'cleanza-cairan-pencuci-piring-jeruk-nipis-450ml') ||
+    products[0];
+
+  const [activeImage, setActiveImage] = useState<string>(product.image);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [openAccordion, setOpenAccordion] = useState<'use' | 'ingredients' | 'benefits' | null>('use');
+
+  // Related products
+  const relatedProducts = products
+    .filter((p) => p.id !== product.id)
+    .slice(0, 4);
+
+  const images = product.galleryImages && product.galleryImages.length > 0
+    ? product.galleryImages
+    : [product.image];
+
+  return (
+    <div className="bg-[#FAFBF9] min-h-screen py-8 text-[#1D241B]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumb Navigation */}
+        <nav className="text-xs text-gray-500 mb-8 flex items-center space-x-2">
+          <span
+            onClick={() => navigateTo('home')}
+            className="hover:text-[#3d4d38] cursor-pointer transition"
+          >
+            Home
+          </span>
+          <span>/</span>
+          <span
+            onClick={() => navigateTo('shop')}
+            className="hover:text-[#3d4d38] cursor-pointer transition"
+          >
+            Shop
+          </span>
+          <span>/</span>
+          <span className="font-semibold text-gray-900 truncate">
+            {product.name}
+          </span>
+        </nav>
+
+        {/* Product Detail 2-Column Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 bg-white rounded-3xl p-6 sm:p-10 border border-[#E5E8E2] shadow-sm mb-16">
+          {/* Left Column: Image Gallery (5 cols) */}
+          <div className="lg:col-span-6 flex flex-col-reverse md:flex-row gap-4">
+            {/* Gallery Thumbnails */}
+            {images.length > 1 && (
+              <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar justify-center md:justify-start">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveImage(img)}
+                    className={`relative aspect-square w-16 rounded-xl overflow-hidden border-2 transition ${
+                      activeImage === img
+                        ? 'border-[#3d4d38] ring-2 ring-[#3d4d38]/20'
+                        : 'border-gray-200 opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    <img src={img} alt="Thumbnail" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Main Product Image */}
+            <div className="flex-1 aspect-square rounded-2xl bg-[#F4F5F2] overflow-hidden relative flex items-center justify-center p-6 border border-gray-100">
+              {product.badge && (
+                <span
+                  className={`absolute top-4 left-4 text-[10px] font-bold tracking-wider uppercase px-3 py-1 rounded-sm text-white shadow-sm ${
+                    product.badge === 'NEW PRODUCT'
+                      ? 'bg-[#3d4d38]'
+                      : product.badge === 'COMING SOON'
+                      ? 'bg-amber-600'
+                      : 'bg-black'
+                  }`}
+                >
+                  {product.badge}
+                </span>
+              )}
+
+              <img
+                src={activeImage || product.image}
+                alt={product.name}
+                className="w-full h-full object-contain drop-shadow-xl hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Detail Information (7 cols) */}
+          <div className="lg:col-span-6 flex flex-col justify-between">
+            <div>
+              {/* Category */}
+              <span className="text-xs font-bold uppercase tracking-widest text-[#3d4d38] mb-2 block">
+                {product.category}
+              </span>
+
+              {/* Title */}
+              <h1 className="text-3xl sm:text-4xl font-bold text-[#1D241B] tracking-tight leading-tight mb-3">
+                {product.name}
+              </h1>
+
+              {/* Rating & Volume */}
+              <div className="flex items-center space-x-4 mb-4 text-xs">
+                <div className="flex items-center space-x-1 font-bold text-[#3d4d38] bg-[#FAFBF9] px-2.5 py-1 rounded-md border border-gray-200">
+                  <CheckCircle2 className="w-4 h-4 text-[#3d4d38]" />
+                  <span>{product.reviewsCount > 0 ? `${product.reviewsCount} Ulasan Terverifikasi` : 'Segera Peluncuran'}</span>
+                </div>
+                <span className="text-gray-400">|</span>
+                <span className="font-semibold text-gray-700 bg-gray-100 px-2 py-0.5 rounded">Volume: {product.volume}</span>
+              </div>
+
+              {/* Price */}
+              <div className="text-2xl font-bold text-[#3d4d38] mb-6">
+                {product.formattedPrice}
+              </div>
+
+              {/* Description */}
+              <p className="text-sm text-gray-600 leading-relaxed font-light mb-8">
+                {product.description}
+              </p>
+
+              {/* Quantity & Buy Now Action */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-8">
+                {product.badge === 'COMING SOON' ? (
+                  <div className="w-full bg-amber-600 text-white font-bold text-xs uppercase tracking-widest py-4 px-8 rounded-lg shadow-md text-center">
+                    VARIUAN COMING SOON - SEGERA HADIR
+                  </div>
+                ) : (
+                  <>
+                    {/* Quantity Controls */}
+                    <div className="flex items-center justify-between border border-gray-300 rounded-lg px-3 py-2 w-32 bg-gray-50">
+                      <button
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        className="p-1 hover:bg-gray-200 rounded text-gray-600"
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="font-bold text-sm px-2">{quantity}</span>
+                      <button
+                        onClick={() => setQuantity((q) => q + 1)}
+                        className="p-1 hover:bg-gray-200 rounded text-gray-600"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    {/* BUY NOW Button */}
+                    <button
+                      onClick={() => addToCart(product, quantity)}
+                      className="flex-1 bg-[#3d4d38] hover:bg-[#2a3726] text-white font-bold text-xs uppercase tracking-widest py-4 px-8 rounded-lg shadow-md transition transform active:scale-[0.99] flex items-center justify-center space-x-2"
+                    >
+                      <span>TAMBAH KE KERANJANG</span>
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {/* Trust Badges */}
+              <div className="grid grid-cols-3 gap-2 py-4 border-y border-gray-100 text-[11px] text-gray-600 mb-6">
+                <div className="flex items-center space-x-2">
+                  <ShieldCheck className="w-4 h-4 text-[#3d4d38] shrink-0" />
+                  <span>100% Cleanza Original</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Truck className="w-4 h-4 text-[#3d4d38] shrink-0" />
+                  <span>Pengiriman Aman & Cepat</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RotateCcw className="w-4 h-4 text-[#3d4d38] shrink-0" />
+                  <span>Garansi Kualitas Cleanza</span>
+                </div>
+              </div>
+
+              {/* Interactive Accordions */}
+              <div className="space-y-3">
+                <div className="border-b border-gray-200 pb-3">
+                  <button
+                    onClick={() => setOpenAccordion(openAccordion === 'use' ? null : 'use')}
+                    className="w-full flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider text-[#1D241B] py-2 hover:text-[#3d4d38] transition"
+                  >
+                    <span>CARA PEMAKAIAN</span>
+                    {openAccordion === 'use' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </button>
+                  {openAccordion === 'use' && (
+                    <div className="text-xs text-gray-600 pt-2 font-light leading-relaxed animate-in fade-in duration-200">
+                      {product.howToUse}
+                    </div>
+                  )}
+                </div>
+
+                <div className="border-b border-gray-200 pb-3">
+                  <button
+                    onClick={() => setOpenAccordion(openAccordion === 'ingredients' ? null : 'ingredients')}
+                    className="w-full flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider text-[#1D241B] py-2 hover:text-[#3d4d38] transition"
+                  >
+                    <span>KOMPOSISI & KANDUNGAN</span>
+                    {openAccordion === 'ingredients' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </button>
+                  {openAccordion === 'ingredients' && (
+                    <div className="text-xs text-gray-600 pt-2 font-light leading-relaxed animate-in fade-in duration-200">
+                      {product.ingredients}
+                    </div>
+                  )}
+                </div>
+
+                {product.benefits && product.benefits.length > 0 && (
+                  <div className="border-b border-gray-200 pb-3">
+                    <button
+                      onClick={() => setOpenAccordion(openAccordion === 'benefits' ? null : 'benefits')}
+                      className="w-full flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider text-[#1D241B] py-2 hover:text-[#3d4d38] transition"
+                    >
+                      <span>KEUNGGULAN UTAMA</span>
+                      {openAccordion === 'benefits' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    </button>
+                    {openAccordion === 'benefits' && (
+                      <ul className="text-xs text-gray-600 pt-2 font-light leading-relaxed space-y-1 list-disc list-inside animate-in fade-in duration-200">
+                        {product.benefits.map((b, idx) => (
+                          <li key={idx}>{b}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Claims Bar */}
+        {product.claims && product.claims.length > 0 && (
+          <div className="bg-white rounded-2xl border border-[#E5E8E2] p-8 mb-16 shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-gray-200">
+              {product.claims.map((claim, idx) => (
+                <div key={idx} className="pt-4 md:pt-0 md:px-4">
+                  <p className="font-bold text-lg text-[#1D241B]">
+                    {claim}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recommended Products */}
+        <div className="mb-16">
+          <h2 className="text-2xl font-bold text-[#1D241B] mb-6">
+            Rekomendasi Produk Cleanza Lainnya
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {relatedProducts.map((relProduct) => (
+              <ProductCard key={relProduct.id} product={relProduct} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
