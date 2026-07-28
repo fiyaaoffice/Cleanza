@@ -21,9 +21,9 @@ export const ShopAllPage: React.FC = () => {
   });
 
   return (
-    <div className="bg-[#FAFBF9] min-h-screen pb-20 text-[#1D241B]">
+    <div className="bg-[#F2F9F3] min-h-screen pb-20 text-[#1D241B]">
       {/* 1. Header Banner */}
-      <div className="relative bg-[#1A2017] text-white py-16 px-4 overflow-hidden mb-10 border-b border-[#3d4d38]">
+      <div className="relative bg-[#0E2915] text-white py-16 px-4 overflow-hidden mb-10 border-b border-[#239B4C]/40">
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=1600"
@@ -34,8 +34,8 @@ export const ShopAllPage: React.FC = () => {
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-xs font-bold uppercase tracking-widest text-[#A2DB38] mb-2 flex items-center space-x-2">
-            <Droplets className="w-3.5 h-3.5 text-[#A2DB38]" />
+          <div className="text-xs font-bold uppercase tracking-widest text-[#FFD000] mb-2 flex items-center space-x-2">
+            <Droplets className="w-3.5 h-3.5 text-[#FFD000]" />
             <span>Katalog Resmi Cleanza Indonesia</span>
           </div>
 
@@ -60,7 +60,7 @@ export const ShopAllPage: React.FC = () => {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition border ${
                   selectedCategory === cat
-                    ? 'bg-[#3d4d38] text-white border-[#3d4d38] font-bold shadow-sm'
+                    ? 'bg-[#239B4C] text-white border-[#239B4C] font-bold shadow-sm'
                     : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400'
                 }`}
               >
@@ -75,7 +75,7 @@ export const ShopAllPage: React.FC = () => {
               onClick={() => setLocalLayout('grid')}
               className={`p-2 rounded-lg border ${
                 localLayout === 'grid'
-                  ? 'bg-[#3d4d38] text-white border-[#3d4d38]'
+                  ? 'bg-[#239B4C] text-white border-[#239B4C]'
                   : 'bg-white text-gray-600 border-gray-200'
               }`}
               title="Grid Layout"
@@ -86,7 +86,7 @@ export const ShopAllPage: React.FC = () => {
               onClick={() => setLocalLayout('list')}
               className={`p-2 rounded-lg border ${
                 localLayout === 'list'
-                  ? 'bg-[#3d4d38] text-white border-[#3d4d38]'
+                  ? 'bg-[#239B4C] text-white border-[#239B4C]'
                   : 'bg-white text-gray-600 border-gray-200'
               }`}
               title="List Layout"
@@ -102,7 +102,7 @@ export const ShopAllPage: React.FC = () => {
           {selectedCategory !== 'All' && (
             <button
               onClick={() => setSelectedCategory('All')}
-              className="text-[#3d4d38] font-bold underline"
+              className="text-[#239B4C] font-bold underline"
             >
               Reset Filter
             </button>
@@ -131,12 +131,12 @@ export const ShopAllPage: React.FC = () => {
                     className="w-24 h-24 object-contain rounded-xl bg-[#F4F5F2] p-2 shrink-0"
                   />
                   <div>
-                    <span className="text-[10px] font-bold text-[#3d4d38] uppercase tracking-wider block">
+                    <span className="text-[10px] font-bold text-[#239B4C] uppercase tracking-wider block">
                       {p.category} • {p.volume}
                     </span>
                     <h3
                       onClick={() => navigateTo('product-detail', p.slug)}
-                      className="font-bold text-base text-[#1D241B] hover:text-[#3d4d38] cursor-pointer transition"
+                      className="font-bold text-base text-[#1D241B] hover:text-[#239B4C] cursor-pointer transition"
                     >
                       {p.name}
                     </h3>
@@ -147,7 +147,7 @@ export const ShopAllPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-3 sm:pt-0">
-                  <span className="font-bold text-base text-[#3d4d38]">
+                  <span className="font-bold text-base text-[#239B4C]">
                     {p.formattedPrice}
                   </span>
                   <div className="flex items-center space-x-2">
@@ -160,7 +160,7 @@ export const ShopAllPage: React.FC = () => {
                     {p.badge !== 'COMING SOON' && (
                       <button
                         onClick={() => addToCart(p)}
-                        className="bg-[#3d4d38] hover:bg-[#2a3726] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-4 rounded-lg transition shadow-sm"
+                        className="bg-[#239B4C] hover:bg-[#165B2D] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-4 rounded-lg transition shadow-sm"
                       >
                         Beli
                       </button>

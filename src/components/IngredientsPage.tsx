@@ -26,9 +26,9 @@ export const IngredientsPage: React.FC = () => {
   ];
 
   return (
-    <div className="bg-[#FAFBF9] min-h-screen py-12 text-[#1D241B]">
+    <div className="bg-[#F2F9F3] min-h-screen py-12 text-[#1D241B]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <span className="text-xs font-bold uppercase tracking-widest text-[#3d4d38] mb-2 block">
+        <span className="text-xs font-bold uppercase tracking-widest text-[#239B4C] mb-2 block">
           Keunggulan Formula Cleanza
         </span>
         <h1 className="text-4xl font-bold tracking-tight mb-4">
@@ -41,7 +41,7 @@ export const IngredientsPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {ingredientsList.map((item, idx) => (
             <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#3d4d38] bg-[#FAFBF9] px-2.5 py-1 rounded border border-[#3d4d38]/20 inline-block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#239B4C] bg-[#F2F9F3] px-2.5 py-1 rounded border border-[#239B4C]/20 inline-block">
                 {item.category}
               </span>
               <h3 className="font-bold text-lg text-[#1D241B]">{item.name}</h3>

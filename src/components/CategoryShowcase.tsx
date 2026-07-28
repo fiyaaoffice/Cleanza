@@ -39,7 +39,7 @@ export const CategoryShowcase: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-[#FAFBF9] border-b border-[#E5E8E2]">
+    <section className="py-16 bg-[#F2F9F3] border-b border-[#E5E8E2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 pb-4 border-b border-[#E5E8E2]">
@@ -60,7 +60,7 @@ export const CategoryShowcase: React.FC = () => {
               setSelectedCategory('All');
               navigateTo('shop');
             }}
-            className="mt-4 sm:mt-0 inline-flex items-center space-x-1 text-xs font-bold uppercase tracking-wider text-[#3d4d38] hover:text-[#2a3726] underline decoration-1 underline-offset-4 transition"
+            className="mt-4 sm:mt-0 inline-flex items-center space-x-1 text-xs font-bold uppercase tracking-wider text-[#239B4C] hover:text-[#165B2D] underline decoration-1 underline-offset-4 transition"
           >
             <span>{language === 'ID' ? 'Lihat Semua Produk Cleanza' : 'View All Cleanza Products'}</span>
             <ArrowUpRight className="w-4 h-4" />
@@ -73,7 +73,7 @@ export const CategoryShowcase: React.FC = () => {
             <div
               key={cat.name}
               onClick={() => handleCategorySelect(cat.name)}
-              className="group cursor-pointer bg-white rounded-2xl p-5 border border-[#E5E8E2] hover:border-[#3d4d38] hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              className="group cursor-pointer bg-white rounded-2xl p-5 border border-[#E5E8E2] hover:border-[#239B4C] hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
             >
               <div className="aspect-[4/3] w-full rounded-xl overflow-hidden bg-[#F2F4F0] mb-4 relative">
                 <img
@@ -87,9 +87,9 @@ export const CategoryShowcase: React.FC = () => {
               </div>
 
               <div>
-                <div className="flex items-center justify-between text-base font-bold text-[#1D241B] group-hover:text-[#3d4d38] transition">
+                <div className="flex items-center justify-between text-base font-bold text-[#1D241B] group-hover:text-[#239B4C] transition">
                   <span>{cat.name}</span>
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition text-gray-400 group-hover:text-[#3d4d38]" />
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition text-gray-400 group-hover:text-[#239B4C]" />
                 </div>
                 <p className="text-xs text-gray-500 mt-1 font-light">
                   {cat.titleIndo}

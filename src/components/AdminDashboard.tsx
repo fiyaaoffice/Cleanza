@@ -123,7 +123,7 @@ export const AdminDashboard: React.FC = () => {
               <span className="text-xl font-bold tracking-tight text-white">
                 Cleanza Dynamic Live CMS
               </span>
-              <span className="bg-[#A2DB38] text-black text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+              <span className="bg-[#FFD000] text-black text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
                 Admin Panel
               </span>
             </div>
@@ -136,7 +136,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="flex items-center space-x-3">
           <button
             onClick={() => navigateTo('home')}
-            className="bg-[#3d4d38] hover:bg-[#A2DB38] hover:text-black text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-1 border border-[#A2DB38]/30"
+            className="bg-[#239B4C] hover:bg-[#FFD000] hover:text-black text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-1 border border-[#FFD000]/30"
           >
             <Eye className="w-4 h-4" />
             <span>Pratinjau Live Website</span>
@@ -160,11 +160,11 @@ export const AdminDashboard: React.FC = () => {
             onClick={() => setActiveTab('copywriting')}
             className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
               activeTab === 'copywriting'
-                ? 'bg-[#3d4d38] text-white border border-[#A2DB38]/50 shadow-lg'
+                ? 'bg-[#239B4C] text-white border border-[#FFD000]/50 shadow-lg'
                 : 'bg-[#1F271D] text-gray-400 hover:text-white'
             }`}
           >
-            <Type className="w-4 h-4 text-[#A2DB38]" />
+            <Type className="w-4 h-4 text-[#FFD000]" />
             <span>Copywriting Manager (Teks)</span>
           </button>
 
@@ -172,11 +172,11 @@ export const AdminDashboard: React.FC = () => {
             onClick={() => setActiveTab('media')}
             className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
               activeTab === 'media'
-                ? 'bg-[#3d4d38] text-white border border-[#A2DB38]/50 shadow-lg'
+                ? 'bg-[#239B4C] text-white border border-[#FFD000]/50 shadow-lg'
                 : 'bg-[#1F271D] text-gray-400 hover:text-white'
             }`}
           >
-            <ImageIcon className="w-4 h-4 text-[#A2DB38]" />
+            <ImageIcon className="w-4 h-4 text-[#FFD000]" />
             <span>Media & Video Manager</span>
           </button>
 
@@ -184,11 +184,11 @@ export const AdminDashboard: React.FC = () => {
             onClick={() => setActiveTab('sections')}
             className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
               activeTab === 'sections'
-                ? 'bg-[#3d4d38] text-white border border-[#A2DB38]/50 shadow-lg'
+                ? 'bg-[#239B4C] text-white border border-[#FFD000]/50 shadow-lg'
                 : 'bg-[#1F271D] text-gray-400 hover:text-white'
             }`}
           >
-            <Layout className="w-4 h-4 text-[#A2DB38]" />
+            <Layout className="w-4 h-4 text-[#FFD000]" />
             <span>Layout & Visibility Manager</span>
           </button>
 
@@ -196,11 +196,11 @@ export const AdminDashboard: React.FC = () => {
             onClick={() => setActiveTab('products')}
             className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
               activeTab === 'products'
-                ? 'bg-[#3d4d38] text-white border border-[#A2DB38]/50 shadow-lg'
+                ? 'bg-[#239B4C] text-white border border-[#FFD000]/50 shadow-lg'
                 : 'bg-[#1F271D] text-gray-400 hover:text-white'
             }`}
           >
-            <Package className="w-4 h-4 text-[#A2DB38]" />
+            <Package className="w-4 h-4 text-[#FFD000]" />
             <span>Manajemen Produk & Katalog ({products.length})</span>
           </button>
         </div>
@@ -210,7 +210,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="space-y-8 animate-in fade-in">
             <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
               <h3 className="text-lg font-bold text-white mb-1 flex items-center space-x-2">
-                <Globe className="w-5 h-5 text-[#A2DB38]" />
+                <Globe className="w-5 h-5 text-[#239B4C]" />
                 <span>1. Top Promo Ticker (Announcement Bar)</span>
               </h3>
               <p className="text-xs text-gray-400 mb-4">
@@ -229,7 +229,7 @@ export const AdminDashboard: React.FC = () => {
                       const val = e.target.value;
                       updateCMSConfig((prev) => ({ ...prev, promoTextId: val }));
                     }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                   />
                 </div>
                 <div>
@@ -243,7 +243,7 @@ export const AdminDashboard: React.FC = () => {
                       const val = e.target.value;
                       updateCMSConfig((prev) => ({ ...prev, promoText: val }));
                     }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                   />
                 </div>
               </div>
@@ -252,7 +252,7 @@ export const AdminDashboard: React.FC = () => {
             {/* Hero Copywriting */}
             <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
               <h3 className="text-lg font-bold text-white mb-1 flex items-center space-x-2">
-                <Droplets className="w-5 h-5 text-[#A2DB38]" />
+                <Droplets className="w-5 h-5 text-[#239B4C]" />
                 <span>2. Landing Page Hero Banner Copywriting</span>
               </h3>
               <p className="text-xs text-gray-400 mb-4">
@@ -274,7 +274,7 @@ export const AdminDashboard: React.FC = () => {
                         hero: { ...prev.hero, tagline: val }
                       }));
                     }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                   />
                 </div>
 
@@ -292,7 +292,7 @@ export const AdminDashboard: React.FC = () => {
                         hero: { ...prev.hero, subtext: val }
                       }));
                     }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                   />
                 </div>
 
@@ -311,7 +311,7 @@ export const AdminDashboard: React.FC = () => {
                           hero: { ...prev.hero, badgeText: val }
                         }));
                       }}
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                     />
                   </div>
                   <div>
@@ -328,7 +328,7 @@ export const AdminDashboard: React.FC = () => {
                           hero: { ...prev.hero, primaryCtaText: val }
                         }));
                       }}
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                     />
                   </div>
                   <div>
@@ -345,7 +345,7 @@ export const AdminDashboard: React.FC = () => {
                           hero: { ...prev.hero, secondaryCtaText: val }
                         }));
                       }}
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                     />
                   </div>
                 </div>
@@ -372,7 +372,7 @@ export const AdminDashboard: React.FC = () => {
                         ourStory: { ...prev.ourStory, headline: val }
                       }));
                     }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                   />
                 </div>
                 <div>
@@ -389,7 +389,7 @@ export const AdminDashboard: React.FC = () => {
                         ourStory: { ...prev.ourStory, subheadline: val }
                       }));
                     }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                   />
                 </div>
               </div>
@@ -415,7 +415,7 @@ export const AdminDashboard: React.FC = () => {
                         contact: { ...prev.contact, callCenter: val }
                       }));
                     }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                   />
                 </div>
                 <div>
@@ -432,7 +432,7 @@ export const AdminDashboard: React.FC = () => {
                         contact: { ...prev.contact, email: val }
                       }));
                     }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                   />
                 </div>
                 <div>
@@ -449,7 +449,7 @@ export const AdminDashboard: React.FC = () => {
                         contact: { ...prev.contact, whatsapp: val }
                       }));
                     }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                   />
                 </div>
               </div>
@@ -461,13 +461,13 @@ export const AdminDashboard: React.FC = () => {
         {activeTab === 'media' && (
           <div className="space-y-8 animate-in fade-in">
             {/* Website Brand Logo Upload Section */}
-            <div className="bg-[#1F271D] rounded-2xl p-6 border-2 border-[#A2DB38]/50 shadow-xl">
+            <div className="bg-[#1F271D] rounded-2xl p-6 border-2 border-[#239B4C]/50 shadow-xl">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-lg font-bold text-white flex items-center space-x-2">
-                  <FileImage className="w-5 h-5 text-[#A2DB38]" />
+                  <FileImage className="w-5 h-5 text-[#FFD000]" />
                   <span>1. Logo Website Brand (Gambar Tanpa Teks)</span>
                 </h3>
-                <span className="bg-[#A2DB38]/20 text-[#A2DB38] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase border border-[#A2DB38]/40">
+                <span className="bg-[#239B4C]/20 text-[#FFD000] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase border border-[#239B4C]/40">
                   Brand Logo
                 </span>
               </div>
@@ -494,7 +494,7 @@ export const AdminDashboard: React.FC = () => {
                     Pilih File Gambar Logo dari Device:
                   </label>
                   <div className="flex flex-wrap items-center gap-3">
-                    <label className="cursor-pointer bg-[#A2DB38] hover:bg-[#8ece28] text-black px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-md">
+                    <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-md">
                       <UploadCloud className="w-4 h-4" />
                       <span>Upload Logo dari Device</span>
                       <input
@@ -514,7 +514,7 @@ export const AdminDashboard: React.FC = () => {
                       onClick={() =>
                         updateCMSConfig((prev) => ({ ...prev, logoUrl: DEFAULT_CLEANZA_LOGO }))
                       }
-                      className="bg-[#2E3B2B] hover:bg-[#3d4d38] text-gray-300 hover:text-white px-3 py-2.5 rounded-xl text-xs font-medium transition"
+                      className="bg-[#2E3B2B] hover:bg-[#239B4C] text-gray-300 hover:text-white px-3 py-2.5 rounded-xl text-xs font-medium transition"
                     >
                       Reset Logo Default
                     </button>
@@ -529,7 +529,7 @@ export const AdminDashboard: React.FC = () => {
             {/* Hero Background Media Manager */}
             <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
               <h3 className="text-lg font-bold text-white mb-2 flex items-center space-x-2">
-                <Video className="w-5 h-5 text-[#A2DB38]" />
+                <Video className="w-5 h-5 text-[#239B4C]" />
                 <span>2. Hero Background Media Manager</span>
               </h3>
               <p className="text-xs text-gray-400 mb-6">
@@ -553,7 +553,7 @@ export const AdminDashboard: React.FC = () => {
                             hero: { ...prev.hero, mediaType: 'image' }
                           }))
                         }
-                        className="text-[#A2DB38] focus:ring-[#A2DB38]"
+                        className="text-[#239B4C] focus:ring-[#239B4C]"
                       />
                       <span>Background Image</span>
                     </label>
@@ -568,7 +568,7 @@ export const AdminDashboard: React.FC = () => {
                             hero: { ...prev.hero, mediaType: 'video' }
                           }))
                         }
-                        className="text-[#A2DB38] focus:ring-[#A2DB38]"
+                        className="text-[#239B4C] focus:ring-[#239B4C]"
                       />
                       <span>Background Video (MP4)</span>
                     </label>
@@ -591,9 +591,9 @@ export const AdminDashboard: React.FC = () => {
                         }));
                       }}
                       placeholder="https://images.unsplash.com/... atau data:image/..."
-                      className="flex-1 bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                      className="flex-1 bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                     />
-                    <label className="cursor-pointer bg-[#3d4d38] hover:bg-[#A2DB38] hover:text-black text-white px-4 py-3 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-2 shrink-0 border border-[#A2DB38]/30">
+                    <label className="cursor-pointer bg-[#239B4C] hover:bg-[#FFD000] hover:text-black text-white px-4 py-3 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-2 shrink-0 border border-[#FFD000]/30">
                       <Upload className="w-4 h-4" />
                       <span>Upload dari Device</span>
                       <input
@@ -648,9 +648,9 @@ export const AdminDashboard: React.FC = () => {
                       ourStory: { ...prev.ourStory, mediaUrl: val }
                     }));
                   }}
-                  className="flex-1 bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#A2DB38]"
+                  className="flex-1 bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                 />
-                <label className="cursor-pointer bg-[#3d4d38] hover:bg-[#A2DB38] hover:text-black text-white px-4 py-3 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-2 shrink-0 border border-[#A2DB38]/30">
+                <label className="cursor-pointer bg-[#239B4C] hover:bg-[#FFD000] hover:text-black text-white px-4 py-3 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-2 shrink-0 border border-[#FFD000]/30">
                   <Upload className="w-4 h-4" />
                   <span>Upload dari Device</span>
                   <input
@@ -687,7 +687,7 @@ export const AdminDashboard: React.FC = () => {
                 {cmsConfig.sections.map((sec) => (
                   <div
                     key={sec.id}
-                    className="flex items-center justify-between p-4 rounded-xl bg-[#151B14] border border-[#2E3B2B] hover:border-[#3d4d38] transition"
+                    className="flex items-center justify-between p-4 rounded-xl bg-[#151B14] border border-[#2E3B2B] hover:border-[#239B4C] transition"
                   >
                     <div>
                       <h4 className="font-bold text-sm text-white">{sec.name}</h4>
@@ -698,7 +698,7 @@ export const AdminDashboard: React.FC = () => {
                       onClick={() => toggleSection(sec.id)}
                       className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-2 ${
                         sec.enabled
-                          ? 'bg-[#3d4d38] text-[#A2DB38] border border-[#A2DB38]/30'
+                          ? 'bg-[#239B4C] text-[#FFD000] border border-[#FFD000]/30'
                           : 'bg-gray-800 text-gray-500'
                       }`}
                     >
@@ -725,7 +725,7 @@ export const AdminDashboard: React.FC = () => {
                   }
                   className={`px-6 py-3 rounded-xl text-xs font-bold border transition ${
                     cmsConfig.layoutMode === 'grid'
-                      ? 'bg-[#3d4d38] text-[#A2DB38] border-[#A2DB38]'
+                      ? 'bg-[#239B4C] text-[#FFD000] border-[#FFD000]'
                       : 'bg-[#151B14] text-gray-400 border-gray-700'
                   }`}
                 >
@@ -737,7 +737,7 @@ export const AdminDashboard: React.FC = () => {
                   }
                   className={`px-6 py-3 rounded-xl text-xs font-bold border transition ${
                     cmsConfig.layoutMode === 'list'
-                      ? 'bg-[#3d4d38] text-[#A2DB38] border-[#A2DB38]'
+                      ? 'bg-[#239B4C] text-[#FFD000] border-[#FFD000]'
                       : 'bg-[#151B14] text-gray-400 border-gray-700'
                   }`}
                 >
@@ -764,9 +764,9 @@ export const AdminDashboard: React.FC = () => {
 
               <button
                 onClick={() => setIsAddingNewProduct(true)}
-                className="bg-[#A2DB38] hover:bg-[#8ece28] text-black font-bold text-xs px-5 py-3 rounded-xl shadow-lg transition flex items-center space-x-2"
+                className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold text-xs px-5 py-3 rounded-xl shadow-lg transition flex items-center space-x-2 border border-[#FFD000]/30"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4 text-[#FFD000]" />
                 <span>Tambah Produk Baru</span>
               </button>
             </div>
@@ -775,10 +775,10 @@ export const AdminDashboard: React.FC = () => {
             {isAddingNewProduct && (
               <form
                 onSubmit={handleSaveNewProduct}
-                className="bg-[#1F271D] p-6 rounded-2xl border-2 border-[#A2DB38] space-y-4 animate-in zoom-in-95"
+                className="bg-[#1F271D] p-6 rounded-2xl border-2 border-[#239B4C] space-y-4 animate-in zoom-in-95"
               >
                 <div className="flex items-center justify-between border-b border-[#2E3B2B] pb-3">
-                  <h4 className="font-bold text-base text-[#A2DB38] uppercase tracking-wider">
+                  <h4 className="font-bold text-base text-[#FFD000] uppercase tracking-wider">
                     Formulir Tambah Produk Cleanza
                   </h4>
                   <button
@@ -877,7 +877,7 @@ export const AdminDashboard: React.FC = () => {
                         placeholder="URL atau Upload dari Device"
                         className="flex-1 bg-[#151B14] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
                       />
-                      <label className="cursor-pointer bg-[#3d4d38] hover:bg-[#A2DB38] hover:text-black text-white px-3 py-2.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 shrink-0 border border-[#A2DB38]/30">
+                      <label className="cursor-pointer bg-[#239B4C] hover:bg-[#FFD000] hover:text-black text-white px-3 py-2.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 shrink-0 border border-[#FFD000]/30">
                         <Upload className="w-3.5 h-3.5" />
                         <span>Upload</span>
                         <input
@@ -910,7 +910,7 @@ export const AdminDashboard: React.FC = () => {
                 <div className="flex justify-end space-x-2 pt-2">
                   <button
                     type="submit"
-                    className="bg-[#A2DB38] text-black font-bold text-xs uppercase tracking-wider px-6 py-2.5 rounded-lg shadow-md"
+                    className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold text-xs uppercase tracking-wider px-6 py-2.5 rounded-lg shadow-md border border-[#FFD000]/30"
                   >
                     Simpan Produk
                   </button>
@@ -932,7 +932,7 @@ export const AdminDashboard: React.FC = () => {
                       className="w-14 h-14 object-contain rounded-lg bg-[#151B14] p-1 shrink-0"
                     />
                     <div>
-                      <span className="text-[10px] font-bold text-[#A2DB38] uppercase">
+                      <span className="text-[10px] font-bold text-[#FFD000] uppercase">
                         {p.category} • {p.volume}
                       </span>
                       <h4 className="font-bold text-sm text-white line-clamp-1">
@@ -967,8 +967,8 @@ export const AdminDashboard: React.FC = () => {
             {/* Quick Edit Modal */}
             {editingProduct && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="bg-[#1F271D] border border-[#A2DB38]/50 p-6 rounded-2xl max-w-xl w-full space-y-4">
-                  <h4 className="font-bold text-base text-[#A2DB38]">
+                <div className="bg-[#1F271D] border border-[#239B4C] p-6 rounded-2xl max-w-xl w-full space-y-4">
+                  <h4 className="font-bold text-base text-[#FFD000]">
                     Edit Produk: {editingProduct.name}
                   </h4>
 
@@ -1058,7 +1058,7 @@ export const AdminDashboard: React.FC = () => {
                         }
                         className="flex-1 bg-[#151B14] border border-[#3E4E3B] rounded p-2 text-xs text-white"
                       />
-                      <label className="cursor-pointer bg-[#3d4d38] hover:bg-[#A2DB38] hover:text-black text-white px-3 py-2 rounded text-xs font-bold transition flex items-center space-x-1 shrink-0 border border-[#A2DB38]/30">
+                      <label className="cursor-pointer bg-[#239B4C] hover:bg-[#FFD000] hover:text-black text-white px-3 py-2 rounded text-xs font-bold transition flex items-center space-x-1 shrink-0 border border-[#FFD000]/30">
                         <Upload className="w-3.5 h-3.5" />
                         <span>Upload</span>
                         <input
@@ -1089,7 +1089,7 @@ export const AdminDashboard: React.FC = () => {
                         updateProduct(editingProduct);
                         setEditingProduct(null);
                       }}
-                      className="bg-[#A2DB38] text-black font-bold px-5 py-2 rounded text-xs"
+                      className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold px-5 py-2 rounded text-xs border border-[#FFD000]/30"
                     >
                       Simpan
                     </button>

@@ -26,20 +26,20 @@ export const ProductDetailPage: React.FC = () => {
     : [product.image];
 
   return (
-    <div className="bg-[#FAFBF9] min-h-screen py-8 text-[#1D241B]">
+    <div className="bg-[#F2F9F3] min-h-screen py-8 text-[#1D241B]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb Navigation */}
         <nav className="text-xs text-gray-500 mb-8 flex items-center space-x-2">
           <span
             onClick={() => navigateTo('home')}
-            className="hover:text-[#3d4d38] cursor-pointer transition"
+            className="hover:text-[#239B4C] cursor-pointer transition"
           >
             Home
           </span>
           <span>/</span>
           <span
             onClick={() => navigateTo('shop')}
-            className="hover:text-[#3d4d38] cursor-pointer transition"
+            className="hover:text-[#239B4C] cursor-pointer transition"
           >
             Shop
           </span>
@@ -62,7 +62,7 @@ export const ProductDetailPage: React.FC = () => {
                     onClick={() => setActiveImage(img)}
                     className={`relative aspect-square w-16 rounded-xl overflow-hidden border-2 transition ${
                       activeImage === img
-                        ? 'border-[#3d4d38] ring-2 ring-[#3d4d38]/20'
+                        ? 'border-[#239B4C] ring-2 ring-[#239B4C]/20'
                         : 'border-gray-200 opacity-60 hover:opacity-100'
                     }`}
                   >
@@ -78,7 +78,7 @@ export const ProductDetailPage: React.FC = () => {
                 <span
                   className={`absolute top-4 left-4 text-[10px] font-bold tracking-wider uppercase px-3 py-1 rounded-sm text-white shadow-sm ${
                     product.badge === 'NEW PRODUCT'
-                      ? 'bg-[#3d4d38]'
+                      ? 'bg-[#239B4C]'
                       : product.badge === 'COMING SOON'
                       ? 'bg-amber-600'
                       : 'bg-black'
@@ -100,7 +100,7 @@ export const ProductDetailPage: React.FC = () => {
           <div className="lg:col-span-6 flex flex-col justify-between">
             <div>
               {/* Category */}
-              <span className="text-xs font-bold uppercase tracking-widest text-[#3d4d38] mb-2 block">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#239B4C] mb-2 block">
                 {product.category}
               </span>
 
@@ -111,8 +111,8 @@ export const ProductDetailPage: React.FC = () => {
 
               {/* Rating & Volume */}
               <div className="flex items-center space-x-4 mb-4 text-xs">
-                <div className="flex items-center space-x-1 font-bold text-[#3d4d38] bg-[#FAFBF9] px-2.5 py-1 rounded-md border border-gray-200">
-                  <CheckCircle2 className="w-4 h-4 text-[#3d4d38]" />
+                <div className="flex items-center space-x-1 font-bold text-[#239B4C] bg-[#F2F9F3] px-2.5 py-1 rounded-md border border-gray-200">
+                  <CheckCircle2 className="w-4 h-4 text-[#239B4C]" />
                   <span>{product.reviewsCount > 0 ? `${product.reviewsCount} Ulasan Terverifikasi` : 'Segera Peluncuran'}</span>
                 </div>
                 <span className="text-gray-400">|</span>
@@ -120,7 +120,7 @@ export const ProductDetailPage: React.FC = () => {
               </div>
 
               {/* Price */}
-              <div className="text-2xl font-bold text-[#3d4d38] mb-6">
+              <div className="text-2xl font-bold text-[#239B4C] mb-6">
                 {product.formattedPrice}
               </div>
 
@@ -157,7 +157,7 @@ export const ProductDetailPage: React.FC = () => {
                     {/* BUY NOW Button */}
                     <button
                       onClick={() => addToCart(product, quantity)}
-                      className="flex-1 bg-[#3d4d38] hover:bg-[#2a3726] text-white font-bold text-xs uppercase tracking-widest py-4 px-8 rounded-lg shadow-md transition transform active:scale-[0.99] flex items-center justify-center space-x-2"
+                      className="flex-1 bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold text-xs uppercase tracking-widest py-4 px-8 rounded-lg shadow-md transition transform active:scale-[0.99] flex items-center justify-center space-x-2"
                     >
                       <span>TAMBAH KE KERANJANG</span>
                     </button>
@@ -168,15 +168,15 @@ export const ProductDetailPage: React.FC = () => {
               {/* Trust Badges */}
               <div className="grid grid-cols-3 gap-2 py-4 border-y border-gray-100 text-[11px] text-gray-600 mb-6">
                 <div className="flex items-center space-x-2">
-                  <ShieldCheck className="w-4 h-4 text-[#3d4d38] shrink-0" />
+                  <ShieldCheck className="w-4 h-4 text-[#239B4C] shrink-0" />
                   <span>100% Cleanza Original</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Truck className="w-4 h-4 text-[#3d4d38] shrink-0" />
+                  <Truck className="w-4 h-4 text-[#239B4C] shrink-0" />
                   <span>Pengiriman Aman & Cepat</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RotateCcw className="w-4 h-4 text-[#3d4d38] shrink-0" />
+                  <RotateCcw className="w-4 h-4 text-[#239B4C] shrink-0" />
                   <span>Garansi Kualitas Cleanza</span>
                 </div>
               </div>
@@ -186,7 +186,7 @@ export const ProductDetailPage: React.FC = () => {
                 <div className="border-b border-gray-200 pb-3">
                   <button
                     onClick={() => setOpenAccordion(openAccordion === 'use' ? null : 'use')}
-                    className="w-full flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider text-[#1D241B] py-2 hover:text-[#3d4d38] transition"
+                    className="w-full flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider text-[#1D241B] py-2 hover:text-[#239B4C] transition"
                   >
                     <span>CARA PEMAKAIAN</span>
                     {openAccordion === 'use' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -201,7 +201,7 @@ export const ProductDetailPage: React.FC = () => {
                 <div className="border-b border-gray-200 pb-3">
                   <button
                     onClick={() => setOpenAccordion(openAccordion === 'ingredients' ? null : 'ingredients')}
-                    className="w-full flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider text-[#1D241B] py-2 hover:text-[#3d4d38] transition"
+                    className="w-full flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider text-[#1D241B] py-2 hover:text-[#239B4C] transition"
                   >
                     <span>KOMPOSISI & KANDUNGAN</span>
                     {openAccordion === 'ingredients' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -217,7 +217,7 @@ export const ProductDetailPage: React.FC = () => {
                   <div className="border-b border-gray-200 pb-3">
                     <button
                       onClick={() => setOpenAccordion(openAccordion === 'benefits' ? null : 'benefits')}
-                      className="w-full flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider text-[#1D241B] py-2 hover:text-[#3d4d38] transition"
+                      className="w-full flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider text-[#1D241B] py-2 hover:text-[#239B4C] transition"
                     >
                       <span>KEUNGGULAN UTAMA</span>
                       {openAccordion === 'benefits' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}

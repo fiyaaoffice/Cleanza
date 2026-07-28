@@ -21,17 +21,17 @@ export const PopularProductsCarousel: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-[#1A1E19] text-white overflow-hidden">
+    <section className="py-16 bg-[#0E2915] text-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+        <div className="grid grid-cols-1 lg:grid-cols-2 rounded-3xl overflow-hidden border border-[#239B4C]/30 shadow-2xl">
           {/* Left Dark Content Panel */}
-          <div className="p-8 sm:p-12 lg:p-16 flex flex-col justify-between bg-[#232B21] relative z-10">
+          <div className="p-8 sm:p-12 lg:p-16 flex flex-col justify-between bg-[#12381C] relative z-10">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#A2DB38] mb-3 block">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#FFD000] mb-3 block">
                 {language === 'ID' ? 'Produk Unggulan Cleanza' : 'Cleanza Spotlight'}
               </span>
 
-              <span className="inline-block bg-[#3d4d38] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded mb-4">
+              <span className="inline-block bg-[#239B4C] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded mb-4">
                 {currentProduct.category}
               </span>
 
@@ -39,15 +39,15 @@ export const PopularProductsCarousel: React.FC = () => {
                 {currentProduct.name}
               </h2>
 
-              <p className="text-sm text-gray-300 font-light leading-relaxed mb-6 line-clamp-3">
+              <p className="text-sm text-gray-200 font-light leading-relaxed mb-6 line-clamp-3">
                 {currentProduct.description}
               </p>
 
               <div className="flex items-center space-x-4 mb-8">
-                <span className="text-2xl font-bold text-[#A2DB38]">
+                <span className="text-2xl font-bold text-[#FFD000]">
                   {currentProduct.formattedPrice}
                 </span>
-                <span className="text-xs text-gray-400 border-l border-gray-600 pl-4">
+                <span className="text-xs text-gray-300 border-l border-gray-600 pl-4">
                   Ukuran: {currentProduct.volume}
                 </span>
               </div>
@@ -58,7 +58,7 @@ export const PopularProductsCarousel: React.FC = () => {
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => navigateTo('product-detail', currentProduct.slug)}
-                  className="bg-[#3d4d38] hover:bg-[#A2DB38] hover:text-black text-white px-6 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition"
+                  className="bg-[#239B4C] hover:bg-[#165B2D] text-white hover:text-[#FFD000] px-6 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition shadow-md"
                 >
                   {language === 'ID' ? 'LIHAT DETAIL' : 'DISCOVER MORE'}
                 </button>
@@ -77,17 +77,17 @@ export const PopularProductsCarousel: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={handlePrev}
-                  className="p-3 rounded-full border border-white/20 hover:border-[#A2DB38] hover:text-[#A2DB38] transition"
+                  className="p-3 rounded-full border border-white/20 hover:border-[#FFD000] hover:text-[#FFD000] transition"
                   aria-label="Previous product"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <span className="text-xs text-gray-400 font-mono px-2">
+                <span className="text-xs text-gray-300 font-mono px-2">
                   0{currentIndex + 1} / 0{featuredProducts.length}
                 </span>
                 <button
                   onClick={handleNext}
-                  className="p-3 rounded-full border border-white/20 hover:border-[#A2DB38] hover:text-[#A2DB38] transition"
+                  className="p-3 rounded-full border border-white/20 hover:border-[#FFD000] hover:text-[#FFD000] transition"
                   aria-label="Next product"
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -97,7 +97,7 @@ export const PopularProductsCarousel: React.FC = () => {
           </div>
 
           {/* Right Product Showcase Image */}
-          <div className="relative min-h-[320px] lg:min-h-[500px] bg-[#121612] flex items-center justify-center p-8">
+          <div className="relative min-h-[320px] lg:min-h-[500px] bg-[#0A1F10] flex items-center justify-center p-8">
             <img
               src={currentProduct.image}
               alt={currentProduct.name}

@@ -6,9 +6,9 @@ export const NewsPage: React.FC = () => {
   const { news } = useStore();
 
   return (
-    <div className="bg-[#FAFBF9] min-h-screen py-12 text-[#1D241B]">
+    <div className="bg-[#F2F9F3] min-h-screen py-12 text-[#1D241B]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <span className="text-xs font-bold uppercase tracking-widest text-[#3d4d38] mb-2 block">
+        <span className="text-xs font-bold uppercase tracking-widest text-[#239B4C] mb-2 block">
           Kabar & Tips Cleanza Dapur
         </span>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#1D241B] mb-8">
@@ -25,7 +25,7 @@ export const NewsPage: React.FC = () => {
                 <img src={item.image} alt={item.title} className="w-full aspect-video object-cover" />
                 <div className="p-6">
                   <div className="flex items-center space-x-2 text-xs text-gray-400 mb-2">
-                    <Calendar className="w-3.5 h-3.5 text-[#3d4d38]" />
+                    <Calendar className="w-3.5 h-3.5 text-[#239B4C]" />
                     <span>{item.date}</span>
                   </div>
                   <h3 className="font-bold text-lg mb-2 line-clamp-2">{item.title}</h3>
@@ -35,7 +35,7 @@ export const NewsPage: React.FC = () => {
                 </div>
               </div>
               <div className="p-6 pt-0">
-                <span className="text-xs font-bold text-[#3d4d38] flex items-center space-x-1">
+                <span className="text-xs font-bold text-[#239B4C] flex items-center space-x-1">
                   <span>Baca Selengkapnya</span>
                   <ArrowUpRight className="w-4 h-4" />
                 </span>
