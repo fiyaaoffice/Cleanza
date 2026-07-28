@@ -234,7 +234,6 @@ export const DEFAULT_CMS_CONFIG: CMSConfig = {
     { id: 'categories', name: 'Category Showcase', enabled: true, order: 2 },
     { id: 'popular', name: 'Popular Product Spotlight', enabled: true, order: 3 },
     { id: 'ourStory', name: 'Our Story & Technology', enabled: true, order: 4 },
-    { id: 'news', name: 'Kabar & Tips Cleanza', enabled: true, order: 5 },
-    { id: 'skinCounselor', name: 'Kalkulator Dapur Cleanza', enabled: true, order: 6 }
+    { id: 'news', name: 'Kabar & Tips Cleanza', enabled: true, order: 5 }
   ]
 };

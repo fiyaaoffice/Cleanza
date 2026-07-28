@@ -4,7 +4,7 @@ import { DEFAULT_CLEANZA_LOGO } from '../data/initialData';
 import { Phone, Mail, MessageSquare, Check } from 'lucide-react';
 
 export const Footer: React.FC = () => {
-  const { cmsConfig, navigateTo, setIsSkinQuizOpen } = useStore();
+  const { cmsConfig, navigateTo } = useStore();
   const { contact } = cmsConfig;
 
   const [waInput, setWaInput] = useState('');
@@ -164,16 +164,6 @@ export const Footer: React.FC = () => {
             © 2026 Cleanza Indonesia. All Rights Reserved.
           </div>
         </div>
-      </div>
-
-      {/* Floating Bottom-Left Green Badge */}
-      <div className="fixed bottom-6 left-6 z-40">
-        <button
-          onClick={() => setIsSkinQuizOpen(true)}
-          className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold text-xs px-4 py-2.5 rounded-full shadow-2xl flex items-center space-x-2 border-2 border-white/20 hover:scale-105 transition duration-300"
-        >
-          <span>Kalkulator Dapur Cleanza</span>
-        </button>
       </div>
     </footer>
   );

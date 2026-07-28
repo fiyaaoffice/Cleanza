@@ -7,14 +7,12 @@ import { CategoryShowcase } from './components/CategoryShowcase';
 import { PopularProductsCarousel } from './components/PopularProductsCarousel';
 import { OurStorySection } from './components/OurStorySection';
 import { NewsSection } from './components/NewsSection';
-import { SkinCounselorBanner } from './components/SkinCounselorBanner';
 import { Footer } from './components/Footer';
 import { ProductDetailPage } from './components/ProductDetailPage';
 import { ShopAllPage } from './components/ShopAllPage';
 import { AdminDashboard } from './components/AdminDashboard';
 import { CartDrawer } from './components/CartDrawer';
 import { SearchModal } from './components/SearchModal';
-import { SkinCounselorModal } from './components/SkinCounselorModal';
 import { OurStoryPage } from './components/OurStoryPage';
 import { NewsPage } from './components/NewsPage';
 import { CommunityPage } from './components/CommunityPage';
@@ -30,13 +28,12 @@ const AppContent: React.FC = () => {
     categories: <CategoryShowcase key="categories" />,
     popular: <PopularProductsCarousel key="popular" />,
     ourStory: <OurStorySection key="ourStory" />,
-    news: <NewsSection key="news" />,
-    skinCounselor: <SkinCounselorBanner key="skinCounselor" />
+    news: <NewsSection key="news" />
   };
 
   if (activePage === 'admin') {
     return (
-      <div className="min-h-screen bg-[#0E2915] text-white">
+      <div className="min-h-screen bg-[#0E2915] text-white" style={{ zoom: '95%' }}>
         <AdminDashboard />
         <AdminPinModal />
         {/* Global Toast Notification */}
@@ -50,7 +47,7 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F2F9F3] flex flex-col justify-between text-[#1D241B] selection:bg-[#239B4C] selection:text-white">
+    <div className="min-h-screen bg-[#F2F9F3] flex flex-col justify-between text-[#1D241B] selection:bg-[#239B4C] selection:text-white" style={{ zoom: '95%' }}>
       <Navbar />
 
       <main className="flex-1 overflow-hidden">
@@ -65,7 +62,7 @@ const AppContent: React.FC = () => {
             {activePage === 'home' && (
               <>
                 {cmsConfig.sections
-                  .filter((sec) => sec.enabled)
+                  .filter((sec) => sec.enabled && sec.id !== 'skinCounselor')
                   .sort((a, b) => a.order - b.order)
                   .map((sec) => sectionComponentMap[sec.id] || null)}
               </>
@@ -86,7 +83,6 @@ const AppContent: React.FC = () => {
       {/* Interactive Global Modals & Drawers */}
       <CartDrawer />
       <SearchModal />
-      <SkinCounselorModal />
       <AdminPinModal />
 
       {/* Floating Toast Notification */}
