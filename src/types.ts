@@ -66,6 +66,8 @@ export interface CMSConfig {
     mediaUrl: string;
     ctaText: string;
   };
+  categoryImages?: Record<string, string>;
+  newsImages?: Record<string, string>;
   skinCounselor: {
     headline: string;
     subheadline: string;

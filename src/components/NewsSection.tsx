@@ -4,7 +4,7 @@ import { ArrowUpRight, Calendar, X } from 'lucide-react';
 import { NewsArticle } from '../types';
 
 export const NewsSection: React.FC = () => {
-  const { news, navigateTo, language } = useStore();
+  const { news, navigateTo, language, cmsConfig } = useStore();
   const [selectedNews, setSelectedNews] = useState<NewsArticle | null>(null);
 
   return (
@@ -35,7 +35,7 @@ export const NewsSection: React.FC = () => {
               <div>
                 <div className="aspect-[16/10] w-full bg-gray-100 overflow-hidden relative">
                   <img
-                    src={item.image}
+                    src={cmsConfig.newsImages?.[item.id] || item.image}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

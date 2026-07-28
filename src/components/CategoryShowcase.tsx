@@ -10,25 +10,25 @@ interface CategoryItem {
 }
 
 export const CategoryShowcase: React.FC = () => {
-  const { navigateTo, setSelectedCategory, language } = useStore();
+  const { navigateTo, setSelectedCategory, language, cmsConfig } = useStore();
 
   const categories: CategoryItem[] = [
     {
       name: 'Kemasan Rumah Tangga',
       titleIndo: 'Refill 450ml & Botol 1000ml',
-      image: 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=600',
+      image: cmsConfig.categoryImages?.['Kemasan Rumah Tangga'] || 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=600',
       count: '2 Produk'
     },
     {
       name: 'Cleanza Profesional',
       titleIndo: 'Jeriken 5000ml (5 Liter)',
-      image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600',
+      image: cmsConfig.categoryImages?.['Cleanza Profesional'] || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600',
       count: '1 Produk'
     },
     {
       name: 'Varian Lemon',
       titleIndo: 'Ekstra Citrus Lemon (Coming Soon)',
-      image: 'https://images.unsplash.com/photo-1534531141161-e41d133a4be3?auto=format&fit=crop&q=80&w=600',
+      image: cmsConfig.categoryImages?.['Varian Lemon'] || 'https://images.unsplash.com/photo-1534531141161-e41d133a4be3?auto=format&fit=crop&q=80&w=600',
       count: 'Coming Soon'
     }
   ];

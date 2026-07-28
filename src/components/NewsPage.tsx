@@ -3,7 +3,7 @@ import { useStore } from '../context/StoreContext';
 import { Calendar, ArrowUpRight } from 'lucide-react';
 
 export const NewsPage: React.FC = () => {
-  const { news } = useStore();
+  const { news, cmsConfig } = useStore();
 
   return (
     <div className="bg-[#F2F9F3] min-h-screen py-12 text-[#1D241B]">
@@ -22,7 +22,7 @@ export const NewsPage: React.FC = () => {
               className="bg-white rounded-3xl overflow-hidden border border-gray-200 hover:shadow-xl transition duration-300 flex flex-col justify-between"
             >
               <div>
-                <img src={item.image} alt={item.title} className="w-full aspect-video object-cover" />
+                <img src={cmsConfig.newsImages?.[item.id] || item.image} alt={item.title} className="w-full aspect-video object-cover" />
                 <div className="p-6">
                   <div className="flex items-center space-x-2 text-xs text-gray-400 mb-2">
                     <Calendar className="w-3.5 h-3.5 text-[#239B4C]" />
