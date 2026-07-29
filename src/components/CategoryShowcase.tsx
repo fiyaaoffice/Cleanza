@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useStore } from '../context/StoreContext';
-import { ChevronRight, ArrowUpRight } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ArrowUpRight } from 'lucide-react';
 
 interface CategoryItem {
   id?: string;
@@ -12,6 +12,7 @@ interface CategoryItem {
 
 export const CategoryShowcase: React.FC = () => {
   const { navigateTo, setSelectedCategory, language, cmsConfig } = useStore();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const defaultCategories: CategoryItem[] = [
     {
@@ -52,11 +53,21 @@ export const CategoryShowcase: React.FC = () => {
     navigateTo('shop');
   };
 
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const scrollAmount = scrollRef.current.clientWidth * 0.75;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <section className="py-16 bg-[#F2F9F3] border-b border-[#E5E8E2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 pb-4 border-b border-[#E5E8E2]">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-[#E5E8E2]">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-[#1D241B] tracking-tight">
               {cmsConfig.categoryShowcase?.headline ||
@@ -71,34 +82,62 @@ export const CategoryShowcase: React.FC = () => {
                   : 'From everyday family refills to 5000ml bulk jugs for catering and restaurants.')}
             </p>
           </div>
-          <button
-            onClick={() => {
-              setSelectedCategory('All');
-              navigateTo('shop');
-            }}
-            className="mt-4 sm:mt-0 inline-flex items-center space-x-1 text-xs font-bold uppercase tracking-wider text-[#239B4C] hover:text-[#165B2D] underline decoration-1 underline-offset-4 transition"
-          >
-            <span>{language === 'ID' ? 'Lihat Semua Produk Cleanza' : 'View All Cleanza Products'}</span>
-            <ArrowUpRight className="w-4 h-4" />
-          </button>
+
+          <div className="mt-4 sm:mt-0 flex items-center space-x-4">
+            {/* Desktop & Tablet Navigation Controls */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => scroll('left')}
+                className="p-2.5 rounded-full bg-white border border-[#E5E8E2] text-gray-700 hover:text-[#239B4C] hover:border-[#239B4C] hover:shadow-md transition"
+                title="Geser Kiri"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => scroll('right')}
+                className="p-2.5 rounded-full bg-white border border-[#E5E8E2] text-gray-700 hover:text-[#239B4C] hover:border-[#239B4C] hover:shadow-md transition"
+                title="Geser Kanan"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                setSelectedCategory('All');
+                navigateTo('shop');
+              }}
+              className="inline-flex items-center space-x-1 text-xs font-bold uppercase tracking-wider text-[#239B4C] hover:text-[#165B2D] underline decoration-1 underline-offset-4 transition"
+            >
+              <span>{language === 'ID' ? 'Lihat Semua' : 'View All'}</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Swipe Hint */}
-        <div className="flex items-center justify-between md:hidden mb-3 text-[11px] text-gray-500 font-medium">
-          <span className="flex items-center space-x-1 text-[#239B4C]">
-            <span>Swipe ke samping untuk pilihan kemasan</span>
+        {/* Swipe Hint */}
+        <div className="flex items-center justify-between mb-3 text-[11px] text-gray-500 font-medium">
+          <span className="flex items-center space-x-1.5 text-[#239B4C]">
+            <span>Swipe / Geser ke samping untuk melihat varian kemasan</span>
             <span>➔</span>
           </span>
-          <span>{categoriesToDisplay.length} Varian</span>
+          <span className="bg-[#E5F4E8] text-[#239B4C] px-2 py-0.5 rounded-full font-bold">
+            {categoriesToDisplay.length} Varian Kemasan
+          </span>
         </div>
 
-        {/* Category Grid / Mobile Horizontal Swipe Carousel */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 md:overflow-visible md:pb-0 md:grid md:grid-cols-3 md:gap-6 scrollbar-none">
+        {/* Universal Horizontal Swipe Carousel (All Devices: Mobile, Tablet & Desktop) */}
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto snap-x snap-mandatory gap-4 sm:gap-6 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none scroll-smooth"
+        >
           {categoriesToDisplay.map((cat, idx) => (
             <div
               key={cat.id || cat.name || idx}
               onClick={() => handleCategorySelect(cat.name)}
-              className="w-[82vw] max-w-[340px] shrink-0 snap-start md:w-auto md:max-w-none md:shrink group cursor-pointer bg-white rounded-2xl p-5 border border-[#E5E8E2] hover:border-[#239B4C] hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              className="w-[82vw] sm:w-[320px] md:w-[360px] lg:w-[380px] shrink-0 snap-start group cursor-pointer bg-white rounded-2xl p-5 border border-[#E5E8E2] hover:border-[#239B4C] hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
             >
               <div className="aspect-square w-full rounded-xl overflow-hidden bg-[#F2F4F0] mb-4 relative">
                 <img
