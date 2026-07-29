@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
 import { ChevronRight, ChevronLeft, ArrowUpRight } from 'lucide-react';
 
@@ -13,6 +13,7 @@ interface CategoryItem {
 export const CategoryShowcase: React.FC = () => {
   const { navigateTo, setSelectedCategory, language, cmsConfig } = useStore();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const defaultCategories: CategoryItem[] = [
     {
@@ -53,116 +54,142 @@ export const CategoryShowcase: React.FC = () => {
     navigateTo('shop');
   };
 
-  const scroll = (direction: 'left' | 'right') => {
+  const handleScroll = () => {
     if (scrollRef.current) {
-      const scrollAmount = scrollRef.current.clientWidth * 0.75;
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
+      const container = scrollRef.current;
+      const children = container.children;
+      if (children.length > 0) {
+        const scrollLeft = container.scrollLeft;
+        let closestIndex = 0;
+        let minDistance = Infinity;
+        Array.from(children).forEach((child, idx) => {
+          const childElement = child as HTMLElement;
+          const distance = Math.abs(childElement.offsetLeft - container.offsetLeft - scrollLeft);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestIndex = idx;
+          }
+        });
+        setActiveIndex(closestIndex);
+      }
+    }
+  };
+
+  const scrollTo = (index: number) => {
+    if (scrollRef.current) {
+      const targetIndex = Math.max(0, Math.min(index, categoriesToDisplay.length - 1));
+      const container = scrollRef.current;
+      const children = container.children;
+      if (children[targetIndex]) {
+        const child = children[targetIndex] as HTMLElement;
+        container.scrollTo({
+          left: child.offsetLeft - container.offsetLeft,
+          behavior: 'smooth'
+        });
+        setActiveIndex(targetIndex);
+      }
     }
   };
 
   return (
-    <section className="py-16 bg-[#F2F9F3] border-b border-[#E5E8E2]">
+    <section className="py-14 bg-[#F2F9F3] border-b border-[#E5E8E2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-[#E5E8E2]">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#1D241B] tracking-tight">
-              {cmsConfig.categoryShowcase?.headline ||
-                (language === 'ID'
-                  ? 'Pilihan Kemasan Cleanza Pencuci Piring'
-                  : 'Cleanza Product Lineup')}
-            </h2>
-            <p className="text-sm text-gray-600 mt-2 max-w-xl font-light">
-              {cmsConfig.categoryShowcase?.description ||
-                (language === 'ID'
-                  ? 'Tersedia ukuran konsumsi harian keluarga hingga ukuran ekonomis 5000ml untuk usaha kuliner.'
-                  : 'From everyday family refills to 5000ml bulk jugs for catering and restaurants.')}
-            </p>
-          </div>
-
-          <div className="mt-4 sm:mt-0 flex items-center space-x-4">
-            {/* Desktop & Tablet Navigation Controls */}
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => scroll('left')}
-                className="p-2.5 rounded-full bg-white border border-[#E5E8E2] text-gray-700 hover:text-[#239B4C] hover:border-[#239B4C] hover:shadow-md transition"
-                title="Geser Kiri"
-                aria-label="Scroll left"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => scroll('right')}
-                className="p-2.5 rounded-full bg-white border border-[#E5E8E2] text-gray-700 hover:text-[#239B4C] hover:border-[#239B4C] hover:shadow-md transition"
-                title="Geser Kanan"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-
-            <button
-              onClick={() => {
-                setSelectedCategory('All');
-                navigateTo('shop');
-              }}
-              className="inline-flex items-center space-x-1 text-xs font-bold uppercase tracking-wider text-[#239B4C] hover:text-[#165B2D] underline decoration-1 underline-offset-4 transition"
-            >
-              <span>{language === 'ID' ? 'Lihat Semua' : 'View All'}</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Swipe Hint */}
-        <div className="flex items-center justify-between mb-3 text-[11px] text-gray-500 font-medium">
-          <span className="flex items-center space-x-1.5 text-[#239B4C]">
+        {/* Top Hint Bar & Total Count */}
+        <div className="flex items-center justify-between mb-4 text-xs font-semibold">
+          <div className="flex items-center space-x-2 text-[#239B4C]">
             <span>Swipe / Geser ke samping untuk melihat varian kemasan</span>
-            <span>➔</span>
-          </span>
-          <span className="bg-[#E5F4E8] text-[#239B4C] px-2 py-0.5 rounded-full font-bold">
+            <span className="text-sm">➔</span>
+          </div>
+          <span className="bg-[#E5F4E8] text-[#239B4C] px-3 py-1 rounded-full font-bold shadow-sm">
             {categoriesToDisplay.length} Varian Kemasan
           </span>
         </div>
 
-        {/* Universal Horizontal Swipe Carousel (All Devices: Mobile, Tablet & Desktop) */}
-        <div
-          ref={scrollRef}
-          className="flex overflow-x-auto snap-x snap-mandatory gap-4 sm:gap-6 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none scroll-smooth"
-        >
-          {categoriesToDisplay.map((cat, idx) => (
-            <div
-              key={cat.id || cat.name || idx}
-              onClick={() => handleCategorySelect(cat.name)}
-              className="w-[82vw] sm:w-[320px] md:w-[360px] lg:w-[380px] shrink-0 snap-start group cursor-pointer bg-white rounded-2xl p-5 border border-[#E5E8E2] hover:border-[#239B4C] hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-            >
-              <div className="aspect-square w-full rounded-xl overflow-hidden bg-[#F2F4F0] mb-4 relative">
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full font-semibold">
-                  {cat.count}
-                </div>
-              </div>
+        {/* Carousel Outer Relative Container */}
+        <div className="relative group/carousel">
+          {/* Floating Left Arrow Button */}
+          <button
+            onClick={() => scrollTo(activeIndex - 1)}
+            disabled={activeIndex === 0}
+            className={`absolute -left-3 sm:-left-5 lg:-left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white text-gray-800 shadow-xl border border-gray-100 flex items-center justify-center transition duration-200 ${
+              activeIndex === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[#239B4C] hover:text-white hover:scale-105'
+            }`}
+            title="Kemasan Sebelumnya"
+            aria-label="Previous category"
+          >
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+          </button>
 
-              <div>
-                <div className="flex items-center justify-between text-base font-bold text-[#1D241B] group-hover:text-[#239B4C] transition">
-                  <span>{cat.name}</span>
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition text-gray-400 group-hover:text-[#239B4C]" />
+          {/* Floating Right Arrow Button */}
+          <button
+            onClick={() => scrollTo(activeIndex + 1)}
+            disabled={activeIndex === categoriesToDisplay.length - 1}
+            className={`absolute -right-3 sm:-right-5 lg:-right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white text-gray-800 shadow-xl border border-gray-100 flex items-center justify-center transition duration-200 ${
+              activeIndex === categoriesToDisplay.length - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[#239B4C] hover:text-white hover:scale-105'
+            }`}
+            title="Kemasan Selanjutnya"
+            aria-label="Next category"
+          >
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+          </button>
+
+          {/* Horizontal Scroll Track */}
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="flex overflow-x-auto snap-x snap-mandatory gap-5 sm:gap-6 pb-6 pt-1 px-1 scrollbar-none scroll-smooth"
+          >
+            {categoriesToDisplay.map((cat, idx) => (
+              <div
+                key={cat.id || cat.name || idx}
+                onClick={() => handleCategorySelect(cat.name)}
+                className="w-[85vw] sm:w-[320px] md:w-[350px] lg:w-[370px] shrink-0 snap-start group/card cursor-pointer bg-white rounded-2xl p-5 border border-[#E5E8E2] hover:border-[#239B4C] hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              >
+                {/* Image Canvas */}
+                <div className="aspect-square w-full rounded-xl overflow-hidden bg-[#F2F4F0] mb-4 relative border border-gray-100">
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="w-full h-full object-cover object-center group-hover/card:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full font-bold shadow">
+                    {cat.count}
+                  </div>
                 </div>
-                <p className="text-xs text-gray-500 mt-1 font-light leading-relaxed">
-                  {cat.titleIndo}
-                </p>
+
+                {/* Content Details */}
+                <div>
+                  <div className="flex items-center justify-between text-base font-bold text-[#1D241B] group-hover/card:text-[#239B4C] transition">
+                    <span>{cat.name}</span>
+                    <ChevronRight className="w-5 h-5 group-hover/card:translate-x-1 transition text-gray-400 group-hover/card:text-[#239B4C]" />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 font-light leading-relaxed">
+                    {cat.titleIndo}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* Pagination Indicators (Dots) */}
+          <div className="flex items-center justify-center space-x-2 mt-2">
+            {categoriesToDisplay.map((_, dotIdx) => (
+              <button
+                key={dotIdx}
+                onClick={() => scrollTo(dotIdx)}
+                className={`transition-all duration-300 rounded-full ${
+                  activeIndex === dotIdx
+                    ? 'w-3 h-3 bg-[#239B4C]'
+                    : 'w-2.5 h-2.5 bg-gray-300 hover:bg-gray-400'
+                }`}
+                title={`Ke slide ${dotIdx + 1}`}
+                aria-label={`Go to slide ${dotIdx + 1}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 };
+
