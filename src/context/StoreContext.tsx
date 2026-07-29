@@ -126,9 +126,32 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     );
 
+    // 3. Subscribe to News collection
+    const newsColRef = collection(db, 'news');
+    const unsubNews = onSnapshot(
+      newsColRef,
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const loadedNews = snapshot.docs.map((docSnap) => docSnap.data() as NewsArticle);
+          setNews(loadedNews);
+        } else {
+          // Seed initial news to Firestore
+          INITIAL_NEWS.forEach((article) => {
+            setDoc(doc(db, 'news', article.id), article).catch((err) =>
+              console.error('Failed seeding news article to Firestore', err)
+            );
+          });
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.LIST, 'news');
+      }
+    );
+
     return () => {
       unsubCms();
       unsubProducts();
+      unsubNews();
     };
   }, []);
 
@@ -249,16 +272,25 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const addNewsArticle = (article: NewsArticle) => {
     setNews((prev) => [article, ...prev]);
+    setDoc(doc(db, 'news', article.id), article).catch((error) =>
+      handleFirestoreError(error, OperationType.WRITE, `news/${article.id}`)
+    );
     showToast(`Artikel "${article.title}" berhasil ditambahkan!`);
   };
 
   const updateNewsArticle = (article: NewsArticle) => {
     setNews((prev) => prev.map((item) => (item.id === article.id ? article : item)));
+    setDoc(doc(db, 'news', article.id), article).catch((error) =>
+      handleFirestoreError(error, OperationType.WRITE, `news/${article.id}`)
+    );
     showToast(`Artikel "${article.title}" berhasil diperbarui!`);
   };
 
   const deleteNewsArticle = (id: string) => {
     setNews((prev) => prev.filter((item) => item.id !== id));
+    deleteDoc(doc(db, 'news', id)).catch((error) =>
+      handleFirestoreError(error, OperationType.DELETE, `news/${id}`)
+    );
     showToast('Artikel berhasil dihapus!');
   };
 
@@ -307,8 +339,26 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const resetCMSAndProducts = () => {
     setProducts(INITIAL_PRODUCTS);
     setCmsConfig(DEFAULT_CMS_CONFIG);
+    setNews(INITIAL_NEWS);
     localStorage.removeItem('cleanza_products');
     localStorage.removeItem('cleanza_cms_config');
+    localStorage.removeItem('cleanza_news');
+
+    // Reset Firestore collections
+    setDoc(doc(db, 'cmsConfig', 'defaultConfig'), DEFAULT_CMS_CONFIG).catch((err) =>
+      console.error('Failed to reset Firestore cmsConfig', err)
+    );
+    INITIAL_PRODUCTS.forEach((prod) => {
+      setDoc(doc(db, 'products', prod.id), prod).catch((err) =>
+        console.error('Failed resetting product in Firestore', err)
+      );
+    });
+    INITIAL_NEWS.forEach((article) => {
+      setDoc(doc(db, 'news', article.id), article).catch((err) =>
+        console.error('Failed resetting news article in Firestore', err)
+      );
+    });
+
     showToast('Data CMS & Katalog Cleanza telah direset!');
   };
 

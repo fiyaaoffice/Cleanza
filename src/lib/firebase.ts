@@ -1,7 +1,10 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, setLogLevel } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
+
+// Silence non-fatal connection retry logs from Firebase SDK
+setLogLevel('error');
 
 const app = initializeApp(firebaseConfig);
 
@@ -36,6 +39,11 @@ export interface FirestoreErrorInfo {
 }
 
 export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errCode = (error as any)?.code;
+  if (errCode === 'unavailable') {
+    console.info(`[Firestore] Backend unreachable (offline mode). Retrying automatically... Path: ${path}`);
+    return;
+  }
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
     authInfo: {
