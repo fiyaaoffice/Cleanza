@@ -11,13 +11,18 @@ export const NewsSection: React.FC = () => {
     <section className="py-16 bg-[#F2F9F3] border-b border-[#E5E8E2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#E5E8E2]">
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#1D241B] tracking-tight">
-            {language === 'ID' ? 'Kabar & Tips Dapur Cleanza' : 'Cleanza News & Tips'}
-          </h2>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-[#E5E8E2]">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#1D241B] tracking-tight">
+              {cmsConfig.newsSection?.headline || (language === 'ID' ? 'Kabar & Tips Dapur Cleanza' : 'Cleanza News & Tips')}
+            </h2>
+            <p className="text-xs text-gray-600 mt-1 font-light">
+              {cmsConfig.newsSection?.description || 'Artikel, kiat praktis mencuci piring, dan inovasi produk pembersih dapur terbaru.'}
+            </p>
+          </div>
           <button
             onClick={() => navigateTo('news')}
-            className="inline-flex items-center space-x-1 text-xs font-bold uppercase tracking-wider text-[#239B4C] hover:text-[#165B2D] underline underline-offset-4 transition"
+            className="mt-3 sm:mt-0 inline-flex items-center space-x-1 text-xs font-bold uppercase tracking-wider text-[#239B4C] hover:text-[#165B2D] underline underline-offset-4 transition"
           >
             <span>{language === 'ID' ? 'Lihat Semua' : 'View All'}</span>
             <ArrowUpRight className="w-4 h-4" />

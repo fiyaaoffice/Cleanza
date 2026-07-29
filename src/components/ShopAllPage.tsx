@@ -40,11 +40,11 @@ export const ShopAllPage: React.FC = () => {
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-3">
-            Cairan Pencuci Piring Cleanza
+            {cmsConfig.shopPage?.title || 'Cairan Pencuci Piring Cleanza'}
           </h1>
 
           <p className="text-sm sm:text-base text-gray-300 font-light max-w-2xl leading-relaxed">
-            Formula konsentrat tinggi peluruh minyak & bau amis. Tersedia kemasan praktis rumah tangga (450ml & 1000ml) dan jeriken hemat Cleanza Profesional (5000ml).
+            {cmsConfig.shopPage?.description || 'Formula konsentrat tinggi peluruh minyak & bau amis. Tersedia kemasan praktis rumah tangga (450ml & 1000ml) dan jeriken hemat Cleanza Profesional (5000ml).'}
           </p>
         </div>
       </div>

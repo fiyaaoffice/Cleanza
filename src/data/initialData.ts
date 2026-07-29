@@ -202,6 +202,7 @@ export const DEFAULT_CLEANZA_LOGO = `data:image/svg+xml;utf8,<svg xmlns="http://
 export const DEFAULT_CMS_CONFIG: CMSConfig = {
   layoutMode: 'grid',
   logoUrl: DEFAULT_CLEANZA_LOGO,
+  faviconUrl: DEFAULT_CLEANZA_LOGO,
   promoText: 'PROMO CLEANZA! Gratis Ongkir & Diskon Kebutuhan Dapur Rumah & Resto',
   promoTextId: 'PROMO CLEANZA! Gratis Ongkir & Diskon Kebutuhan Dapur Rumah & Resto',
   hero: {
@@ -213,21 +214,50 @@ export const DEFAULT_CMS_CONFIG: CMSConfig = {
     mediaType: 'image',
     mediaUrl: 'https://images.unsplash.com/photo-1585837575652-267c041d77d4?auto=format&fit=crop&q=80&w=1600'
   },
+  categoryShowcase: {
+    headline: 'Pilihan Kemasan Cleanza Pencuci Piring',
+    description: 'Tersedia ukuran konsumsi harian keluarga hingga ukuran ekonomis 5000ml untuk usaha kuliner.'
+  },
+  popularSection: {
+    headline: 'Produk Unggulan Cleanza',
+    description: 'Kemasan terfavorit dengan daya bersih ekstra meluruhkan lemak membandel.'
+  },
   ourStory: {
     headline: 'Keberkahan Kebersihan Dapur Keluarga & Usaha Anda',
     subheadline: 'Dibuat dari ekstrak bahan alami terpilih untuk memberikan hasil cuci paling higienis, hemat, dan nyaman digunakan setiap hari.',
+    paragraph1: 'Cleanza adalah brand cairan pencuci piring modern yang diformulasikan khusus dengan daya angkat lemak pekat dan pembasmi bau amis instan. Menggunakan ekstrak Jeruk Nipis alami & varian Lemon Mediterania, Cleanza menghadirkan kebersihan higienis untuk piring, gelas, dan peralatan dapur Anda.',
+    paragraph2: 'Dengan filosofi "Bersih Maksimal, Lembut Di Tangan", Cleanza menghadirkan varian kemasan praktis rumah tangga (450ml & 1000ml) serta kemasan jeriken ekonomis Cleanza Profesional (5000ml) khusus untuk restoran, katering, dan usaha kuliner.',
     mediaUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=1200',
     ctaText: 'PELAJARI FORMULA CLEANZA'
+  },
+  newsSection: {
+    headline: 'Kabar & Tips Dapur Cleanza',
+    description: 'Artikel, kiat praktis mencuci piring, dan inovasi produk pembersih dapur terbaru.'
   },
   skinCounselor: {
     headline: 'Kalkulator Kebutuhan Cleanza Dapur Anda',
     subheadline: 'Hitung estimasi kebutuhan cairan pencuci piring harian untuk rumah tangga atau usaha kuliner Anda.',
     ctaText: 'HITUNG KEBUTUHAN CUCI'
   },
+  shopPage: {
+    title: 'Cairan Pencuci Piring Cleanza',
+    description: 'Temukan varian kemasan rumah tangga (450ml & 1000ml) hingga ukuran ekonomis 5000ml Cleanza Profesional.'
+  },
+  ingredientsPage: {
+    title: 'Bahan & Formula Unggulan Cleanza',
+    description: 'Setiap tetes Cleanza diproduksi dengan konsentrat pembersih tinggi yang teruji higienis, aman untuk peralatan makan seluruh keluarga, dan lembut di tangan.'
+  },
+  communityPage: {
+    title: 'Mitra Kebersihan Usaha Kuliner & Restoran',
+    description: 'Solusi ekonomis pencuci piring jeriken 5000ml berdaya angkat minyak tinggi untuk katering, kafe, rumah makan, hotel, dan instansi.'
+  },
   contact: {
     callCenter: '+62 812 3456 7890',
     email: 'info@cleanza.co.id',
-    whatsapp: '+62 812 3456 7890'
+    whatsapp: '+62 812 3456 7890',
+    footerDescription: 'Cairan pencuci piring konsentrat tinggi dengan kesegaran Jeruk Nipis alami & varian Lemon. Meluruhkan minyak membandel dan bau amis seketika.',
+    address: 'Jl. Kebersihan Raya No. 88, Jakarta Selatan, Indonesia',
+    copyright: '© 2026 Cleanza Indonesia. All Rights Reserved.'
   },
   sections: [
     { id: 'hero', name: 'Hero Section', enabled: true, order: 1 },

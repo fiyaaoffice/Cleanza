@@ -3,7 +3,7 @@ import { useStore } from '../context/StoreContext';
 import { ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react';
 
 export const PopularProductsCarousel: React.FC = () => {
-  const { products, navigateTo, addToCart, language } = useStore();
+  const { products, navigateTo, addToCart, language, cmsConfig } = useStore();
   const featuredProducts = products.filter((p) => p.isFeatured || p.badge === 'BEST SELLER');
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -28,7 +28,7 @@ export const PopularProductsCarousel: React.FC = () => {
           <div className="p-8 sm:p-12 lg:p-16 flex flex-col justify-between bg-[#12381C] relative z-10">
             <div>
               <span className="text-xs font-bold uppercase tracking-widest text-[#FFD000] mb-3 block">
-                {language === 'ID' ? 'Produk Unggulan Cleanza' : 'Cleanza Spotlight'}
+                {cmsConfig.popularSection?.headline || (language === 'ID' ? 'Produk Unggulan Cleanza' : 'Cleanza Spotlight')}
               </span>
 
               <span className="inline-block bg-[#239B4C] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded mb-4">

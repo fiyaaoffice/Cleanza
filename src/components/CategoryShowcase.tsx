@@ -45,14 +45,16 @@ export const CategoryShowcase: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 pb-4 border-b border-[#E5E8E2]">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-[#1D241B] tracking-tight">
-              {language === 'ID'
-                ? 'Pilihan Kemasan Cleanza Pencuci Piring'
-                : 'Cleanza Product Lineup'}
+              {cmsConfig.categoryShowcase?.headline ||
+                (language === 'ID'
+                  ? 'Pilihan Kemasan Cleanza Pencuci Piring'
+                  : 'Cleanza Product Lineup')}
             </h2>
             <p className="text-sm text-gray-600 mt-2 max-w-xl font-light">
-              {language === 'ID'
-                ? 'Tersedia ukuran konsumsi harian keluarga hingga ukuran ekonomis 5000ml untuk usaha kuliner.'
-                : 'From everyday family refills to 5000ml bulk jugs for catering and restaurants.'}
+              {cmsConfig.categoryShowcase?.description ||
+                (language === 'ID'
+                  ? 'Tersedia ukuran konsumsi harian keluarga hingga ukuran ekonomis 5000ml untuk usaha kuliner.'
+                  : 'From everyday family refills to 5000ml bulk jugs for catering and restaurants.')}
             </p>
           </div>
           <button

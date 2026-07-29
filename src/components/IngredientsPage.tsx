@@ -1,7 +1,10 @@
 import React from 'react';
+import { useStore } from '../context/StoreContext';
 import { Leaf, ShieldCheck, Droplets, Zap } from 'lucide-react';
 
 export const IngredientsPage: React.FC = () => {
+  const { cmsConfig } = useStore();
+  const { ingredientsPage } = cmsConfig;
   const ingredientsList = [
     {
       name: 'Ekstrak Jeruk Nipis Alami',
@@ -32,10 +35,10 @@ export const IngredientsPage: React.FC = () => {
           Keunggulan Formula Cleanza
         </span>
         <h1 className="text-4xl font-bold tracking-tight mb-4">
-          Bahan & Formula Unggulan Cleanza
+          {ingredientsPage?.title || 'Bahan & Formula Unggulan Cleanza'}
         </h1>
         <p className="text-sm text-gray-600 font-light leading-relaxed max-w-2xl mb-10">
-          Setiap tetes Cleanza diproduksi dengan konsentrat pembersih tinggi yang teruji higienis, aman untuk peralatan makan seluruh keluarga, dan lembut di tangan.
+          {ingredientsPage?.description || 'Setiap tetes Cleanza diproduksi dengan konsentrat pembersih tinggi yang teruji higienis, aman untuk peralatan makan seluruh keluarga, dan lembut di tangan.'}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">

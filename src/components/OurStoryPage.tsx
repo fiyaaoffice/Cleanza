@@ -3,7 +3,8 @@ import { useStore } from '../context/StoreContext';
 import { ShieldCheck, Leaf, Sparkles, ArrowRight, Droplets } from 'lucide-react';
 
 export const OurStoryPage: React.FC = () => {
-  const { navigateTo } = useStore();
+  const { navigateTo, cmsConfig } = useStore();
+  const { ourStory } = cmsConfig;
 
   return (
     <div className="bg-[#F2F9F3] min-h-screen py-12 text-[#1D241B]">
@@ -12,12 +13,12 @@ export const OurStoryPage: React.FC = () => {
           Tentang Cleanza Indonesia
         </span>
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-[#1D241B] mb-6">
-          Solusi Pencuci Piring Bersih Alami & Bebas Bau Amis.
+          {ourStory.headline || 'Solusi Pencuci Piring Bersih Alami & Bebas Bau Amis.'}
         </h1>
 
         <div className="aspect-video w-full rounded-3xl overflow-hidden mb-10 shadow-xl border border-gray-200">
           <img
-            src="https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=1200"
+            src={ourStory.mediaUrl || "https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=1200"}
             alt="Cleanza Quality"
             className="w-full h-full object-cover"
           />
@@ -25,10 +26,10 @@ export const OurStoryPage: React.FC = () => {
 
         <div className="prose prose-lg max-w-none text-gray-700 font-light space-y-6 leading-relaxed mb-12">
           <p>
-            Cleanza adalah brand cairan pencuci piring modern yang diformulasikan khusus dengan daya angkat lemak pekat dan pembasmi bau amis instan. Menggunakan ekstrak Jeruk Nipis alami & varian Lemon Mediterania, Cleanza menghadirkan kebersihan higienis untuk piring, gelas, dan peralatan dapur Anda.
+            {ourStory.paragraph1 || ourStory.subheadline || 'Cleanza adalah brand cairan pencuci piring modern yang diformulasikan khusus dengan daya angkat lemak pekat dan pembasmi bau amis instan. Menggunakan ekstrak Jeruk Nipis alami & varian Lemon Mediterania, Cleanza menghadirkan kebersihan higienis untuk piring, gelas, dan peralatan dapur Anda.'}
           </p>
           <p>
-            Dengan filosofi <strong className="font-semibold text-[#239B4C]">"Bersih Maksimal, Lembut Di Tangan"</strong>, Cleanza menghadirkan varian kemasan praktis rumah tangga (450ml & 1000ml) serta kemasan jeriken ekonomis Cleanza Profesional (5000ml) khusus untuk restoran, katering, dan usaha kuliner.
+            {ourStory.paragraph2 || 'Dengan filosofi "Bersih Maksimal, Lembut Di Tangan", Cleanza menghadirkan varian kemasan praktis rumah tangga (450ml & 1000ml) serta kemasan jeriken ekonomis Cleanza Profesional (5000ml) khusus untuk restoran, katering, dan usaha kuliner.'}
           </p>
         </div>
 

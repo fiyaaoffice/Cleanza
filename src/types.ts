@@ -49,6 +49,7 @@ export interface CMSSectionConfig {
 export interface CMSConfig {
   layoutMode: 'grid' | 'list';
   logoUrl?: string;
+  faviconUrl?: string;
   promoText: string;
   promoTextId: string;
   hero: {
@@ -60,24 +61,53 @@ export interface CMSConfig {
     mediaType: 'image' | 'video';
     mediaUrl: string;
   };
+  categoryShowcase?: {
+    headline: string;
+    description: string;
+  };
+  popularSection?: {
+    headline: string;
+    description: string;
+  };
   ourStory: {
     headline: string;
     subheadline: string;
+    paragraph1?: string;
+    paragraph2?: string;
     mediaUrl: string;
     ctaText: string;
   };
-  categoryImages?: Record<string, string>;
-  newsImages?: Record<string, string>;
+  newsSection?: {
+    headline: string;
+    description: string;
+  };
   skinCounselor: {
     headline: string;
     subheadline: string;
     ctaText: string;
   };
+  shopPage?: {
+    title: string;
+    description: string;
+  };
+  ingredientsPage?: {
+    title: string;
+    description: string;
+  };
+  communityPage?: {
+    title: string;
+    description: string;
+  };
   contact: {
     callCenter: string;
     email: string;
     whatsapp: string;
+    footerDescription?: string;
+    address?: string;
+    copyright?: string;
   };
+  categoryImages?: Record<string, string>;
+  newsImages?: Record<string, string>;
   sections: CMSSectionConfig[];
 }
 

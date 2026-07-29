@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, CartItem, CMSConfig, PageView, NewsArticle } from '../types';
-import { INITIAL_PRODUCTS, INITIAL_NEWS, DEFAULT_CMS_CONFIG } from '../data/initialData';
+import { INITIAL_PRODUCTS, INITIAL_NEWS, DEFAULT_CMS_CONFIG, DEFAULT_CLEANZA_LOGO } from '../data/initialData';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc } from 'firebase/firestore';
 import { safeGetItem, safeSetItem } from '../utils/safeStorage';
@@ -161,6 +161,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     safeSetItem('cleanza_cms_config', cmsConfig);
+
+    // Update dynamic document favicon
+    if (cmsConfig.faviconUrl || DEFAULT_CMS_CONFIG.faviconUrl) {
+      const iconUrl = cmsConfig.faviconUrl || DEFAULT_CMS_CONFIG.faviconUrl || DEFAULT_CLEANZA_LOGO;
+      let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.href = iconUrl;
+    }
   }, [cmsConfig]);
 
   useEffect(() => {

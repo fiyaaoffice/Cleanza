@@ -80,7 +80,7 @@ export const Footer: React.FC = () => {
               />
             </div>
             <p className="text-xs text-gray-400 font-light leading-relaxed">
-              Cairan pencuci piring konsentrat tinggi dengan kesegaran Jeruk Nipis alami & varian Lemon. Meluruhkan minyak membandel dan bau amis seketika.
+              {contact.footerDescription || 'Cairan pencuci piring konsentrat tinggi dengan kesegaran Jeruk Nipis alami & varian Lemon. Meluruhkan minyak membandel dan bau amis seketika.'}
             </p>
           </div>
 
@@ -161,7 +161,7 @@ export const Footer: React.FC = () => {
       <div className="bg-[#121611] py-4 px-4 border-t border-gray-800 text-[11px] text-gray-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <div>
-            © 2026 Cleanza Indonesia. All Rights Reserved.
+            {contact.copyright || '© 2026 Cleanza Indonesia. All Rights Reserved.'}
           </div>
         </div>
       </div>

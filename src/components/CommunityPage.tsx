@@ -3,7 +3,8 @@ import { useStore } from '../context/StoreContext';
 import { Building2, Utensils, Award, ArrowRight, ShieldCheck, PhoneCall } from 'lucide-react';
 
 export const CommunityPage: React.FC = () => {
-  const { navigateTo } = useStore();
+  const { navigateTo, cmsConfig } = useStore();
+  const { communityPage } = cmsConfig;
 
   return (
     <div className="bg-[#F2F9F3] min-h-screen py-12 text-[#1D241B]">
@@ -13,10 +14,10 @@ export const CommunityPage: React.FC = () => {
             Cleanza Profesional (5000ml / 5L)
           </span>
           <h1 className="text-4xl font-bold tracking-tight mb-4">
-            Mitra Kebersihan Usaha Kuliner & Restoran
+            {communityPage?.title || 'Mitra Kebersihan Usaha Kuliner & Restoran'}
           </h1>
           <p className="text-sm text-gray-600 font-light leading-relaxed">
-            Solusi ekonomis pencuci piring jeriken 5000ml berdaya angkat minyak tinggi untuk katering, kafe, rumah makan, hotel, dan instansi.
+            {communityPage?.description || 'Solusi ekonomis pencuci piring jeriken 5000ml berdaya angkat minyak tinggi untuk katering, kafe, rumah makan, hotel, dan instansi.'}
           </p>
         </div>
 

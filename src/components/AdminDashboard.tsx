@@ -50,7 +50,7 @@ export const AdminDashboard: React.FC = () => {
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'branding' | 'hero' | 'categories' | 'products' | 'ourStory' | 'news' | 'contact' | 'sections'
+    'overview' | 'branding' | 'descriptions' | 'hero' | 'categories' | 'products' | 'ourStory' | 'news' | 'contact' | 'sections'
   >('overview');
 
   // Search and Filter State for Products
@@ -195,7 +195,8 @@ export const AdminDashboard: React.FC = () => {
 
   const menuItems = [
     { id: 'overview', label: 'Ringkasan & Stats', icon: Sparkles, badge: null },
-    { id: 'branding', label: 'Logo & Pengumuman Bar', icon: Globe, badge: 'Branding' },
+    { id: 'branding', label: 'Logo, Favicon & Banner', icon: Globe, badge: 'Favicon' },
+    { id: 'descriptions', label: 'Custom Deskripsi Teks', icon: Type, badge: 'Full Text' },
     { id: 'hero', label: 'Hero Banner Beranda', icon: Droplets, badge: 'Media' },
     { id: 'categories', label: 'Pilihan Kemasan', icon: Layers, badge: 'Card 1:1' },
     { id: 'products', label: 'Katalog Produk', icon: Package, badge: `${products.length}` },
@@ -507,6 +508,88 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Favicon Upload Card */}
+                <div className="bg-[#192118] rounded-2xl p-6 border-2 border-[#239B4C]/50 shadow-xl space-y-5">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-bold text-white flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-[#FFD000]" />
+                      <span>Favicon Website (Ikon Tab Browser)</span>
+                    </h3>
+                    <span className="bg-[#FFD000]/20 text-[#FFD000] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase border border-[#FFD000]/40">
+                      Browser Favicon
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-300 leading-relaxed">
+                    Upload file favicon kustom (PNG, SVG, ICO) dari perangkat Anda. Favicon ini akan tampil langsung pada tab browser saat dibuka di semua perangkat teman atau pelanggan Anda.
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-[#141A13] p-5 rounded-xl border border-[#2E3B2B]">
+                    <div>
+                      <p className="text-xs font-semibold text-gray-400 mb-2">Pratinjau Favicon Aktif:</p>
+                      <div className="bg-[#1D241B] p-4 rounded-xl border border-[#3E4E3B] flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-lg bg-white p-1.5 flex items-center justify-center border border-gray-300 shrink-0 shadow">
+                          <img
+                            src={cmsConfig.faviconUrl || cmsConfig.logoUrl || DEFAULT_CLEANZA_LOGO}
+                            alt="Favicon Preview"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-white">Tab Browser Cleanza</p>
+                          <p className="text-[10px] text-gray-400 truncate max-w-[180px]">
+                            {cmsConfig.faviconUrl ? 'Favicon Kustom Aktif' : 'Default Logo Favicon'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <p className="text-xs font-semibold text-gray-300">Pilih File Favicon dari Perangkat Anda:</p>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-md">
+                          <UploadCloud className="w-4 h-4 text-[#FFD000]" />
+                          <span>Upload File Favicon</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleFileUpload(e, (dataUrl) =>
+                                updateCMSConfig((prev) => ({ ...prev, faviconUrl: dataUrl }))
+                              )
+                            }
+                          />
+                        </label>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateCMSConfig((prev) => ({ ...prev, faviconUrl: DEFAULT_CLEANZA_LOGO }))
+                          }
+                          className="bg-[#2E3B2B] hover:bg-gray-700 text-gray-300 hover:text-white px-3.5 py-2.5 rounded-xl text-xs font-semibold transition"
+                        >
+                          Reset Favicon
+                        </button>
+                      </div>
+
+                      <div className="mt-2">
+                        <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                          Atau URL Gambar Favicon Langsung:
+                        </label>
+                        <input
+                          type="url"
+                          value={cmsConfig.faviconUrl || ''}
+                          onChange={(e) =>
+                            updateCMSConfig((prev) => ({ ...prev, faviconUrl: e.target.value }))
+                          }
+                          placeholder="https://example.com/favicon.png"
+                          className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#239B4C]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Announcement Bar Promo Ticker */}
                 <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -545,6 +628,355 @@ export const AdminDashboard: React.FC = () => {
                           updateCMSConfig((prev) => ({ ...prev, promoText: val }));
                         }}
                         className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: CUSTOM DESKRIPSI TEKS HALAMAN */}
+            {activeTab === 'descriptions' && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="bg-[#192118] rounded-2xl p-6 border-2 border-[#239B4C]/50 shadow-xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-bold text-white flex items-center gap-2">
+                      <Type className="w-5 h-5 text-[#FFD000]" />
+                      <span>Custom Teks & Deskripsi Seluruh Halaman Website</span>
+                    </h3>
+                    <span className="bg-[#239B4C]/20 text-[#FFD000] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase border border-[#239B4C]/40">
+                      Pusat Pengaturan Deskripsi
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-300 leading-relaxed">
+                    Ubah seluruh teks judul, subjudul, dan deskripsi penjelasan di semua halaman website Cleanza secara terpusat. Perubahan langsung tersimpan dan disinkronkan ke seluruh perangkat pelanggan.
+                  </p>
+                </div>
+
+                {/* 1. Hero Section Texts */}
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
+                  <h4 className="text-sm font-bold text-[#FFD000] uppercase tracking-wider border-b border-[#2E3B2B] pb-2">
+                    1. Teks Hero Banner (Beranda Utama)
+                  </h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">
+                        Judul Utama Tagline Hero
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsConfig.hero.tagline}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({ ...prev, hero: { ...prev.hero, tagline: val } }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">
+                        Deskripsi / Subteks Penjelas Hero
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={cmsConfig.hero.subtext}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({ ...prev, hero: { ...prev.hero, subtext: val } }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Pilihan Kemasan & Unggulan */}
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
+                  <h4 className="text-sm font-bold text-[#FFD000] uppercase tracking-wider border-b border-[#2E3B2B] pb-2">
+                    2. Section Pilihan Kemasan & Produk Unggulan
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-3 bg-[#141A13] p-4 rounded-xl border border-[#2E3B2B]">
+                      <h5 className="text-xs font-bold text-[#239B4C] uppercase">Category Showcase</h5>
+                      <div>
+                        <label className="block text-[11px] text-gray-400 mb-1">Judul Section Kemasan</label>
+                        <input
+                          type="text"
+                          value={cmsConfig.categoryShowcase?.headline || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              categoryShowcase: { ...(prev.categoryShowcase || { headline: '', description: '' }), headline: val }
+                            }));
+                          }}
+                          className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
+                          placeholder="Pilihan Kemasan Cleanza Pencuci Piring"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-gray-400 mb-1">Deskripsi Section Kemasan</label>
+                        <textarea
+                          rows={2}
+                          value={cmsConfig.categoryShowcase?.description || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              categoryShowcase: { ...(prev.categoryShowcase || { headline: '', description: '' }), description: val }
+                            }));
+                          }}
+                          className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
+                          placeholder="Tersedia ukuran konsumsi harian keluarga hingga ukuran ekonomis 5000ml..."
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 bg-[#141A13] p-4 rounded-xl border border-[#2E3B2B]">
+                      <h5 className="text-xs font-bold text-[#239B4C] uppercase">Popular Showcase</h5>
+                      <div>
+                        <label className="block text-[11px] text-gray-400 mb-1">Judul Section Produk Unggulan</label>
+                        <input
+                          type="text"
+                          value={cmsConfig.popularSection?.headline || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              popularSection: { ...(prev.popularSection || { headline: '', description: '' }), headline: val }
+                            }));
+                          }}
+                          className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
+                          placeholder="Produk Unggulan Cleanza"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-gray-400 mb-1">Deskripsi Section Unggulan</label>
+                        <textarea
+                          rows={2}
+                          value={cmsConfig.popularSection?.description || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              popularSection: { ...(prev.popularSection || { headline: '', description: '' }), description: val }
+                            }));
+                          }}
+                          className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
+                          placeholder="Kemasan terfavorit dengan daya bersih ekstra meluruhkan lemak membandel."
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Our Story & Paragraphs */}
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
+                  <h4 className="text-sm font-bold text-[#FFD000] uppercase tracking-wider border-b border-[#2E3B2B] pb-2">
+                    3. Deskripsi Halaman "Our Story & Tentang Cleanza"
+                  </h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">Judul Utama Story</label>
+                      <input
+                        type="text"
+                        value={cmsConfig.ourStory.headline}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({ ...prev, ourStory: { ...prev.ourStory, headline: val } }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">Paragraf 1 Story</label>
+                      <textarea
+                        rows={3}
+                        value={cmsConfig.ourStory.paragraph1 || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({ ...prev, ourStory: { ...prev.ourStory, paragraph1: val } }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                        placeholder="Cleanza adalah brand cairan pencuci piring modern..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">Paragraf 2 Story</label>
+                      <textarea
+                        rows={3}
+                        value={cmsConfig.ourStory.paragraph2 || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({ ...prev, ourStory: { ...prev.ourStory, paragraph2: val } }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                        placeholder="Dengan filosofi 'Bersih Maksimal, Lembut Di Tangan'..."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Page Specific Header Descriptions */}
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
+                  <h4 className="text-sm font-bold text-[#FFD000] uppercase tracking-wider border-b border-[#2E3B2B] pb-2">
+                    4. Teks & Deskripsi Header Halaman Lainnya
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Shop All Page */}
+                    <div className="bg-[#141A13] p-4 rounded-xl border border-[#2E3B2B] space-y-2">
+                      <h5 className="text-xs font-bold text-white uppercase">Halaman Katalog Shop</h5>
+                      <div>
+                        <label className="block text-[10px] text-gray-400">Judul Katalog</label>
+                        <input
+                          type="text"
+                          value={cmsConfig.shopPage?.title || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              shopPage: { ...(prev.shopPage || { title: '', description: '' }), title: val }
+                            }));
+                          }}
+                          className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-lg p-2 text-xs text-white"
+                          placeholder="Cairan Pencuci Piring Cleanza"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-gray-400">Deskripsi Katalog</label>
+                        <textarea
+                          rows={2}
+                          value={cmsConfig.shopPage?.description || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              shopPage: { ...(prev.shopPage || { title: '', description: '' }), description: val }
+                            }));
+                          }}
+                          className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-lg p-2 text-xs text-white"
+                          placeholder="Temukan varian kemasan rumah tangga..."
+                        />
+                      </div>
+                    </div>
+
+                    {/* Ingredients Page */}
+                    <div className="bg-[#141A13] p-4 rounded-xl border border-[#2E3B2B] space-y-2">
+                      <h5 className="text-xs font-bold text-white uppercase">Halaman Formula</h5>
+                      <div>
+                        <label className="block text-[10px] text-gray-400">Judul Halaman Formula</label>
+                        <input
+                          type="text"
+                          value={cmsConfig.ingredientsPage?.title || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              ingredientsPage: { ...(prev.ingredientsPage || { title: '', description: '' }), title: val }
+                            }));
+                          }}
+                          className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-lg p-2 text-xs text-white"
+                          placeholder="Bahan & Formula Unggulan Cleanza"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-gray-400">Deskripsi Formula</label>
+                        <textarea
+                          rows={2}
+                          value={cmsConfig.ingredientsPage?.description || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              ingredientsPage: { ...(prev.ingredientsPage || { title: '', description: '' }), description: val }
+                            }));
+                          }}
+                          className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-lg p-2 text-xs text-white"
+                          placeholder="Setiap tetes Cleanza diproduksi dengan konsentrat..."
+                        />
+                      </div>
+                    </div>
+
+                    {/* Community / Professional 5L */}
+                    <div className="bg-[#141A13] p-4 rounded-xl border border-[#2E3B2B] space-y-2">
+                      <h5 className="text-xs font-bold text-white uppercase">Cleanza 5L Resto</h5>
+                      <div>
+                        <label className="block text-[10px] text-gray-400">Judul Mitra 5L</label>
+                        <input
+                          type="text"
+                          value={cmsConfig.communityPage?.title || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              communityPage: { ...(prev.communityPage || { title: '', description: '' }), title: val }
+                            }));
+                          }}
+                          className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-lg p-2 text-xs text-white"
+                          placeholder="Mitra Kebersihan Usaha Kuliner & Restoran"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-gray-400">Deskripsi Mitra 5L</label>
+                        <textarea
+                          rows={2}
+                          value={cmsConfig.communityPage?.description || ''}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              communityPage: { ...(prev.communityPage || { title: '', description: '' }), description: val }
+                            }));
+                          }}
+                          className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-lg p-2 text-xs text-white"
+                          placeholder="Solusi ekonomis pencuci piring jeriken 5000ml..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5. Footer & Contact Description */}
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
+                  <h4 className="text-sm font-bold text-[#FFD000] uppercase tracking-wider border-b border-[#2E3B2B] pb-2">
+                    5. Deskripsi Footer & Informasi Hak Cipta
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">Deskripsi Singkat Footer</label>
+                      <textarea
+                        rows={3}
+                        value={cmsConfig.contact.footerDescription || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({ ...prev, contact: { ...prev.contact, footerDescription: val } }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                        placeholder="Cairan pencuci piring konsentrat tinggi dengan kesegaran Jeruk Nipis..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">Teks Hak Cipta / Copyright</label>
+                      <input
+                        type="text"
+                        value={cmsConfig.contact.copyright || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({ ...prev, contact: { ...prev.contact, copyright: val } }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white mb-2"
+                        placeholder="© 2026 Cleanza Indonesia. All Rights Reserved."
+                      />
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">Alamat Kantor / Pabrik</label>
+                      <input
+                        type="text"
+                        value={cmsConfig.contact.address || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({ ...prev, contact: { ...prev.contact, address: val } }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                        placeholder="Jl. Kebersihan Raya No. 88, Jakarta..."
                       />
                     </div>
                   </div>
