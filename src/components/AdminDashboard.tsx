@@ -47,10 +47,12 @@ export const AdminDashboard: React.FC = () => {
     navigateTo,
     resetCMSAndProducts,
     publishAllToCloud,
+    clearCacheAndFetchFromCloud,
     lockAdmin
   } = useStore();
 
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isRefreshingCache, setIsRefreshingCache] = useState(false);
 
   const [activeTab, setActiveTab] = useState<
     'overview' | 'branding' | 'descriptions' | 'hero' | 'categories' | 'products' | 'ourStory' | 'news' | 'contact' | 'sections'
@@ -247,20 +249,35 @@ export const AdminDashboard: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex items-center space-x-2.5 w-full md:w-auto justify-end">
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
             <button
               onClick={async () => {
                 setIsPublishing(true);
                 await publishAllToCloud();
                 setIsPublishing(false);
               }}
-              disabled={isPublishing}
+              disabled={isPublishing || isRefreshingCache}
               className="bg-[#239B4C] hover:bg-[#1C843F] text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-[#FFD000]/40 shadow-lg disabled:opacity-50"
               title="Publish & Sync semua perubahan ke Cloud Firestore agar dapat dilihat di perangkat teman / perangkat lain"
             >
               <UploadCloud className={`w-4 h-4 text-[#FFD000] ${isPublishing ? 'animate-bounce' : ''}`} />
               <span>{isPublishing ? 'Memproses Sync...' : 'Publish Ke Cloud'}</span>
             </button>
+
+            <button
+              onClick={async () => {
+                setIsRefreshingCache(true);
+                await clearCacheAndFetchFromCloud();
+                setIsRefreshingCache(false);
+              }}
+              disabled={isRefreshingCache || isPublishing}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-blue-400/40 shadow-lg disabled:opacity-50"
+              title="Hapus cache browser lokal & ambil data terbaru dari Cloud Firestore"
+            >
+              <RotateCcw className={`w-3.5 h-3.5 text-blue-200 ${isRefreshingCache ? 'animate-spin' : ''}`} />
+              <span>{isRefreshingCache ? 'Refetch Cloud...' : 'Clear Cache & Refresh'}</span>
+            </button>
+
             <button
               onClick={() => navigateTo('home')}
               className="bg-gray-800 hover:bg-gray-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-gray-600 shadow-md"

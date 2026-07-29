@@ -41,3 +41,11 @@ export function safeGetItem<T>(key: string, fallback: T): T {
     return fallback;
   }
 }
+
+export function safeRemoveItem(key: string): void {
+  try {
+    localStorage.removeItem(key);
+  } catch (e) {
+    console.warn(`[Storage] Failed to remove key "${key}":`, e);
+  }
+}

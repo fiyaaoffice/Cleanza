@@ -2,8 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, CartItem, CMSConfig, PageView, NewsArticle } from '../types';
 import { INITIAL_PRODUCTS, INITIAL_NEWS, DEFAULT_CMS_CONFIG, DEFAULT_CLEANZA_LOGO } from '../data/initialData';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { collection, doc, onSnapshot, setDoc, deleteDoc } from 'firebase/firestore';
-import { safeGetItem, safeSetItem } from '../utils/safeStorage';
+import { collection, doc, onSnapshot, setDoc, deleteDoc, getDoc, getDocs } from 'firebase/firestore';
+import { safeGetItem, safeSetItem, safeRemoveItem } from '../utils/safeStorage';
 
 interface StoreContextType {
   products: Product[];
@@ -47,6 +47,7 @@ interface StoreContextType {
   handleLogoClickAdmin: () => void;
   resetCMSAndProducts: () => void;
   publishAllToCloud: () => Promise<boolean>;
+  clearCacheAndFetchFromCloud: () => Promise<boolean>;
   showToast: (msg: string) => void;
   lockAdmin: () => void;
 }
@@ -392,12 +393,59 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         await setDoc(doc(db, 'news', article.id), article);
       }
 
+      // Sync local cache
+      safeSetItem('cleanza_cms_config', cmsConfig);
+      safeSetItem('cleanza_products', products);
+      safeSetItem('cleanza_news', news);
+
       showToast('✅ Berhasil Mempublikasikan ke Firestore Cloud! Semua Perangkat Lain Dapat Melihat Perubahan.');
       return true;
     } catch (error: any) {
       console.error('Failed to sync to cloud:', error);
       const errMsg = error?.message || 'Gagal menyimpan ke cloud';
       showToast(`⚠️ Gagal Sync ke Cloud: ${errMsg}`);
+      return false;
+    }
+  };
+
+  const clearCacheAndFetchFromCloud = async (): Promise<boolean> => {
+    try {
+      showToast('🔄 Membersihkan cache lokal & mengambil data terbaru dari Cloud...');
+      
+      // Clear localStorage cache
+      safeRemoveItem('cleanza_products');
+      safeRemoveItem('cleanza_cms_config');
+      safeRemoveItem('cleanza_news');
+
+      // Fetch fresh CMS Config from Firestore
+      const cmsDocSnap = await getDoc(doc(db, 'cmsConfig', 'defaultConfig'));
+      if (cmsDocSnap.exists()) {
+        const freshCms = cmsDocSnap.data() as CMSConfig;
+        setCmsConfig(freshCms);
+        safeSetItem('cleanza_cms_config', freshCms);
+      }
+
+      // Fetch fresh Products from Firestore
+      const productsSnap = await getDocs(collection(db, 'products'));
+      if (!productsSnap.empty) {
+        const freshProducts = productsSnap.docs.map((docSnap) => docSnap.data() as Product);
+        setProducts(freshProducts);
+        safeSetItem('cleanza_products', freshProducts);
+      }
+
+      // Fetch fresh News from Firestore
+      const newsSnap = await getDocs(collection(db, 'news'));
+      if (!newsSnap.empty) {
+        const freshNews = newsSnap.docs.map((docSnap) => docSnap.data() as NewsArticle);
+        setNews(freshNews);
+        safeSetItem('cleanza_news', freshNews);
+      }
+
+      showToast('⚡ Cache berhasil dibersihkan & data terbaru berhasil dimuat dari Cloud!');
+      return true;
+    } catch (error: any) {
+      console.error('Failed clearCacheAndFetchFromCloud:', error);
+      showToast(`⚠️ Gagal memuat data cloud: ${error?.message || 'Koneksi terganggu'}`);
       return false;
     }
   };
@@ -444,6 +492,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         handleLogoClickAdmin,
         resetCMSAndProducts,
         publishAllToCloud,
+        clearCacheAndFetchFromCloud,
         showToast,
         lockAdmin,
       }}
