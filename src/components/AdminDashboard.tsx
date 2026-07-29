@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
-import { Product, ProductBadge, ProductCategory } from '../types';
+import { Product, ProductBadge, ProductCategory, NewsArticle } from '../types';
 import { DEFAULT_CLEANZA_LOGO } from '../data/initialData';
 import {
   Layout,
@@ -18,7 +18,17 @@ import {
   Droplets,
   Upload,
   UploadCloud,
-  FileImage
+  FileImage,
+  Search,
+  Lock,
+  CheckCircle2,
+  Newspaper,
+  Phone,
+  Layers,
+  Sparkles,
+  Check,
+  FolderPlus,
+  Info
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
@@ -30,13 +40,57 @@ export const AdminDashboard: React.FC = () => {
     updateProduct,
     addProduct,
     deleteProduct,
+    addNewsArticle,
+    updateNewsArticle,
+    deleteNewsArticle,
     navigateTo,
-    resetCMSAndProducts
+    resetCMSAndProducts,
+    lockAdmin
   } = useStore();
 
-  const [activeTab, setActiveTab] = useState<'sections' | 'copywriting' | 'media' | 'products'>('media');
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'branding' | 'hero' | 'categories' | 'products' | 'ourStory' | 'news' | 'contact' | 'sections'
+  >('overview');
 
-  // File Upload Helper to convert local device images to Data URLs
+  // Search and Filter State for Products
+  const [productSearch, setProductSearch] = useState('');
+  const [productCategoryFilter, setProductCategoryFilter] = useState('All');
+
+  // Local state for adding/editing product
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isAddingNewProduct, setIsAddingNewProduct] = useState(false);
+
+  // Local state for adding/editing news article
+  const [editingNews, setEditingNews] = useState<NewsArticle | null>(null);
+  const [isAddingNewNews, setIsAddingNewNews] = useState(false);
+
+  // New Product Form State
+  const [newProd, setNewProd] = useState<Partial<Product>>({
+    name: '',
+    category: 'Kemasan Rumah Tangga',
+    volume: '450ml',
+    price: 12000,
+    formattedPrice: 'Rp12.000',
+    badge: 'NEW PRODUCT',
+    image: 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=800',
+    description: 'Cairan pencuci piring Cleanza dengan ekstrak Jeruk Nipis alami.',
+    howToUse: 'Tuangkan secukupnya pada spons basah, remas hingga berbusa, lalu usapkan pada piring.',
+    ingredients: 'Ekstrak Jeruk Nipis Alami, Cleanza Ultra Degreaser Agent, Aqua.',
+    rating: 5.0,
+    reviewsCount: 25
+  });
+
+  // New News Article Form State
+  const [newNews, setNewNews] = useState<Partial<NewsArticle>>({
+    title: '',
+    category: 'Tips Dapur',
+    date: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }),
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=800',
+    excerpt: 'Tips dan panduan praktis kebersihan dapur dengan Cleanza.',
+    content: 'Tuliskan deskripsi lengkap dan panduan di sini...'
+  });
+
+  // Helper for file upload from device
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     callback: (dataUrl: string) => void
@@ -74,26 +128,6 @@ export const AdminDashboard: React.FC = () => {
     }));
   };
 
-  // Local state for editing product
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [isAddingNewProduct, setIsAddingNewProduct] = useState(false);
-
-  // New Product Form State
-  const [newProd, setNewProd] = useState<Partial<Product>>({
-    name: '',
-    category: 'Kemasan Rumah Tangga',
-    volume: '450ml',
-    price: 12000,
-    formattedPrice: 'Rp12.000',
-    badge: 'NEW PRODUCT',
-    image: 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=800',
-    description: 'Cairan pencuci piring Cleanza dengan ekstrak Jeruk Nipis alami.',
-    howToUse: 'Tuangkan secukupnya pada spons basah, remas hingga berbusa, lalu usapkan pada piring.',
-    ingredients: 'Ekstrak Jeruk Nipis Alami, Cleanza Ultra Degreaser Agent, Aqua.',
-    rating: 5.0,
-    reviewsCount: 25
-  });
-
   const handleSaveNewProduct = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProd.name) return;
@@ -120,6 +154,24 @@ export const AdminDashboard: React.FC = () => {
     setIsAddingNewProduct(false);
   };
 
+  const handleSaveNewNews = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newNews.title) return;
+
+    const article: NewsArticle = {
+      id: `news-${Date.now()}`,
+      title: newNews.title,
+      category: newNews.category || 'Tips Dapur',
+      date: newNews.date || new Date().toLocaleDateString('id-ID'),
+      image: newNews.image || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=800',
+      excerpt: newNews.excerpt || '',
+      content: newNews.content || ''
+    };
+
+    addNewsArticle(article);
+    setIsAddingNewNews(false);
+  };
+
   const toggleSection = (id: string) => {
     updateCMSConfig((prev) => ({
       ...prev,
@@ -127,1271 +179,1395 @@ export const AdminDashboard: React.FC = () => {
     }));
   };
 
-  return (
-    <div className="bg-[#151B14] min-h-screen text-white pb-20 font-sans">
-      {/* Admin Top Header Bar */}
-      <div className="bg-[#1F271D] border-b border-[#2E3B2B] sticky top-0 z-40 px-4 sm:px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => navigateTo('home')}
-            className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition flex items-center space-x-1 text-xs font-bold"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Kembali ke Live Website</span>
-          </button>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xl font-bold tracking-tight text-white">
-                Cleanza Dynamic Live CMS
-              </span>
-              <span className="bg-[#FFD000] text-black text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                Admin Panel
-              </span>
-            </div>
-            <p className="text-[11px] text-gray-400">
-              Perubahan di dashboard ini langsung ter-render secara dinamis di seluruh halaman website Cleanza.
-            </p>
-          </div>
-        </div>
+  // Filter products
+  const filteredProducts = products.filter((p) => {
+    const matchesSearch = p.name.toLowerCase().includes(productSearch.toLowerCase()) || p.category.toLowerCase().includes(productSearch.toLowerCase());
+    const matchesCat = productCategoryFilter === 'All' || p.category === productCategoryFilter;
+    return matchesSearch && matchesCat;
+  });
 
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={() => navigateTo('home')}
-            className="bg-[#239B4C] hover:bg-[#FFD000] hover:text-black text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-1 border border-[#FFD000]/30"
-          >
-            <Eye className="w-4 h-4" />
-            <span>Pratinjau Live Website</span>
-          </button>
-          <button
-            onClick={resetCMSAndProducts}
-            className="bg-red-900/40 hover:bg-red-800 text-red-200 px-3 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-1 border border-red-700/50"
-            title="Reset semua perubahan ke data default"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Reset Default</span>
-          </button>
+  const menuItems = [
+    { id: 'overview', label: 'Ringkasan & Stats', icon: Sparkles, badge: null },
+    { id: 'branding', label: 'Logo & Pengumuman Bar', icon: Globe, badge: 'Branding' },
+    { id: 'hero', label: 'Hero Banner Beranda', icon: Droplets, badge: 'Media' },
+    { id: 'categories', label: 'Pilihan Kemasan', icon: Layers, badge: 'Card 1:1' },
+    { id: 'products', label: 'Katalog Produk', icon: Package, badge: `${products.length}` },
+    { id: 'ourStory', label: 'Our Story & Kualitas', icon: Type, badge: 'Teknologi' },
+    { id: 'news', label: 'Kabar & Tips Cleanza', icon: Newspaper, badge: `${news.length}` },
+    { id: 'contact', label: 'Kontak & Footer', icon: Phone, badge: 'Call Center' },
+    { id: 'sections', label: 'Tata Letak Section', icon: Layout, badge: 'Visibility' }
+  ] as const;
+
+  return (
+    <div className="bg-[#121711] min-h-screen text-white pb-20 font-sans selection:bg-[#239B4C] selection:text-white">
+      {/* Top Admin Navigation Header */}
+      <div className="bg-[#1A2219] border-b border-[#2E3B2B] sticky top-0 z-40 px-4 sm:px-8 py-3.5 shadow-xl">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => navigateTo('home')}
+                className="p-2 bg-[#239B4C]/20 hover:bg-[#239B4C] text-white rounded-xl transition flex items-center space-x-1.5 text-xs font-bold border border-[#239B4C]/40"
+              >
+                <ArrowLeft className="w-4 h-4 text-[#FFD000]" />
+                <span className="hidden sm:inline">Ke Live Website</span>
+              </button>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-lg font-extrabold tracking-tight text-white flex items-center gap-1.5">
+                    Cleanza CMS Panel
+                  </span>
+                  <span className="bg-[#FFD000] text-black text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
+                    Dynamic Admin
+                  </span>
+                </div>
+                <p className="text-[11px] text-gray-400 hidden sm:block">
+                  Kelola teks, gambar, produk, dan tampilan website Cleanza secara langsung.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={lockAdmin}
+              className="md:hidden p-2 bg-red-900/30 text-red-300 rounded-lg text-xs font-bold border border-red-700/40"
+              title="Kunci Akses Admin"
+            >
+              <Lock className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="flex items-center space-x-2.5 w-full md:w-auto justify-end">
+            <button
+              onClick={() => navigateTo('home')}
+              className="bg-[#239B4C] hover:bg-[#1C843F] text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-[#FFD000]/30 shadow-md"
+            >
+              <Eye className="w-4 h-4 text-[#FFD000]" />
+              <span>Pratinjau Website</span>
+            </button>
+            <button
+              onClick={resetCMSAndProducts}
+              className="bg-red-950/50 hover:bg-red-800 text-red-200 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-red-800/60"
+              title="Reset semua data ke konfigurasi awal"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Reset Default</span>
+            </button>
+            <button
+              onClick={lockAdmin}
+              className="hidden md:flex bg-[#2E3B2B] hover:bg-red-900/60 text-gray-300 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition items-center space-x-1 border border-gray-700"
+              title="Kunci Panel Admin"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Kunci</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Main Admin Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        {/* Navigation Tabs */}
-        <div className="flex space-x-2 border-b border-[#2E3B2B] pb-4 mb-8 overflow-x-auto no-scrollbar">
-          <button
-            onClick={() => setActiveTab('copywriting')}
-            className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
-              activeTab === 'copywriting'
-                ? 'bg-[#239B4C] text-white border border-[#FFD000]/50 shadow-lg'
-                : 'bg-[#1F271D] text-gray-400 hover:text-white'
-            }`}
-          >
-            <Type className="w-4 h-4 text-[#FFD000]" />
-            <span>Copywriting Manager (Teks)</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('media')}
-            className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
-              activeTab === 'media'
-                ? 'bg-[#239B4C] text-white border border-[#FFD000]/50 shadow-lg'
-                : 'bg-[#1F271D] text-gray-400 hover:text-white'
-            }`}
-          >
-            <ImageIcon className="w-4 h-4 text-[#FFD000]" />
-            <span>Media & Video Manager</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('sections')}
-            className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
-              activeTab === 'sections'
-                ? 'bg-[#239B4C] text-white border border-[#FFD000]/50 shadow-lg'
-                : 'bg-[#1F271D] text-gray-400 hover:text-white'
-            }`}
-          >
-            <Layout className="w-4 h-4 text-[#FFD000]" />
-            <span>Layout & Visibility Manager</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('products')}
-            className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
-              activeTab === 'products'
-                ? 'bg-[#239B4C] text-white border border-[#FFD000]/50 shadow-lg'
-                : 'bg-[#1F271D] text-gray-400 hover:text-white'
-            }`}
-          >
-            <Package className="w-4 h-4 text-[#FFD000]" />
-            <span>Manajemen Produk & Katalog ({products.length})</span>
-          </button>
-        </div>
-
-        {/* TAB 1: COPYWRITING MANAGER */}
-        {activeTab === 'copywriting' && (
-          <div className="space-y-8 animate-in fade-in">
-            <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center space-x-2">
-                <Globe className="w-5 h-5 text-[#239B4C]" />
-                <span>1. Top Promo Ticker (Announcement Bar)</span>
-              </h3>
-              <p className="text-xs text-gray-400 mb-4">
-                Teks berjalan di bagian paling atas seluruh halaman website.
+      {/* Main Container Layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Sidebar Menu Navigation */}
+          <div className="lg:col-span-3 space-y-2">
+            <div className="bg-[#192118] p-3.5 rounded-2xl border border-[#2E3B2B] shadow-lg sticky top-20">
+              <p className="text-[10px] font-bold text-[#FFD000] uppercase tracking-wider px-3 mb-2">
+                Kategori Kustomisasi
               </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Promo Text (Bahasa Indonesia)
-                  </label>
-                  <input
-                    type="text"
-                    value={cmsConfig.promoTextId}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      updateCMSConfig((prev) => ({ ...prev, promoTextId: val }));
-                    }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Promo Text (English Version)
-                  </label>
-                  <input
-                    type="text"
-                    value={cmsConfig.promoText}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      updateCMSConfig((prev) => ({ ...prev, promoText: val }));
-                    }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Hero Copywriting */}
-            <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
-              <h3 className="text-lg font-bold text-white mb-1 flex items-center space-x-2">
-                <Droplets className="w-5 h-5 text-[#239B4C]" />
-                <span>2. Landing Page Hero Banner Copywriting</span>
-              </h3>
-              <p className="text-xs text-gray-400 mb-4">
-                Ubah judul utama, deskripsi, dan tombol aksi di halaman beranda.
-              </p>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Hero Main Tagline / Headline
-                  </label>
-                  <input
-                    type="text"
-                    value={cmsConfig.hero.tagline}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      updateCMSConfig((prev) => ({
-                        ...prev,
-                        hero: { ...prev.hero, tagline: val }
-                      }));
-                    }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Hero Subtitle / Description
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={cmsConfig.hero.subtext}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      updateCMSConfig((prev) => ({
-                        ...prev,
-                        hero: { ...prev.hero, subtext: val }
-                      }));
-                    }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-300 mb-1">
-                      Floating Badge Text
-                    </label>
-                    <input
-                      type="text"
-                      value={cmsConfig.hero.badgeText}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        updateCMSConfig((prev) => ({
-                          ...prev,
-                          hero: { ...prev.hero, badgeText: val }
-                        }));
-                      }}
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-300 mb-1">
-                      Primary CTA Button Label
-                    </label>
-                    <input
-                      type="text"
-                      value={cmsConfig.hero.primaryCtaText}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        updateCMSConfig((prev) => ({
-                          ...prev,
-                          hero: { ...prev.hero, primaryCtaText: val }
-                        }));
-                      }}
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-300 mb-1">
-                      Secondary CTA Button Label
-                    </label>
-                    <input
-                      type="text"
-                      value={cmsConfig.hero.secondaryCtaText}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        updateCMSConfig((prev) => ({
-                          ...prev,
-                          hero: { ...prev.hero, secondaryCtaText: val }
-                        }));
-                      }}
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Our Story Copywriting */}
-            <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
-              <h3 className="text-lg font-bold text-white mb-1">
-                3. Section "Our Story & Cleanza Quality"
-              </h3>
-              <div className="space-y-4 mt-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Story Headline
-                  </label>
-                  <input
-                    type="text"
-                    value={cmsConfig.ourStory.headline}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      updateCMSConfig((prev) => ({
-                        ...prev,
-                        ourStory: { ...prev.ourStory, headline: val }
-                      }));
-                    }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Story Subheadline
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={cmsConfig.ourStory.subheadline}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      updateCMSConfig((prev) => ({
-                        ...prev,
-                        ourStory: { ...prev.ourStory, subheadline: val }
-                      }));
-                    }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Footer Contact Details */}
-            <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
-              <h3 className="text-lg font-bold text-white mb-1">
-                4. Informasi Kontak Footer
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Call Center Phone Number
-                  </label>
-                  <input
-                    type="text"
-                    value={cmsConfig.contact.callCenter}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      updateCMSConfig((prev) => ({
-                        ...prev,
-                        contact: { ...prev.contact, callCenter: val }
-                      }));
-                    }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Contact Email Address
-                  </label>
-                  <input
-                    type="text"
-                    value={cmsConfig.contact.email}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      updateCMSConfig((prev) => ({
-                        ...prev,
-                        contact: { ...prev.contact, email: val }
-                      }));
-                    }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Official WhatsApp Number
-                  </label>
-                  <input
-                    type="text"
-                    value={cmsConfig.contact.whatsapp}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      updateCMSConfig((prev) => ({
-                        ...prev,
-                        contact: { ...prev.contact, whatsapp: val }
-                      }));
-                    }}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                  />
-                </div>
+              <div className="space-y-1">
+                {menuItems.map((item) => {
+                  const IconComp = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveTab(item.id as typeof activeTab)}
+                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left ${
+                        isActive
+                          ? 'bg-[#239B4C] text-white border border-[#FFD000]/40 shadow-md translate-x-1'
+                          : 'text-gray-300 hover:bg-[#253023] hover:text-white'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2.5 min-w-0">
+                        <IconComp className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#FFD000]' : 'text-[#239B4C]'}`} />
+                        <span className="truncate">{item.label}</span>
+                      </div>
+                      {item.badge && (
+                        <span
+                          className={`text-[9px] px-2 py-0.5 rounded-full font-extrabold shrink-0 ${
+                            isActive ? 'bg-[#FFD000] text-black' : 'bg-[#253023] text-gray-400'
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
-        )}
 
-        {/* TAB 2: MEDIA & VIDEO MANAGER */}
-        {activeTab === 'media' && (
-          <div className="space-y-8 animate-in fade-in">
-            {/* Website Brand Logo Upload Section */}
-            <div className="bg-[#1F271D] rounded-2xl p-6 border-2 border-[#239B4C]/50 shadow-xl">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-bold text-white flex items-center space-x-2">
-                  <FileImage className="w-5 h-5 text-[#FFD000]" />
-                  <span>1. Logo Website Brand (Gambar Tanpa Teks)</span>
-                </h3>
-                <span className="bg-[#239B4C]/20 text-[#FFD000] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase border border-[#239B4C]/40">
-                  Brand Logo
-                </span>
-              </div>
-              <p className="text-xs text-gray-300 mb-6">
-                Upload file gambar logo brand Cleanza dari perangkat Anda. Website akan secara otomatis menampilkan gambar logo ini dan menghilangkan teks tulisan "Cleanza" di Header & Footer.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-[#151B14] p-5 rounded-xl border border-[#2E3B2B]">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-2">
-                    Pratinjau Logo Brand Saat Ini:
-                  </label>
-                  <div className="bg-[#1D241B] p-4 rounded-xl border border-[#3E4E3B] flex items-center justify-center min-h-[90px]">
-                    <img
-                      src={cmsConfig.logoUrl || DEFAULT_CLEANZA_LOGO}
-                      alt="Current Brand Logo"
-                      className="h-12 w-auto max-w-[240px] object-contain"
-                    />
+          {/* Main Dynamic Panel Body */}
+          <div className="lg:col-span-9 space-y-6">
+            {/* TAB 1: OVERVIEW DASHBOARD */}
+            {activeTab === 'overview' && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="bg-gradient-to-r from-[#192118] to-[#1F2C1E] p-6 rounded-2xl border border-[#2E3B2B] shadow-xl">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-black text-white flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-[#FFD000]" />
+                        <span>Selamat Datang di Admin Panel Cleanza</span>
+                      </h2>
+                      <p className="text-xs text-gray-300 mt-1 max-w-2xl leading-relaxed">
+                        Pusat kendali CMS serbaguna. Ubah teks pengumuman, logo brand, background video/gambar hero banner, gambar kategori 1:1, katalog produk, dan artikel berita dengan pembaruan seketika.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <label className="block text-xs font-semibold text-gray-300">
-                    Pilih File Gambar Logo dari Device:
-                  </label>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-md">
-                      <UploadCloud className="w-4 h-4" />
-                      <span>Upload Logo dari Device</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) =>
-                          handleFileUpload(e, (dataUrl) =>
-                            updateCMSConfig((prev) => ({ ...prev, logoUrl: dataUrl }))
-                          )
-                        }
-                      />
-                    </label>
+                {/* Quick System Stats Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="bg-[#192118] p-5 rounded-2xl border border-[#2E3B2B] flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-400 font-semibold">Total Produk Cleanza</p>
+                      <h3 className="text-2xl font-black text-[#FFD000] mt-1">{products.length} Items</h3>
+                      <p className="text-[10px] text-gray-400 mt-1">Kemasan Rumah Tangga & 5L</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-xl bg-[#239B4C]/20 border border-[#239B4C]/40 flex items-center justify-center">
+                      <Package className="w-6 h-6 text-[#239B4C]" />
+                    </div>
+                  </div>
+
+                  <div className="bg-[#192118] p-5 rounded-2xl border border-[#2E3B2B] flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-400 font-semibold">Artikel Kabar & Tips</p>
+                      <h3 className="text-2xl font-black text-white mt-1">{news.length} Artikel</h3>
+                      <p className="text-[10px] text-gray-400 mt-1">Tips Kebersihan Dapur</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-xl bg-[#FFD000]/20 border border-[#FFD000]/40 flex items-center justify-center">
+                      <Newspaper className="w-6 h-6 text-[#FFD000]" />
+                    </div>
+                  </div>
+
+                  <div className="bg-[#192118] p-5 rounded-2xl border border-[#2E3B2B] flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-400 font-semibold">Section Aktif Beranda</p>
+                      <h3 className="text-2xl font-black text-[#239B4C] mt-1">
+                        {cmsConfig.sections.filter((s) => s.enabled).length} / {cmsConfig.sections.length} Active
+                      </h3>
+                      <p className="text-[10px] text-gray-400 mt-1">Sesuai Toggle Visibilitas</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-xl bg-[#239B4C]/20 border border-[#239B4C]/40 flex items-center justify-center">
+                      <Layout className="w-6 h-6 text-[#239B4C]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Navigation Action Cards */}
+                <div className="bg-[#192118] p-6 rounded-2xl border border-[#2E3B2B] space-y-4">
+                  <h3 className="text-sm font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#239B4C]" />
+                    <span>Aksi Cepat Kustomisasi Website Cleanza</span>
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setActiveTab('branding')}
+                      className="p-4 bg-[#141A13] hover:bg-[#253023] rounded-xl border border-[#2E3B2B] text-left transition space-y-1 group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-xs text-white group-hover:text-[#FFD000]">
+                          1. Ubah Logo Brand & Ticker Promo
+                        </span>
+                        <Globe className="w-4 h-4 text-[#239B4C]" />
+                      </div>
+                      <p className="text-[11px] text-gray-400">
+                        Upload file logo brand Cleanza dari device dan sesuaikan running text pengumuman di bagian paling atas website.
+                      </p>
+                    </button>
 
                     <button
-                      type="button"
-                      onClick={() =>
-                        updateCMSConfig((prev) => ({ ...prev, logoUrl: DEFAULT_CLEANZA_LOGO }))
-                      }
-                      className="bg-[#2E3B2B] hover:bg-[#239B4C] text-gray-300 hover:text-white px-3 py-2.5 rounded-xl text-xs font-medium transition"
+                      onClick={() => setActiveTab('categories')}
+                      className="p-4 bg-[#141A13] hover:bg-[#253023] rounded-xl border border-[#2E3B2B] text-left transition space-y-1 group"
                     >
-                      Reset Logo Default
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-xs text-white group-hover:text-[#FFD000]">
+                          2. Upload Gambar Kategori (1:1 Square)
+                        </span>
+                        <ImageIcon className="w-4 h-4 text-[#239B4C]" />
+                      </div>
+                      <p className="text-[11px] text-gray-400">
+                        Upload gambar sampul kategori (Rumah Tangga, Profesional, Varian Lemon) langsung dengan format rasio 1:1 presisi.
+                      </p>
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab('products')}
+                      className="p-4 bg-[#141A13] hover:bg-[#253023] rounded-xl border border-[#2E3B2B] text-left transition space-y-1 group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-xs text-white group-hover:text-[#FFD000]">
+                          3. Tambah atau Edit Katalog Produk
+                        </span>
+                        <Package className="w-4 h-4 text-[#239B4C]" />
+                      </div>
+                      <p className="text-[11px] text-gray-400">
+                        Kelola varian ukuran (450ml, 1000ml, 5000ml), harga, deskripsi, serta foto kemasan produk Cleanza.
+                      </p>
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab('hero')}
+                      className="p-4 bg-[#141A13] hover:bg-[#253023] rounded-xl border border-[#2E3B2B] text-left transition space-y-1 group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-xs text-white group-hover:text-[#FFD000]">
+                          4. Ganti Background Hero Video / Image
+                        </span>
+                        <Video className="w-4 h-4 text-[#239B4C]" />
+                      </div>
+                      <p className="text-[11px] text-gray-400">
+                        Upload video MP4 atau gambar latar belakang hero banner beranda beserta judul utama tagline.
+                      </p>
                     </button>
                   </div>
-                  <p className="text-[11px] text-gray-400">
-                    Format disarankan: PNG, SVG, atau JPG transparan (Maks. 5MB).
-                  </p>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Hero Background Media Manager */}
-            <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
-              <h3 className="text-lg font-bold text-white mb-2 flex items-center space-x-2">
-                <Video className="w-5 h-5 text-[#239B4C]" />
-                <span>2. Hero Background Media Manager</span>
-              </h3>
-              <p className="text-xs text-gray-400 mb-6">
-                Atur URL gambar/video latar belakang atau upload file media langsung dari perangkat Anda.
-              </p>
+            {/* TAB 2: BRANDING & ANNOUNCEMENT BAR */}
+            {activeTab === 'branding' && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                {/* Logo Upload Card */}
+                <div className="bg-[#192118] rounded-2xl p-6 border-2 border-[#239B4C]/50 shadow-xl space-y-5">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-bold text-white flex items-center gap-2">
+                      <FileImage className="w-5 h-5 text-[#FFD000]" />
+                      <span>Logo Utama Brand Cleanza</span>
+                    </h3>
+                    <span className="bg-[#239B4C]/20 text-[#FFD000] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase border border-[#239B4C]/40">
+                      Header & Footer Logo
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-300 leading-relaxed">
+                    Upload gambar logo brand Cleanza dari komputer atau ponsel Anda. Gambar ini akan tampil di bagian Header dan Footer seluruh halaman website.
+                  </p>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-2">
-                    Tipe Media Latar Belakang
-                  </label>
-                  <div className="flex space-x-4">
-                    <label className="inline-flex items-center space-x-2 cursor-pointer text-xs">
-                      <input
-                        type="radio"
-                        name="mediaType"
-                        checked={cmsConfig.hero.mediaType === 'image'}
-                        onChange={() =>
-                          updateCMSConfig((prev) => ({
-                            ...prev,
-                            hero: { ...prev.hero, mediaType: 'image' }
-                          }))
-                        }
-                        className="text-[#239B4C] focus:ring-[#239B4C]"
-                      />
-                      <span>Background Image</span>
-                    </label>
-                    <label className="inline-flex items-center space-x-2 cursor-pointer text-xs">
-                      <input
-                        type="radio"
-                        name="mediaType"
-                        checked={cmsConfig.hero.mediaType === 'video'}
-                        onChange={() =>
-                          updateCMSConfig((prev) => ({
-                            ...prev,
-                            hero: { ...prev.hero, mediaType: 'video' }
-                          }))
-                        }
-                        className="text-[#239B4C] focus:ring-[#239B4C]"
-                      />
-                      <span>Background Video (MP4)</span>
-                    </label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-[#141A13] p-5 rounded-xl border border-[#2E3B2B]">
+                    <div>
+                      <p className="text-xs font-semibold text-gray-400 mb-2">Pratinjau Logo Aktif:</p>
+                      <div className="bg-[#1D241B] p-4 rounded-xl border border-[#3E4E3B] flex items-center justify-center min-h-[100px]">
+                        <img
+                          src={cmsConfig.logoUrl || DEFAULT_CLEANZA_LOGO}
+                          alt="Current Brand Logo"
+                          className="h-12 w-auto max-w-[240px] object-contain"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <p className="text-xs font-semibold text-gray-300">Pilih File Logo dari Device Anda:</p>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-md">
+                          <UploadCloud className="w-4 h-4 text-[#FFD000]" />
+                          <span>Upload File Logo</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleFileUpload(e, (dataUrl) =>
+                                updateCMSConfig((prev) => ({ ...prev, logoUrl: dataUrl }))
+                              )
+                            }
+                          />
+                        </label>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateCMSConfig((prev) => ({ ...prev, logoUrl: DEFAULT_CLEANZA_LOGO }))
+                          }
+                          className="bg-[#2E3B2B] hover:bg-gray-700 text-gray-300 hover:text-white px-3.5 py-2.5 rounded-xl text-xs font-semibold transition"
+                        >
+                          Reset Logo Default
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-gray-400">
+                        Format disarankan: PNG Transparan atau SVG (Maksimal 5MB).
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Media Asset (URL atau Upload dari Perangkat)
-                  </label>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <input
-                      type="text"
-                      value={cmsConfig.hero.mediaUrl}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        updateCMSConfig((prev) => ({
-                          ...prev,
-                          hero: { ...prev.hero, mediaUrl: val }
-                        }));
-                      }}
-                      placeholder="https://images.unsplash.com/... atau data:image/..."
-                      className="flex-1 bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                    />
-                    <label className="cursor-pointer bg-[#239B4C] hover:bg-[#FFD000] hover:text-black text-white px-4 py-3 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-2 shrink-0 border border-[#FFD000]/30">
-                      <Upload className="w-4 h-4" />
-                      <span>Upload dari Device</span>
+                {/* Announcement Bar Promo Ticker */}
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-[#239B4C]" />
+                    <span>Top Announcement Ticker Bar (Teks Promo Atas)</span>
+                  </h3>
+                  <p className="text-xs text-gray-400">
+                    Teks pengumuman berjalan di bilah teratas seluruh halaman website.
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Pengumuman Teks (Bahasa Indonesia)
+                      </label>
                       <input
-                        type="file"
-                        accept="image/*,video/*"
-                        className="hidden"
-                        onChange={(e) =>
-                          handleFileUpload(e, (dataUrl) =>
+                        type="text"
+                        value={cmsConfig.promoTextId}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({ ...prev, promoTextId: val, promoText: val }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
+                        placeholder="Contoh: PROMO CLEANZA! Gratis Ongkir & Diskon Kebutuhan Dapur..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Announcement Text (English Version)
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsConfig.promoText}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({ ...prev, promoText: val }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: HERO BANNER SECTION */}
+            {activeTab === 'hero' && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-5">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Droplets className="w-5 h-5 text-[#239B4C]" />
+                    <span>Teks & Konten Hero Banner Beranda</span>
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Judul Utama / Tagline
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsConfig.hero.tagline}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({
+                            ...prev,
+                            hero: { ...prev.hero, tagline: val }
+                          }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Subjudul / Deskripsi Pendukung
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={cmsConfig.hero.subtext}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({
+                            ...prev,
+                            hero: { ...prev.hero, subtext: val }
+                          }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                          Badge Teks Melayang
+                        </label>
+                        <input
+                          type="text"
+                          value={cmsConfig.hero.badgeText}
+                          onChange={(e) => {
+                            const val = e.target.value;
                             updateCMSConfig((prev) => ({
                               ...prev,
-                              hero: { ...prev.hero, mediaUrl: dataUrl }
-                            }))
-                          )
-                        }
-                      />
-                    </label>
-                  </div>
-                </div>
-
-                {/* Live Preview of Media */}
-                <div className="mt-4 p-4 rounded-xl bg-[#151B14] border border-gray-800">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">
-                    Pratinjau Media Hero saat ini
-                  </span>
-                  <div className="aspect-video max-h-48 rounded-lg overflow-hidden relative bg-black">
-                    {cmsConfig.hero.mediaType === 'video' ? (
-                      <video src={cmsConfig.hero.mediaUrl} autoPlay loop muted className="w-full h-full object-cover" />
-                    ) : (
-                      <img src={cmsConfig.hero.mediaUrl} alt="Hero Media Preview" className="w-full h-full object-cover" />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Our Story Banner Media */}
-            <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
-              <h3 className="text-lg font-bold text-white mb-2">
-                3. Our Story Banner Image Asset
-              </h3>
-              <p className="text-xs text-gray-400 mb-3">
-                Ubah gambar banner cerita Cleanza dengan memasukkan URL atau mengunggah langsung file dari perangkat Anda.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <input
-                  type="text"
-                  value={cmsConfig.ourStory.mediaUrl}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    updateCMSConfig((prev) => ({
-                      ...prev,
-                      ourStory: { ...prev.ourStory, mediaUrl: val }
-                    }));
-                  }}
-                  className="flex-1 bg-[#151B14] border border-[#3E4E3B] rounded-lg p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
-                />
-                <label className="cursor-pointer bg-[#239B4C] hover:bg-[#FFD000] hover:text-black text-white px-4 py-3 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-2 shrink-0 border border-[#FFD000]/30">
-                  <Upload className="w-4 h-4" />
-                  <span>Upload dari Device</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) =>
-                      handleFileUpload(e, (dataUrl) =>
-                        updateCMSConfig((prev) => ({
-                          ...prev,
-                          ourStory: { ...prev.ourStory, mediaUrl: dataUrl }
-                        }))
-                      )
-                    }
-                  />
-                </label>
-              </div>
-            </div>
-
-            {/* Category Showcase Images Asset Manager */}
-            <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
-              <h3 className="text-lg font-bold text-white mb-2 flex items-center space-x-2">
-                <ImageIcon className="w-5 h-5 text-[#239B4C]" />
-                <span>4. Gambar Kategori Cleanza (Category Showcase Assets)</span>
-              </h3>
-              <p className="text-xs text-gray-400 mb-4">
-                Upload gambar sampul untuk tiap kategori produk Cleanza langsung dari perangkat Anda.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
-                  { key: 'Kemasan Rumah Tangga', def: 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=600' },
-                  { key: 'Cleanza Profesional', def: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600' },
-                  { key: 'Varian Lemon', def: 'https://images.unsplash.com/photo-1534531141161-e41d133a4be3?auto=format&fit=crop&q=80&w=600' }
-                ].map((cat) => {
-                  const currentImg = cmsConfig.categoryImages?.[cat.key] || cat.def;
-                  return (
-                    <div key={cat.key} className="bg-[#151B14] p-4 rounded-xl border border-[#2E3B2B] space-y-3">
-                      <div className="aspect-square w-full rounded-lg overflow-hidden bg-black relative">
-                        <img src={currentImg} alt={cat.key} className="w-full h-full object-cover" />
-                      </div>
-                      <p className="text-xs font-bold text-white">{cat.key}</p>
-                      <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white w-full py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-2">
-                        <Upload className="w-3.5 h-3.5 text-[#FFD000]" />
-                        <span>Upload Gambar dari Device</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) =>
-                            handleFileUpload(e, (dataUrl) =>
-                              handleCategoryImgUpload(cat.key, dataUrl)
-                            )
-                          }
+                              hero: { ...prev.hero, badgeText: val }
+                            }));
+                          }}
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
                         />
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Kabar & Tips Cleanza News Images Asset Manager */}
-            <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
-              <h3 className="text-lg font-bold text-white mb-2 flex items-center space-x-2">
-                <FileImage className="w-5 h-5 text-[#FFD000]" />
-                <span>5. Gambar Artikel Kabar & Tips Cleanza</span>
-              </h3>
-              <p className="text-xs text-gray-400 mb-4">
-                Upload gambar sampul untuk setiap artikel tips dapur Cleanza dari perangkat Anda.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {news.map((item) => {
-                  const currentImg = cmsConfig.newsImages?.[item.id] || item.image;
-                  return (
-                    <div key={item.id} className="bg-[#151B14] p-4 rounded-xl border border-[#2E3B2B] space-y-3">
-                      <div className="aspect-video w-full rounded-lg overflow-hidden bg-black relative">
-                        <img src={currentImg} alt={item.title} className="w-full h-full object-cover" />
                       </div>
-                      <p className="text-xs font-bold text-white line-clamp-2">{item.title}</p>
-                      <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white w-full py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-2">
-                        <Upload className="w-3.5 h-3.5 text-[#FFD000]" />
-                        <span>Upload Gambar Artikel</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) =>
-                            handleFileUpload(e, (dataUrl) =>
-                              handleNewsImgUpload(item.id, dataUrl)
-                            )
-                          }
-                        />
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 3: SECTIONS & VISIBILITY MANAGER */}
-        {activeTab === 'sections' && (
-          <div className="space-y-6 animate-in fade-in">
-            <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
-              <h3 className="text-lg font-bold text-white mb-1">
-                Toggle Visibilitas & Pengaturan Gambar Section Landing Page
-              </h3>
-              <p className="text-xs text-gray-400 mb-6">
-                Aktifkan / sembunyikan section atau upload file gambar dari perangkat Anda secara instan untuk setiap bagian.
-              </p>
-
-              <div className="space-y-4">
-                {cmsConfig.sections.map((sec) => (
-                  <div
-                    key={sec.id}
-                    className="p-5 rounded-xl bg-[#151B14] border border-[#2E3B2B] hover:border-[#239B4C] transition space-y-4"
-                  >
-                    <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-bold text-sm text-white">{sec.name}</h4>
-                        <p className="text-[11px] text-gray-400">ID Section: #{sec.id}</p>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                          Tombol Utama (CTA 1)
+                        </label>
+                        <input
+                          type="text"
+                          value={cmsConfig.hero.primaryCtaText}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              hero: { ...prev.hero, primaryCtaText: val }
+                            }));
+                          }}
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                        />
                       </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                          Tombol Kedua (CTA 2)
+                        </label>
+                        <input
+                          type="text"
+                          value={cmsConfig.hero.secondaryCtaText}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            updateCMSConfig((prev) => ({
+                              ...prev,
+                              hero: { ...prev.hero, secondaryCtaText: val }
+                            }));
+                          }}
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                      <button
-                        onClick={() => toggleSection(sec.id)}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center space-x-2 ${
-                          sec.enabled
-                            ? 'bg-[#239B4C] text-[#FFD000] border border-[#FFD000]/30'
-                            : 'bg-gray-800 text-gray-500'
-                        }`}
-                      >
-                        <span>{sec.enabled ? 'TAMPIL (ACTIVE)' : 'DISEMBUNYIKAN'}</span>
-                      </button>
+                {/* Background Hero Media */}
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Video className="w-5 h-5 text-[#239B4C]" />
+                    <span>Latar Belakang Hero (Gambar / Video)</span>
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs font-semibold text-gray-300 mb-2">Tipe Media Latar Belakang:</p>
+                      <div className="flex space-x-6">
+                        <label className="inline-flex items-center space-x-2 cursor-pointer text-xs font-bold text-white">
+                          <input
+                            type="radio"
+                            name="mediaType"
+                            checked={cmsConfig.hero.mediaType === 'image'}
+                            onChange={() =>
+                              updateCMSConfig((prev) => ({
+                                ...prev,
+                                hero: { ...prev.hero, mediaType: 'image' }
+                              }))
+                            }
+                            className="text-[#239B4C] focus:ring-[#239B4C]"
+                          />
+                          <span>Background Gambar</span>
+                        </label>
+                        <label className="inline-flex items-center space-x-2 cursor-pointer text-xs font-bold text-white">
+                          <input
+                            type="radio"
+                            name="mediaType"
+                            checked={cmsConfig.hero.mediaType === 'video'}
+                            onChange={() =>
+                              updateCMSConfig((prev) => ({
+                                ...prev,
+                                hero: { ...prev.hero, mediaType: 'video' }
+                              }))
+                            }
+                            className="text-[#239B4C] focus:ring-[#239B4C]"
+                          />
+                          <span>Background Video (MP4)</span>
+                        </label>
+                      </div>
                     </div>
 
-                    {/* Image Upload Sub-Panel for each Section */}
-                    <div className="pt-3 border-t border-[#2E3B2B]/60">
-                      <p className="text-xs font-semibold text-[#FFD000] mb-3 flex items-center space-x-1.5">
-                        <UploadCloud className="w-3.5 h-3.5" />
-                        <span>Upload & Ganti Gambar Section "{sec.name}" dari Device:</span>
+                    <div className="flex flex-col md:flex-row items-center gap-4 bg-[#141A13] p-4 rounded-xl border border-[#2E3B2B]">
+                      <div className="w-32 h-20 rounded-lg overflow-hidden bg-black shrink-0 relative">
+                        {cmsConfig.hero.mediaType === 'video' ? (
+                          <video src={cmsConfig.hero.mediaUrl} className="w-full h-full object-cover" autoPlay loop muted />
+                        ) : (
+                          <img src={cmsConfig.hero.mediaUrl} alt="Hero" className="w-full h-full object-cover" />
+                        )}
+                      </div>
+
+                      <div className="flex-1 w-full space-y-2">
+                        <p className="text-xs font-semibold text-gray-300">Upload Media Hero dari Perangkat Anda:</p>
+                        <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white px-4 py-2 rounded-xl text-xs font-bold transition inline-flex items-center space-x-2">
+                          <Upload className="w-4 h-4 text-[#FFD000]" />
+                          <span>Pilih File Gambar / Video Hero</span>
+                          <input
+                            type="file"
+                            accept="image/*,video/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleFileUpload(e, (dataUrl) =>
+                                updateCMSConfig((prev) => ({
+                                  ...prev,
+                                  hero: { ...prev.hero, mediaUrl: dataUrl }
+                                }))
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 4: CATEGORY SHOWCASE (1:1 CANVAS) */}
+            {activeTab === 'categories' && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                        <ImageIcon className="w-5 h-5 text-[#239B4C]" />
+                        <span>Pilihan Kemasan Cleanza Pencuci Piring (Gambar Square 1:1)</span>
+                      </h3>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Atur gambar sampul rasio 1:1 untuk setiap kategori produk Cleanza.
                       </p>
+                    </div>
+                    <span className="bg-[#FFD000] text-black text-[10px] font-black px-2.5 py-1 rounded-full uppercase">
+                      Kanvas 1:1
+                    </span>
+                  </div>
 
-                      {/* HERO SECTION IMAGE UPLOAD */}
-                      {sec.id === 'hero' && (
-                        <div className="flex flex-col sm:flex-row items-center gap-4 bg-[#1D241B] p-3.5 rounded-xl border border-[#2E3B2B]">
-                          <div className="w-24 h-16 rounded-lg overflow-hidden bg-black shrink-0">
-                            {cmsConfig.hero.mediaType === 'video' ? (
-                              <video src={cmsConfig.hero.mediaUrl} className="w-full h-full object-cover" />
-                            ) : (
-                              <img src={cmsConfig.hero.mediaUrl} alt="Hero" className="w-full h-full object-cover" />
-                            )}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                    {[
+                      { key: 'Kemasan Rumah Tangga', label: 'Kemasan Rumah Tangga (450ml / 1000ml)', def: 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=600' },
+                      { key: 'Cleanza Profesional', label: 'Cleanza Profesional (Jerigen 5L)', def: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600' },
+                      { key: 'Varian Lemon', label: 'Varian Lemon (Baru)', def: 'https://images.unsplash.com/photo-1534531141161-e41d133a4be3?auto=format&fit=crop&q=80&w=600' }
+                    ].map((cat) => {
+                      const currentImg = cmsConfig.categoryImages?.[cat.key] || cat.def;
+                      return (
+                        <div key={cat.key} className="bg-[#141A13] p-4 rounded-xl border border-[#2E3B2B] flex flex-col justify-between space-y-3">
+                          <div className="aspect-square w-full rounded-xl overflow-hidden bg-black relative border border-[#2E3B2B]">
+                            <img src={currentImg} alt={cat.key} className="w-full h-full object-cover" />
+                            <span className="absolute bottom-2 left-2 bg-black/80 text-white text-[9px] font-bold px-2 py-0.5 rounded">
+                              Rasio 1:1
+                            </span>
                           </div>
-                          <div className="flex-1 w-full space-y-2">
-                            <input
-                              type="text"
-                              value={cmsConfig.hero.mediaUrl}
-                              onChange={(e) =>
-                                updateCMSConfig((prev) => ({
-                                  ...prev,
-                                  hero: { ...prev.hero, mediaUrl: e.target.value }
-                                }))
-                              }
-                              className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-2 text-xs text-white"
-                            />
-                            <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center space-x-2">
+                          <div>
+                            <p className="text-xs font-bold text-white mb-2">{cat.label}</p>
+                            <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white w-full py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2">
                               <Upload className="w-3.5 h-3.5 text-[#FFD000]" />
-                              <span>Upload Gambar/Video Hero dari Device</span>
-                              <input
-                                type="file"
-                                accept="image/*,video/*"
-                                className="hidden"
-                                onChange={(e) =>
-                                  handleFileUpload(e, (dataUrl) =>
-                                    updateCMSConfig((prev) => ({
-                                      ...prev,
-                                      hero: { ...prev.hero, mediaUrl: dataUrl }
-                                    }))
-                                  )
-                                }
-                              />
-                            </label>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* CATEGORIES SECTION IMAGES UPLOAD */}
-                      {sec.id === 'categories' && (
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          {[
-                            { key: 'Kemasan Rumah Tangga', def: 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=600' },
-                            { key: 'Cleanza Profesional', def: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600' },
-                            { key: 'Varian Lemon', def: 'https://images.unsplash.com/photo-1534531141161-e41d133a4be3?auto=format&fit=crop&q=80&w=600' }
-                          ].map((cat) => {
-                            const currentImg = cmsConfig.categoryImages?.[cat.key] || cat.def;
-                            return (
-                              <div key={cat.key} className="bg-[#1D241B] p-3 rounded-xl border border-[#2E3B2B] flex flex-col justify-between space-y-2">
-                                <div className="aspect-square w-full rounded-lg overflow-hidden bg-black relative">
-                                  <img src={currentImg} alt={cat.key} className="w-full h-full object-cover" />
-                                </div>
-                                <div>
-                                  <p className="text-[11px] font-bold text-white truncate mb-1.5">{cat.key}</p>
-                                  <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white w-full py-1.5 px-2 rounded-lg text-[10px] font-bold transition flex items-center justify-center space-x-1">
-                                    <Upload className="w-3 h-3 text-[#FFD000]" />
-                                    <span>Upload Gambar dari Device</span>
-                                    <input
-                                      type="file"
-                                      accept="image/*"
-                                      className="hidden"
-                                      onChange={(e) =>
-                                        handleFileUpload(e, (dataUrl) =>
-                                          handleCategoryImgUpload(cat.key, dataUrl)
-                                        )
-                                      }
-                                    />
-                                  </label>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {/* POPULAR PRODUCTS SECTION IMAGES UPLOAD */}
-                      {sec.id === 'popular' && (
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          {products.slice(0, 3).map((prod) => (
-                            <div key={prod.id} className="bg-[#1D241B] p-3 rounded-xl border border-[#2E3B2B] flex flex-col justify-between space-y-2">
-                              <div className="aspect-square w-full rounded-lg overflow-hidden bg-white/5 relative">
-                                <img src={prod.image} alt={prod.name} className="w-full h-full object-cover" />
-                              </div>
-                              <div>
-                                <p className="text-[11px] font-bold text-white truncate mb-1.5">{prod.name}</p>
-                                <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white w-full py-1.5 px-2 rounded-lg text-[10px] font-bold transition flex items-center justify-center space-x-1">
-                                  <Upload className="w-3 h-3 text-[#FFD000]" />
-                                  <span>Upload Gambar Produk</span>
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={(e) =>
-                                      handleFileUpload(e, (dataUrl) =>
-                                        updateProduct({ ...prod, image: dataUrl })
-                                      )
-                                    }
-                                  />
-                                </label>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* OUR STORY SECTION IMAGE UPLOAD */}
-                      {sec.id === 'ourStory' && (
-                        <div className="flex flex-col sm:flex-row items-center gap-4 bg-[#1D241B] p-3.5 rounded-xl border border-[#2E3B2B]">
-                          <div className="w-24 h-16 rounded-lg overflow-hidden bg-black shrink-0">
-                            <img src={cmsConfig.ourStory.mediaUrl} alt="Our Story" className="w-full h-full object-cover" />
-                          </div>
-                          <div className="flex-1 w-full space-y-2">
-                            <input
-                              type="text"
-                              value={cmsConfig.ourStory.mediaUrl}
-                              onChange={(e) =>
-                                updateCMSConfig((prev) => ({
-                                  ...prev,
-                                  ourStory: { ...prev.ourStory, mediaUrl: e.target.value }
-                                }))
-                              }
-                              className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-2 text-xs text-white"
-                            />
-                            <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center space-x-2">
-                              <Upload className="w-3.5 h-3.5 text-[#FFD000]" />
-                              <span>Upload Gambar Our Story dari Device</span>
+                              <span>Upload Gambar 1:1</span>
                               <input
                                 type="file"
                                 accept="image/*"
                                 className="hidden"
                                 onChange={(e) =>
                                   handleFileUpload(e, (dataUrl) =>
-                                    updateCMSConfig((prev) => ({
-                                      ...prev,
-                                      ourStory: { ...prev.ourStory, mediaUrl: dataUrl }
-                                    }))
+                                    handleCategoryImgUpload(cat.key, dataUrl)
                                   )
                                 }
                               />
                             </label>
                           </div>
                         </div>
-                      )}
-
-                      {/* NEWS SECTION IMAGES UPLOAD */}
-                      {sec.id === 'news' && (
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          {news.map((item) => {
-                            const currentImg = cmsConfig.newsImages?.[item.id] || item.image;
-                            return (
-                              <div key={item.id} className="bg-[#1D241B] p-3 rounded-xl border border-[#2E3B2B] flex flex-col justify-between space-y-2">
-                                <div className="aspect-video w-full rounded-lg overflow-hidden bg-black relative">
-                                  <img src={currentImg} alt={item.title} className="w-full h-full object-cover" />
-                                </div>
-                                <div>
-                                  <p className="text-[11px] font-bold text-white truncate mb-1.5">{item.title}</p>
-                                  <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white w-full py-1.5 px-2 rounded-lg text-[10px] font-bold transition flex items-center justify-center space-x-1">
-                                    <Upload className="w-3 h-3 text-[#FFD000]" />
-                                    <span>Upload Gambar Artikel</span>
-                                    <input
-                                      type="file"
-                                      accept="image/*"
-                                      className="hidden"
-                                      onChange={(e) =>
-                                        handleFileUpload(e, (dataUrl) =>
-                                          handleNewsImgUpload(item.id, dataUrl)
-                                        )
-                                      }
-                                    />
-                                  </label>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
+                      );
+                    })}
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
-
-            {/* Layout Mode Grid vs List */}
-            <div className="bg-[#1F271D] rounded-2xl p-6 border border-[#2E3B2B]">
-              <h3 className="text-lg font-bold text-white mb-1">
-                Default Mode Tampilan Katalog Produk
-              </h3>
-              <p className="text-xs text-gray-400 mb-4">
-                Pilih format tampilan default katalog di Shop All page.
-              </p>
-
-              <div className="flex space-x-4">
-                <button
-                  onClick={() =>
-                    updateCMSConfig((prev) => ({ ...prev, layoutMode: 'grid' }))
-                  }
-                  className={`px-6 py-3 rounded-xl text-xs font-bold border transition ${
-                    cmsConfig.layoutMode === 'grid'
-                      ? 'bg-[#239B4C] text-[#FFD000] border-[#FFD000]'
-                      : 'bg-[#151B14] text-gray-400 border-gray-700'
-                  }`}
-                >
-                  Grid Layout Mode
-                </button>
-                <button
-                  onClick={() =>
-                    updateCMSConfig((prev) => ({ ...prev, layoutMode: 'list' }))
-                  }
-                  className={`px-6 py-3 rounded-xl text-xs font-bold border transition ${
-                    cmsConfig.layoutMode === 'list'
-                      ? 'bg-[#239B4C] text-[#FFD000] border-[#FFD000]'
-                      : 'bg-[#151B14] text-gray-400 border-gray-700'
-                  }`}
-                >
-                  List Layout Mode
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 4: PRODUCT CATALOG CMS MANAGER */}
-        {activeTab === 'products' && (
-          <div className="space-y-6 animate-in fade-in">
-            {/* Header with Add Product button */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-white">
-                  Katalog Produk Cleanza ({products.length} Items)
-                </h3>
-                <p className="text-xs text-gray-400">
-                  Tambah, edit harga, nama, kategori, atau hapus produk secara dinamis.
-                </p>
-              </div>
-
-              <button
-                onClick={() => setIsAddingNewProduct(true)}
-                className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold text-xs px-5 py-3 rounded-xl shadow-lg transition flex items-center space-x-2 border border-[#FFD000]/30"
-              >
-                <Plus className="w-4 h-4 text-[#FFD000]" />
-                <span>Tambah Produk Baru</span>
-              </button>
-            </div>
-
-            {/* Modal or Form to Add New Product */}
-            {isAddingNewProduct && (
-              <form
-                onSubmit={handleSaveNewProduct}
-                className="bg-[#1F271D] p-6 rounded-2xl border-2 border-[#239B4C] space-y-4 animate-in zoom-in-95"
-              >
-                <div className="flex items-center justify-between border-b border-[#2E3B2B] pb-3">
-                  <h4 className="font-bold text-base text-[#FFD000] uppercase tracking-wider">
-                    Formulir Tambah Produk Cleanza
-                  </h4>
-                  <button
-                    type="button"
-                    onClick={() => setIsAddingNewProduct(false)}
-                    className="text-xs text-gray-400 hover:text-white"
-                  >
-                    Batal
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">
-                      Nama Produk
-                    </label>
-                    <input
-                      type="text"
-                      value={newProd.name}
-                      onChange={(e) => setNewProd({ ...newProd, name: e.target.value })}
-                      required
-                      placeholder="e.g. Cleanza Jeruk Nipis 450ml"
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">
-                      Kategori
-                    </label>
-                    <select
-                      value={newProd.category}
-                      onChange={(e) => setNewProd({ ...newProd, category: e.target.value as ProductCategory })}
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
-                    >
-                      <option value="Kemasan Rumah Tangga">Kemasan Rumah Tangga</option>
-                      <option value="Cleanza Profesional">Cleanza Profesional</option>
-                      <option value="Varian Lemon">Varian Lemon</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">
-                      Harga (Rp)
-                    </label>
-                    <input
-                      type="number"
-                      value={newProd.price}
-                      onChange={(e) => setNewProd({ ...newProd, price: Number(e.target.value) })}
-                      required
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">
-                      Ukuran / Volume
-                    </label>
-                    <input
-                      type="text"
-                      value={newProd.volume}
-                      onChange={(e) => setNewProd({ ...newProd, volume: e.target.value })}
-                      placeholder="e.g. 450ml / 1000ml / 5000ml"
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">
-                      Badge
-                    </label>
-                    <select
-                      value={newProd.badge || ''}
-                      onChange={(e) => setNewProd({ ...newProd, badge: (e.target.value as ProductBadge) || null })}
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
-                    >
-                      <option value="">Tidak ada Badge</option>
-                      <option value="NEW PRODUCT">NEW PRODUCT</option>
-                      <option value="BEST SELLER">BEST SELLER</option>
-                      <option value="COMING SOON">COMING SOON</option>
-                      <option value="LIMITED">LIMITED</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">
-                      Gambar Produk (URL / Upload Device)
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={newProd.image}
-                        onChange={(e) => setNewProd({ ...newProd, image: e.target.value })}
-                        placeholder="URL atau Upload dari Device"
-                        className="flex-1 bg-[#151B14] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
-                      />
-                      <label className="cursor-pointer bg-[#239B4C] hover:bg-[#FFD000] hover:text-black text-white px-3 py-2.5 rounded-lg text-xs font-bold transition flex items-center space-x-1 shrink-0 border border-[#FFD000]/30">
-                        <Upload className="w-3.5 h-3.5" />
-                        <span>Upload</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) =>
-                            handleFileUpload(e, (dataUrl) =>
-                              setNewProd((prev) => ({ ...prev, image: dataUrl }))
-                            )
-                          }
-                        />
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">
-                    Deskripsi Singkat
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={newProd.description}
-                    onChange={(e) => setNewProd({ ...newProd, description: e.target.value })}
-                    className="w-full bg-[#151B14] border border-[#3E4E3B] rounded-lg p-2.5 text-xs text-white"
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-2 pt-2">
-                  <button
-                    type="submit"
-                    className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold text-xs uppercase tracking-wider px-6 py-2.5 rounded-lg shadow-md border border-[#FFD000]/30"
-                  >
-                    Simpan Produk
-                  </button>
-                </div>
-              </form>
             )}
 
-            {/* List of Products for editing */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {products.map((p) => (
-                <div
-                  key={p.id}
-                  className="bg-[#1F271D] p-4 rounded-xl border border-[#2E3B2B] flex items-center justify-between gap-4"
-                >
-                  <div className="flex items-center space-x-3">
-                    <img
-                      src={p.image}
-                      alt={p.name}
-                      className="w-14 h-14 object-contain rounded-lg bg-[#151B14] p-1 shrink-0"
-                    />
+            {/* TAB 5: PRODUCTS CATALOG MANAGEMENT */}
+            {activeTab === 'products' && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                {/* Header Actions & Filter */}
+                <div className="bg-[#192118] p-5 rounded-2xl border border-[#2E3B2B] space-y-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
-                      <span className="text-[10px] font-bold text-[#FFD000] uppercase">
-                        {p.category} • {p.volume}
-                      </span>
-                      <h4 className="font-bold text-sm text-white line-clamp-1">
-                        {p.name}
-                      </h4>
-                      <p className="text-xs text-gray-300 font-semibold mt-0.5">
-                        {p.formattedPrice}
+                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <Package className="w-5 h-5 text-[#239B4C]" />
+                        <span>Katalog Produk Cleanza ({products.length} Items)</span>
+                      </h3>
+                      <p className="text-xs text-gray-400">
+                        Tambah varian produk baru, edit harga, badge, deskripsi, atau ubah gambar produk.
                       </p>
                     </div>
-                  </div>
 
-                  <div className="flex items-center space-x-2 shrink-0">
                     <button
-                      onClick={() => setEditingProduct(p)}
-                      className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs"
-                      title="Edit Produk"
+                      onClick={() => setIsAddingNewProduct(true)}
+                      className="bg-[#239B4C] hover:bg-[#1C843F] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg transition flex items-center space-x-2 border border-[#FFD000]/30 shrink-0"
                     >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => deleteProduct(p.id)}
-                      className="p-2 bg-red-900/40 hover:bg-red-800 text-red-200 rounded-lg text-xs"
-                      title="Hapus Produk"
-                    >
-                      <Trash2 className="w-4 h-4" />
+                      <Plus className="w-4 h-4 text-[#FFD000]" />
+                      <span>Tambah Produk Baru</span>
                     </button>
                   </div>
-                </div>
-              ))}
-            </div>
 
-            {/* Quick Edit Modal */}
-            {editingProduct && (
-              <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="bg-[#1F271D] border border-[#239B4C] p-6 rounded-2xl max-w-xl w-full space-y-4">
-                  <h4 className="font-bold text-base text-[#FFD000]">
-                    Edit Produk: {editingProduct.name}
-                  </h4>
-
-                  <div>
-                    <label className="block text-xs text-gray-300 mb-1">Nama Produk</label>
-                    <input
-                      type="text"
-                      value={editingProduct.name}
-                      onChange={(e) =>
-                        setEditingProduct({ ...editingProduct, name: e.target.value })
-                      }
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded p-2 text-xs text-white"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs text-gray-300 mb-1">Harga (Rp)</label>
+                  {/* Search and Category Filter */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <div className="relative">
+                      <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                       <input
-                        type="number"
-                        value={editingProduct.price}
-                        onChange={(e) => {
-                          const val = Number(e.target.value);
-                          setEditingProduct({
-                            ...editingProduct,
-                            price: val,
-                            formattedPrice: `Rp${val.toLocaleString('id-ID')}`
-                          });
-                        }}
-                        className="w-full bg-[#151B14] border border-[#3E4E3B] rounded p-2 text-xs text-white"
+                        type="text"
+                        value={productSearch}
+                        onChange={(e) => setProductSearch(e.target.value)}
+                        placeholder="Cari nama produk..."
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-300 mb-1">Kategori</label>
                       <select
-                        value={editingProduct.category}
-                        onChange={(e) =>
-                          setEditingProduct({
-                            ...editingProduct,
-                            category: e.target.value as ProductCategory
-                          })
-                        }
-                        className="w-full bg-[#151B14] border border-[#3E4E3B] rounded p-2 text-xs text-white"
+                        value={productCategoryFilter}
+                        onChange={(e) => setProductCategoryFilter(e.target.value)}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#239B4C]"
                       >
+                        <option value="All">Semua Kategori Produk</option>
                         <option value="Kemasan Rumah Tangga">Kemasan Rumah Tangga</option>
                         <option value="Cleanza Profesional">Cleanza Profesional</option>
                         <option value="Varian Lemon">Varian Lemon</option>
                       </select>
                     </div>
                   </div>
+                </div>
 
-                  <div>
-                    <label className="block text-xs text-gray-300 mb-1">Badge</label>
-                    <select
-                      value={editingProduct.badge || ''}
-                      onChange={(e) =>
-                        setEditingProduct({
-                          ...editingProduct,
-                          badge: (e.target.value as ProductBadge) || null
-                        })
-                      }
-                      className="w-full bg-[#151B14] border border-[#3E4E3B] rounded p-2 text-xs text-white"
-                    >
-                      <option value="">Tidak ada Badge</option>
-                      <option value="NEW PRODUCT">NEW PRODUCT</option>
-                      <option value="BEST SELLER">BEST SELLER</option>
-                      <option value="COMING SOON">COMING SOON</option>
-                      <option value="LIMITED">LIMITED</option>
-                    </select>
-                  </div>
+                {/* Form to Add New Product */}
+                {isAddingNewProduct && (
+                  <form
+                    onSubmit={handleSaveNewProduct}
+                    className="bg-[#192118] p-6 rounded-2xl border-2 border-[#239B4C] space-y-4 animate-in zoom-in-95 shadow-2xl"
+                  >
+                    <div className="flex items-center justify-between border-b border-[#2E3B2B] pb-3">
+                      <h4 className="font-bold text-sm text-[#FFD000] uppercase tracking-wider flex items-center gap-2">
+                        <FolderPlus className="w-4 h-4" />
+                        <span>Formulir Tambah Produk Cleanza Baru</span>
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => setIsAddingNewProduct(false)}
+                        className="text-xs text-gray-400 hover:text-white"
+                      >
+                        Batal
+                      </button>
+                    </div>
 
-                  <div>
-                    <label className="block text-xs text-gray-300 mb-1">
-                      Gambar Produk (URL / Upload Device)
-                    </label>
-                    <div className="flex gap-2 items-center">
-                      <img
-                        src={editingProduct.image}
-                        alt="Preview"
-                        className="w-9 h-9 object-contain bg-[#151B14] p-1 rounded border border-[#3E4E3B] shrink-0"
-                      />
-                      <input
-                        type="text"
-                        value={editingProduct.image}
-                        onChange={(e) =>
-                          setEditingProduct({ ...editingProduct, image: e.target.value })
-                        }
-                        className="flex-1 bg-[#151B14] border border-[#3E4E3B] rounded p-2 text-xs text-white"
-                      />
-                      <label className="cursor-pointer bg-[#239B4C] hover:bg-[#FFD000] hover:text-black text-white px-3 py-2 rounded text-xs font-bold transition flex items-center space-x-1 shrink-0 border border-[#FFD000]/30">
-                        <Upload className="w-3.5 h-3.5" />
-                        <span>Upload</span>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1">
+                          Nama Produk
+                        </label>
                         <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) =>
-                            handleFileUpload(e, (dataUrl) =>
-                              setEditingProduct((prev) => (prev ? { ...prev, image: dataUrl } : null))
-                            )
-                          }
+                          type="text"
+                          value={newProd.name}
+                          onChange={(e) => setNewProd({ ...newProd, name: e.target.value })}
+                          required
+                          placeholder="e.g. Cleanza Jeruk Nipis 450ml"
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
                         />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1">
+                          Kategori
+                        </label>
+                        <select
+                          value={newProd.category}
+                          onChange={(e) => setNewProd({ ...newProd, category: e.target.value as ProductCategory })}
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                        >
+                          <option value="Kemasan Rumah Tangga">Kemasan Rumah Tangga</option>
+                          <option value="Cleanza Profesional">Cleanza Profesional</option>
+                          <option value="Varian Lemon">Varian Lemon</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1">
+                          Harga (Rp)
+                        </label>
+                        <input
+                          type="number"
+                          value={newProd.price}
+                          onChange={(e) => setNewProd({ ...newProd, price: Number(e.target.value) })}
+                          required
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1">
+                          Ukuran / Volume
+                        </label>
+                        <input
+                          type="text"
+                          value={newProd.volume}
+                          onChange={(e) => setNewProd({ ...newProd, volume: e.target.value })}
+                          placeholder="e.g. 450ml / 1000ml / 5000ml"
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1">
+                          Badge Label
+                        </label>
+                        <select
+                          value={newProd.badge || ''}
+                          onChange={(e) => setNewProd({ ...newProd, badge: (e.target.value as ProductBadge) || null })}
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                        >
+                          <option value="">Tidak ada Badge</option>
+                          <option value="NEW PRODUCT">NEW PRODUCT</option>
+                          <option value="BEST SELLER">BEST SELLER</option>
+                          <option value="COMING SOON">COMING SOON</option>
+                          <option value="LIMITED">LIMITED</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1">
+                          Upload Foto Kemasan Produk
+                        </label>
+                        <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white w-full py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2">
+                          <Upload className="w-3.5 h-3.5 text-[#FFD000]" />
+                          <span>Pilih Foto dari Device</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleFileUpload(e, (dataUrl) =>
+                                setNewProd((prev) => ({ ...prev, image: dataUrl }))
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">
+                        Deskripsi Singkat Produk
                       </label>
+                      <textarea
+                        rows={2}
+                        value={newProd.description}
+                        onChange={(e) => setNewProd({ ...newProd, description: e.target.value })}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                      />
+                    </div>
+
+                    <div className="flex justify-end space-x-2 pt-2">
+                      <button
+                        type="submit"
+                        className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold text-xs uppercase tracking-wider px-6 py-2.5 rounded-xl shadow-md border border-[#FFD000]/30"
+                      >
+                        Simpan Produk
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {/* Product List Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredProducts.map((p) => (
+                    <div
+                      key={p.id}
+                      className="bg-[#192118] p-4 rounded-xl border border-[#2E3B2B] flex items-center justify-between gap-4 hover:border-[#239B4C] transition"
+                    >
+                      <div className="flex items-center space-x-3 min-w-0">
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          className="w-14 h-14 object-contain rounded-lg bg-[#141A13] p-1 shrink-0 border border-[#2E3B2B]"
+                        />
+                        <div className="min-w-0">
+                          <span className="text-[10px] font-bold text-[#FFD000] uppercase block truncate">
+                            {p.category} • {p.volume}
+                          </span>
+                          <h4 className="font-bold text-xs text-white truncate">
+                            {p.name}
+                          </h4>
+                          <p className="text-xs text-gray-300 font-semibold mt-0.5">
+                            {p.formattedPrice}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2 shrink-0">
+                        <button
+                          onClick={() => setEditingProduct(p)}
+                          className="p-2 bg-white/10 hover:bg-[#239B4C] text-white rounded-lg text-xs transition"
+                          title="Edit Detail Produk"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => deleteProduct(p.id)}
+                          className="p-2 bg-red-900/40 hover:bg-red-800 text-red-200 rounded-lg text-xs transition"
+                          title="Hapus Produk"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Quick Edit Product Modal */}
+                {editingProduct && (
+                  <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-[#192118] border-2 border-[#239B4C] p-6 rounded-2xl max-w-xl w-full space-y-4 max-h-[90vh] overflow-y-auto">
+                      <div className="flex items-center justify-between border-b border-[#2E3B2B] pb-3">
+                        <h4 className="font-bold text-sm text-[#FFD000] uppercase tracking-wider">
+                          Edit Produk: {editingProduct.name}
+                        </h4>
+                        <button
+                          onClick={() => setEditingProduct(null)}
+                          className="text-xs text-gray-400 hover:text-white"
+                        >
+                          Tutup
+                        </button>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-300 mb-1">Nama Produk</label>
+                        <input
+                          type="text"
+                          value={editingProduct.name}
+                          onChange={(e) =>
+                            setEditingProduct({ ...editingProduct, name: e.target.value })
+                          }
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-300 mb-1">Harga (Rp)</label>
+                          <input
+                            type="number"
+                            value={editingProduct.price}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              setEditingProduct({
+                                ...editingProduct,
+                                price: val,
+                                formattedPrice: `Rp${val.toLocaleString('id-ID')}`
+                              });
+                            }}
+                            className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-300 mb-1">Kategori</label>
+                          <select
+                            value={editingProduct.category}
+                            onChange={(e) =>
+                              setEditingProduct({
+                                ...editingProduct,
+                                category: e.target.value as ProductCategory
+                              })
+                            }
+                            className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                          >
+                            <option value="Kemasan Rumah Tangga">Kemasan Rumah Tangga</option>
+                            <option value="Cleanza Profesional">Cleanza Profesional</option>
+                            <option value="Varian Lemon">Varian Lemon</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-300 mb-1">Upload Foto Kemasan Produk</label>
+                        <div className="flex gap-3 items-center">
+                          <img
+                            src={editingProduct.image}
+                            alt="Preview"
+                            className="w-12 h-12 object-contain bg-[#141A13] p-1 rounded-xl border border-[#3E4E3B] shrink-0"
+                          />
+                          <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center space-x-2">
+                            <Upload className="w-3.5 h-3.5 text-[#FFD000]" />
+                            <span>Pilih Foto Baru dari Device</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) =>
+                                handleFileUpload(e, (dataUrl) =>
+                                  setEditingProduct((prev) => (prev ? { ...prev, image: dataUrl } : null))
+                                )
+                              }
+                            />
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end space-x-2 pt-3 border-t border-[#2E3B2B]">
+                        <button
+                          type="button"
+                          onClick={() => setEditingProduct(null)}
+                          className="bg-gray-700 text-white px-4 py-2 rounded-xl text-xs"
+                        >
+                          Batal
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateProduct(editingProduct);
+                            setEditingProduct(null);
+                          }}
+                          className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold px-5 py-2 rounded-xl text-xs border border-[#FFD000]/30"
+                        >
+                          Simpan Perubahan
+                        </button>
+                      </div>
                     </div>
                   </div>
+                )}
+              </div>
+            )}
 
-                  <div className="flex justify-end space-x-2 pt-2">
+            {/* TAB 6: OUR STORY & BRAND TECHNOLOGY */}
+            {activeTab === 'ourStory' && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Type className="w-5 h-5 text-[#239B4C]" />
+                    <span>Konten Section "Our Story & Cleanza Quality"</span>
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Judul Story
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsConfig.ourStory.headline}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({
+                            ...prev,
+                            ourStory: { ...prev.ourStory, headline: val }
+                          }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Subjudul / Penjelasan Keunggulan Cleanza
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={cmsConfig.ourStory.subheadline}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({
+                            ...prev,
+                            ourStory: { ...prev.ourStory, subheadline: val }
+                          }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                      />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-4 bg-[#141A13] p-4 rounded-xl border border-[#2E3B2B]">
+                      <div className="w-28 h-20 rounded-xl overflow-hidden bg-black shrink-0 relative">
+                        <img src={cmsConfig.ourStory.mediaUrl} alt="Our Story" className="w-full h-full object-cover" />
+                      </div>
+
+                      <div className="flex-1 w-full space-y-2">
+                        <p className="text-xs font-semibold text-gray-300">Upload Gambar Story dari Device:</p>
+                        <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white px-4 py-2 rounded-xl text-xs font-bold transition inline-flex items-center space-x-2">
+                          <Upload className="w-4 h-4 text-[#FFD000]" />
+                          <span>Pilih Gambar dari Device</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleFileUpload(e, (dataUrl) =>
+                                updateCMSConfig((prev) => ({
+                                  ...prev,
+                                  ourStory: { ...prev.ourStory, mediaUrl: dataUrl }
+                                }))
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 7: KABAR & TIPS NEWS ARTICLES */}
+            {activeTab === 'news' && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="bg-[#192118] p-5 rounded-2xl border border-[#2E3B2B] flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base font-bold text-white flex items-center gap-2">
+                      <Newspaper className="w-5 h-5 text-[#FFD000]" />
+                      <span>Manajemen Artikel Kabar & Tips Cleanza ({news.length})</span>
+                    </h3>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Tambah, edit judul, ringkasan, atau upload gambar artikel tips kebersihan dapur.
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => setIsAddingNewNews(true)}
+                    className="bg-[#239B4C] hover:bg-[#1C843F] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg transition flex items-center space-x-2 border border-[#FFD000]/30 shrink-0"
+                  >
+                    <Plus className="w-4 h-4 text-[#FFD000]" />
+                    <span>Tambah Artikel Baru</span>
+                  </button>
+                </div>
+
+                {/* Form to Add New Article */}
+                {isAddingNewNews && (
+                  <form
+                    onSubmit={handleSaveNewNews}
+                    className="bg-[#192118] p-6 rounded-2xl border-2 border-[#239B4C] space-y-4 animate-in zoom-in-95 shadow-xl"
+                  >
+                    <div className="flex items-center justify-between border-b border-[#2E3B2B] pb-3">
+                      <h4 className="font-bold text-sm text-[#FFD000] uppercase tracking-wider">
+                        Formulir Artikel Baru
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => setIsAddingNewNews(false)}
+                        className="text-xs text-gray-400 hover:text-white"
+                      >
+                        Batal
+                      </button>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">
+                        Judul Artikel
+                      </label>
+                      <input
+                        type="text"
+                        value={newNews.title}
+                        onChange={(e) => setNewNews({ ...newNews, title: e.target.value })}
+                        required
+                        placeholder="Contoh: Tips Efektif Hilangkan Lemak Pada Wadah Plastik"
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1">Kategori</label>
+                        <input
+                          type="text"
+                          value={newNews.category}
+                          onChange={(e) => setNewNews({ ...newNews, category: e.target.value })}
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1">Upload Gambar Sampul</label>
+                        <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white w-full py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2">
+                          <Upload className="w-3.5 h-3.5 text-[#FFD000]" />
+                          <span>Pilih Gambar dari Device</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleFileUpload(e, (dataUrl) =>
+                                setNewNews((prev) => ({ ...prev, image: dataUrl }))
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">Ringkasan / Excerpt</label>
+                      <textarea
+                        rows={2}
+                        value={newNews.excerpt}
+                        onChange={(e) => setNewNews({ ...newNews, excerpt: e.target.value })}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                      />
+                    </div>
+
+                    <div className="flex justify-end pt-2">
+                      <button
+                        type="submit"
+                        className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold text-xs uppercase px-6 py-2.5 rounded-xl shadow-md border border-[#FFD000]/30"
+                      >
+                        Simpan Artikel
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {/* News Articles Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {news.map((item) => {
+                    const currentImg = cmsConfig.newsImages?.[item.id] || item.image;
+                    return (
+                      <div key={item.id} className="bg-[#192118] p-4 rounded-xl border border-[#2E3B2B] flex flex-col justify-between space-y-3">
+                        <div className="space-y-2">
+                          <div className="aspect-video w-full rounded-lg overflow-hidden bg-black relative border border-[#2E3B2B]">
+                            <img src={currentImg} alt={item.title} className="w-full h-full object-cover" />
+                          </div>
+                          <span className="text-[10px] font-bold text-[#FFD000] uppercase block">{item.category} • {item.date}</span>
+                          <h4 className="font-bold text-xs text-white line-clamp-2">{item.title}</h4>
+                        </div>
+
+                        <div className="space-y-2 pt-2 border-t border-[#2E3B2B]">
+                          <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white w-full py-2 px-3 rounded-xl text-[11px] font-bold transition flex items-center justify-center space-x-1.5">
+                            <Upload className="w-3.5 h-3.5 text-[#FFD000]" />
+                            <span>Upload Gambar Artikel</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) =>
+                                handleFileUpload(e, (dataUrl) =>
+                                  handleNewsImgUpload(item.id, dataUrl)
+                                )
+                              }
+                            />
+                          </label>
+
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setEditingNews(item)}
+                              className="flex-1 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1"
+                            >
+                              <Edit className="w-3.5 h-3.5" />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              onClick={() => deleteNewsArticle(item.id)}
+                              className="py-1.5 px-3 bg-red-900/40 hover:bg-red-800 text-red-200 rounded-lg text-xs font-semibold transition"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Edit News Article Modal */}
+                {editingNews && (
+                  <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-[#192118] border-2 border-[#239B4C] p-6 rounded-2xl max-w-lg w-full space-y-4">
+                      <div className="flex items-center justify-between border-b border-[#2E3B2B] pb-3">
+                        <h4 className="font-bold text-sm text-[#FFD000] uppercase tracking-wider">
+                          Edit Artikel Kebersihan
+                        </h4>
+                        <button
+                          onClick={() => setEditingNews(null)}
+                          className="text-xs text-gray-400 hover:text-white"
+                        >
+                          Tutup
+                        </button>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-300 mb-1">Judul Artikel</label>
+                        <input
+                          type="text"
+                          value={editingNews.title}
+                          onChange={(e) => setEditingNews({ ...editingNews, title: e.target.value })}
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-300 mb-1">Ringkasan</label>
+                        <textarea
+                          rows={2}
+                          value={editingNews.excerpt}
+                          onChange={(e) => setEditingNews({ ...editingNews, excerpt: e.target.value })}
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                        />
+                      </div>
+
+                      <div className="flex justify-end space-x-2 pt-2">
+                        <button
+                          type="button"
+                          onClick={() => setEditingNews(null)}
+                          className="bg-gray-700 text-white px-4 py-2 rounded-xl text-xs"
+                        >
+                          Batal
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateNewsArticle(editingNews);
+                            setEditingNews(null);
+                          }}
+                          className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold px-5 py-2 rounded-xl text-xs"
+                        >
+                          Simpan
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB 8: CONTACT & FOOTER */}
+            {activeTab === 'contact' && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Phone className="w-5 h-5 text-[#239B4C]" />
+                    <span>Informasi Kontak & Layanan Pelanggan Footer</span>
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Nomor Call Center
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsConfig.contact.callCenter}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({
+                            ...prev,
+                            contact: { ...prev.contact, callCenter: val }
+                          }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Alamat Email Layanan
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsConfig.contact.email}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({
+                            ...prev,
+                            contact: { ...prev.contact, email: val }
+                          }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                        Nomor Official WhatsApp
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsConfig.contact.whatsapp}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({
+                            ...prev,
+                            contact: { ...prev.contact, whatsapp: val }
+                          }));
+                        }}
+                        className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 9: LAYOUT & VISIBILITY */}
+            {activeTab === 'sections' && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Layout className="w-5 h-5 text-[#239B4C]" />
+                    <span>Visibilitas & Toggle Section Landing Page</span>
+                  </h3>
+                  <p className="text-xs text-gray-400">
+                    Aktifkan atau sembunyikan section tertentu dari beranda website secara instan.
+                  </p>
+
+                  <div className="space-y-3">
+                    {cmsConfig.sections.map((sec) => (
+                      <div
+                        key={sec.id}
+                        className="flex items-center justify-between p-4 rounded-xl bg-[#141A13] border border-[#2E3B2B] hover:border-[#239B4C] transition"
+                      >
+                        <div>
+                          <h4 className="font-bold text-xs text-white">{sec.name}</h4>
+                          <p className="text-[10px] text-gray-400">Section ID: #{sec.id}</p>
+                        </div>
+
+                        <button
+                          onClick={() => toggleSection(sec.id)}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 ${
+                            sec.enabled
+                              ? 'bg-[#239B4C] text-[#FFD000] border border-[#FFD000]/30 shadow-md'
+                              : 'bg-gray-800 text-gray-500'
+                          }`}
+                        >
+                          <Check className={`w-3.5 h-3.5 ${sec.enabled ? 'opacity-100' : 'opacity-0'}`} />
+                          <span>{sec.enabled ? 'TAMPIL (AKTIF)' : 'DISEMBUNYIKAN'}</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Default Catalog Layout Mode */}
+                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-3">
+                  <h3 className="text-base font-bold text-white">Default Format Tampilan Katalog Produk</h3>
+                  <div className="flex space-x-3">
                     <button
-                      type="button"
-                      onClick={() => setEditingProduct(null)}
-                      className="bg-gray-700 text-white px-4 py-2 rounded text-xs"
+                      onClick={() => updateCMSConfig((prev) => ({ ...prev, layoutMode: 'grid' }))}
+                      className={`px-5 py-2.5 rounded-xl text-xs font-bold border transition ${
+                        cmsConfig.layoutMode === 'grid'
+                          ? 'bg-[#239B4C] text-[#FFD000] border-[#FFD000]'
+                          : 'bg-[#141A13] text-gray-400 border-gray-700'
+                      }`}
                     >
-                      Batal
+                      Grid Layout Mode
                     </button>
                     <button
-                      type="button"
-                      onClick={() => {
-                        updateProduct(editingProduct);
-                        setEditingProduct(null);
-                      }}
-                      className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold px-5 py-2 rounded text-xs border border-[#FFD000]/30"
+                      onClick={() => updateCMSConfig((prev) => ({ ...prev, layoutMode: 'list' }))}
+                      className={`px-5 py-2.5 rounded-xl text-xs font-bold border transition ${
+                        cmsConfig.layoutMode === 'list'
+                          ? 'bg-[#239B4C] text-[#FFD000] border-[#FFD000]'
+                          : 'bg-[#141A13] text-gray-400 border-gray-700'
+                      }`}
                     >
-                      Simpan
+                      List Layout Mode
                     </button>
                   </div>
                 </div>
               </div>
             )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

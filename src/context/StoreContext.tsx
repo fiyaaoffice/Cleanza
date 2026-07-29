@@ -23,6 +23,9 @@ interface StoreContextType {
   adminClicks: number;
   
   // Actions
+  addNewsArticle: (article: NewsArticle) => void;
+  updateNewsArticle: (article: NewsArticle) => void;
+  deleteNewsArticle: (id: string) => void;
   navigateTo: (page: PageView, productSlug?: string) => void;
   setSelectedCategory: (cat: string) => void;
   updateCMSConfig: (updater: (prev: CMSConfig) => CMSConfig) => void;
@@ -77,7 +80,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   });
 
-  const [news] = useState<NewsArticle[]>(INITIAL_NEWS);
+  const [news, setNews] = useState<NewsArticle[]>(() => {
+    try {
+      const saved = localStorage.getItem('cleanza_news');
+      return saved ? JSON.parse(saved) : INITIAL_NEWS;
+    } catch {
+      return INITIAL_NEWS;
+    }
+  });
   const [activePage, setActivePage] = useState<PageView>('home');
   const [selectedProductSlug, setSelectedProductSlug] = useState<string>('cleanza-cairan-pencuci-piring-jeruk-nipis-450ml');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -264,6 +274,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     showToast('Produk berhasil dihapus!');
   };
 
+  const addNewsArticle = (article: NewsArticle) => {
+    setNews((prev) => [article, ...prev]);
+    showToast(`Artikel "${article.title}" berhasil ditambahkan!`);
+  };
+
+  const updateNewsArticle = (article: NewsArticle) => {
+    setNews((prev) => prev.map((item) => (item.id === article.id ? article : item)));
+    showToast(`Artikel "${article.title}" berhasil diperbarui!`);
+  };
+
+  const deleteNewsArticle = (id: string) => {
+    setNews((prev) => prev.filter((item) => item.id !== id));
+    showToast('Artikel berhasil dihapus!');
+  };
+
   const addToCart = (product: Product, quantity = 1) => {
     setCart((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
@@ -339,6 +364,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updateProduct,
         addProduct,
         deleteProduct,
+        addNewsArticle,
+        updateNewsArticle,
+        deleteNewsArticle,
         addToCart,
         removeFromCart,
         updateCartQuantity,
