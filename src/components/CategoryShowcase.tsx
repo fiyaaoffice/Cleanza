@@ -3,6 +3,7 @@ import { useStore } from '../context/StoreContext';
 import { ChevronRight, ArrowUpRight } from 'lucide-react';
 
 interface CategoryItem {
+  id?: string;
   name: string;
   titleIndo: string;
   image: string;
@@ -12,26 +13,39 @@ interface CategoryItem {
 export const CategoryShowcase: React.FC = () => {
   const { navigateTo, setSelectedCategory, language, cmsConfig } = useStore();
 
-  const categories: CategoryItem[] = [
+  const defaultCategories: CategoryItem[] = [
     {
+      id: 'cat-1',
       name: 'Kemasan Rumah Tangga',
-      titleIndo: 'Refill 450ml & Botol 1000ml',
+      titleIndo: 'Refill 450ml & Botol 1000ml - Solusi praktis cuci piring harian keluarga dengan formula ekstrak jeruk nipis alami yang lembut di tangan.',
       image: cmsConfig.categoryImages?.['Kemasan Rumah Tangga'] || 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=600',
       count: '2 Produk'
     },
     {
+      id: 'cat-2',
       name: 'Cleanza Profesional',
-      titleIndo: 'Jeriken 5000ml (5 Liter)',
+      titleIndo: 'Jeriken 5000ml (5 Liter) - Pilihan hemat resto & katering berdaya angkat lemak pekat instan untuk usaha kuliner.',
       image: cmsConfig.categoryImages?.['Cleanza Profesional'] || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600',
       count: '1 Produk'
     },
     {
+      id: 'cat-3',
       name: 'Varian Lemon',
-      titleIndo: 'Ekstra Citrus Lemon (Coming Soon)',
+      titleIndo: 'Ekstra Citrus Lemon - Keharuman lemon segar mediterania pembasmi bau amis ikan & minyak membandel.',
       image: cmsConfig.categoryImages?.['Varian Lemon'] || 'https://images.unsplash.com/photo-1534531141161-e41d133a4be3?auto=format&fit=crop&q=80&w=600',
       count: 'Coming Soon'
     }
   ];
+
+  const categoriesToDisplay: CategoryItem[] = (cmsConfig.categoryShowcase?.items && cmsConfig.categoryShowcase.items.length > 0)
+    ? cmsConfig.categoryShowcase.items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        titleIndo: item.titleIndo,
+        image: cmsConfig.categoryImages?.[item.name] || item.image,
+        count: item.count || 'Produk Cleanza'
+      }))
+    : defaultCategories;
 
   const handleCategorySelect = (catName: string) => {
     setSelectedCategory(catName);
@@ -69,13 +83,22 @@ export const CategoryShowcase: React.FC = () => {
           </button>
         </div>
 
-        {/* Category Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {categories.map((cat) => (
+        {/* Mobile Swipe Hint */}
+        <div className="flex items-center justify-between md:hidden mb-3 text-[11px] text-gray-500 font-medium">
+          <span className="flex items-center space-x-1 text-[#239B4C]">
+            <span>Swipe ke samping untuk pilihan kemasan</span>
+            <span>➔</span>
+          </span>
+          <span>{categoriesToDisplay.length} Varian</span>
+        </div>
+
+        {/* Category Grid / Mobile Horizontal Swipe Carousel */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 md:overflow-visible md:pb-0 md:grid md:grid-cols-3 md:gap-6 scrollbar-none">
+          {categoriesToDisplay.map((cat, idx) => (
             <div
-              key={cat.name}
+              key={cat.id || cat.name || idx}
               onClick={() => handleCategorySelect(cat.name)}
-              className="group cursor-pointer bg-white rounded-2xl p-5 border border-[#E5E8E2] hover:border-[#239B4C] hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              className="w-[82vw] max-w-[340px] shrink-0 snap-start md:w-auto md:max-w-none md:shrink group cursor-pointer bg-white rounded-2xl p-5 border border-[#E5E8E2] hover:border-[#239B4C] hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
             >
               <div className="aspect-square w-full rounded-xl overflow-hidden bg-[#F2F4F0] mb-4 relative">
                 <img
@@ -93,7 +116,7 @@ export const CategoryShowcase: React.FC = () => {
                   <span>{cat.name}</span>
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition text-gray-400 group-hover:text-[#239B4C]" />
                 </div>
-                <p className="text-xs text-gray-500 mt-1 font-light">
+                <p className="text-xs text-gray-500 mt-1 font-light leading-relaxed">
                   {cat.titleIndo}
                 </p>
               </div>

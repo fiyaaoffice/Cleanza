@@ -46,6 +46,14 @@ export interface CMSSectionConfig {
   order: number;
 }
 
+export interface CategoryShowcaseItem {
+  id: string;
+  name: string;
+  titleIndo: string;
+  image: string;
+  count?: string;
+}
+
 export interface CMSConfig {
   layoutMode: 'grid' | 'list';
   logoUrl?: string;
@@ -64,6 +72,7 @@ export interface CMSConfig {
   categoryShowcase?: {
     headline: string;
     description: string;
+    items?: CategoryShowcaseItem[];
   };
   popularSection?: {
     headline: string;

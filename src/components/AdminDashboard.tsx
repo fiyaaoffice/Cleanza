@@ -1165,61 +1165,296 @@ export const AdminDashboard: React.FC = () => {
               </div>
             )}
 
-            {/* TAB 4: CATEGORY SHOWCASE (1:1 CANVAS) */}
+            {/* TAB 4: CATEGORY SHOWCASE MANAGEMENT */}
             {activeTab === 'categories' && (
               <div className="space-y-6 animate-in fade-in duration-300">
-                <div className="bg-[#192118] rounded-2xl p-6 border border-[#2E3B2B] space-y-4">
-                  <div className="flex items-center justify-between">
+                <div className="bg-[#192118] rounded-2xl p-6 border-2 border-[#239B4C]/50 shadow-xl space-y-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                       <h3 className="text-base font-bold text-white flex items-center gap-2">
                         <ImageIcon className="w-5 h-5 text-[#239B4C]" />
-                        <span>Pilihan Kemasan Cleanza Pencuci Piring (Gambar Square 1:1)</span>
+                        <span>Pilihan Kemasan Cleanza Pencuci Piring (Custom Deskripsi & Gambar)</span>
                       </h3>
-                      <p className="text-xs text-gray-400 mt-1">
-                        Atur gambar sampul rasio 1:1 untuk setiap kategori produk Cleanza.
+                      <p className="text-xs text-gray-300 mt-1 leading-relaxed">
+                        Kelola judul section, gambar sampul (rasio 1:1), serta tambah dan ubah deskripsi penjelasan untuk setiap varian kemasan pencuci piring.
                       </p>
                     </div>
-                    <span className="bg-[#FFD000] text-black text-[10px] font-black px-2.5 py-1 rounded-full uppercase">
-                      Kanvas 1:1
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newCatItem = {
+                          id: `cat-${Date.now()}`,
+                          name: 'Varian Kemasan Baru',
+                          titleIndo: 'Deskripsi penjelasan varian kemasan Cleanza baru...',
+                          image: 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=600',
+                          count: 'Produk Baru'
+                        };
+                        const currentItems = cmsConfig.categoryShowcase?.items && cmsConfig.categoryShowcase.items.length > 0
+                          ? cmsConfig.categoryShowcase.items
+                          : [
+                              {
+                                id: 'cat-1',
+                                name: 'Kemasan Rumah Tangga',
+                                titleIndo: 'Refill 450ml & Botol 1000ml - Solusi praktis cuci piring harian keluarga dengan formula ekstrak jeruk nipis alami yang lembut di tangan.',
+                                image: cmsConfig.categoryImages?.['Kemasan Rumah Tangga'] || 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=600',
+                                count: '2 Produk'
+                              },
+                              {
+                                id: 'cat-2',
+                                name: 'Cleanza Profesional',
+                                titleIndo: 'Jeriken 5000ml (5 Liter) - Pilihan hemat resto & katering berdaya angkat lemak pekat instan untuk usaha kuliner.',
+                                image: cmsConfig.categoryImages?.['Cleanza Profesional'] || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600',
+                                count: '1 Produk'
+                              },
+                              {
+                                id: 'cat-3',
+                                name: 'Varian Lemon',
+                                titleIndo: 'Ekstra Citrus Lemon - Keharuman lemon segar mediterania pembasmi bau amis ikan & minyak membandel.',
+                                image: cmsConfig.categoryImages?.['Varian Lemon'] || 'https://images.unsplash.com/photo-1534531141161-e41d133a4be3?auto=format&fit=crop&q=80&w=600',
+                                count: 'Coming Soon'
+                              }
+                            ];
+                        updateCMSConfig((prev) => ({
+                          ...prev,
+                          categoryShowcase: {
+                            headline: prev.categoryShowcase?.headline || 'Pilihan Kemasan Cleanza Pencuci Piring',
+                            description: prev.categoryShowcase?.description || 'Tersedia ukuran konsumsi harian keluarga hingga ukuran ekonomis 5000ml untuk usaha kuliner.',
+                            items: [...currentItems, newCatItem]
+                          }
+                        }));
+                      }}
+                      className="bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg transition flex items-center space-x-2 shrink-0 border border-[#FFD000]/30"
+                    >
+                      <Plus className="w-4 h-4 text-[#FFD000]" />
+                      <span>+ Tambah Kemasan Baru</span>
+                    </button>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                    {[
-                      { key: 'Kemasan Rumah Tangga', label: 'Kemasan Rumah Tangga (450ml / 1000ml)', def: 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=600' },
-                      { key: 'Cleanza Profesional', label: 'Cleanza Profesional (Jerigen 5L)', def: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600' },
-                      { key: 'Varian Lemon', label: 'Varian Lemon (Baru)', def: 'https://images.unsplash.com/photo-1534531141161-e41d133a4be3?auto=format&fit=crop&q=80&w=600' }
-                    ].map((cat) => {
-                      const currentImg = cmsConfig.categoryImages?.[cat.key] || cat.def;
-                      return (
-                        <div key={cat.key} className="bg-[#141A13] p-4 rounded-xl border border-[#2E3B2B] flex flex-col justify-between space-y-3">
-                          <div className="aspect-square w-full rounded-xl overflow-hidden bg-black relative border border-[#2E3B2B]">
-                            <img src={currentImg} alt={cat.key} className="w-full h-full object-cover" />
-                            <span className="absolute bottom-2 left-2 bg-black/80 text-white text-[9px] font-bold px-2 py-0.5 rounded">
-                              Rasio 1:1
-                            </span>
-                          </div>
-                          <div>
-                            <p className="text-xs font-bold text-white mb-2">{cat.label}</p>
-                            <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white w-full py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2">
-                              <Upload className="w-3.5 h-3.5 text-[#FFD000]" />
-                              <span>Upload Gambar 1:1</span>
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(e) =>
-                                  handleFileUpload(e, (dataUrl) =>
-                                    handleCategoryImgUpload(cat.key, dataUrl)
-                                  )
-                                }
-                              />
-                            </label>
-                          </div>
-                        </div>
-                      );
-                    })}
+                  {/* Section Title & Subtitle */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#141A13] p-4 rounded-xl border border-[#2E3B2B]">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">
+                        Judul Utama Section Kemasan
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsConfig.categoryShowcase?.headline || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({
+                            ...prev,
+                            categoryShowcase: {
+                              ...(prev.categoryShowcase || { headline: '', description: '' }),
+                              headline: val
+                            }
+                          }));
+                        }}
+                        className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
+                        placeholder="Pilihan Kemasan Cleanza Pencuci Piring"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-300 mb-1">
+                        Deskripsi Singkat Section Kemasan
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsConfig.categoryShowcase?.description || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          updateCMSConfig((prev) => ({
+                            ...prev,
+                            categoryShowcase: {
+                              ...(prev.categoryShowcase || { headline: '', description: '' }),
+                              description: val
+                            }
+                          }));
+                        }}
+                        className="w-full bg-[#1D241B] border border-[#3E4E3B] rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#239B4C]"
+                        placeholder="Tersedia ukuran konsumsi harian keluarga hingga ukuran ekonomis 5000ml..."
+                      />
+                    </div>
                   </div>
+                </div>
+
+                {/* Items Grid */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-bold text-[#FFD000] uppercase tracking-wider flex items-center justify-between border-b border-[#2E3B2B] pb-2">
+                    <span>Daftar Kartu Kemasan ({ (cmsConfig.categoryShowcase?.items && cmsConfig.categoryShowcase.items.length > 0) ? cmsConfig.categoryShowcase.items.length : 3 } Kemasan)</span>
+                    <span className="text-xs text-gray-400 font-normal">Edit gambar, nama, dan deskripsi penjelasan</span>
+                  </h4>
+
+                  {(() => {
+                    const currentItems = (cmsConfig.categoryShowcase?.items && cmsConfig.categoryShowcase.items.length > 0)
+                      ? cmsConfig.categoryShowcase.items
+                      : [
+                          {
+                            id: 'cat-1',
+                            name: 'Kemasan Rumah Tangga',
+                            titleIndo: 'Refill 450ml & Botol 1000ml - Solusi praktis cuci piring harian keluarga dengan formula ekstrak jeruk nipis alami yang lembut di tangan.',
+                            image: cmsConfig.categoryImages?.['Kemasan Rumah Tangga'] || 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=600',
+                            count: '2 Produk'
+                          },
+                          {
+                            id: 'cat-2',
+                            name: 'Cleanza Profesional',
+                            titleIndo: 'Jeriken 5000ml (5 Liter) - Pilihan hemat resto & katering berdaya angkat lemak pekat instan untuk usaha kuliner.',
+                            image: cmsConfig.categoryImages?.['Cleanza Profesional'] || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600',
+                            count: '1 Produk'
+                          },
+                          {
+                            id: 'cat-3',
+                            name: 'Varian Lemon',
+                            titleIndo: 'Ekstra Citrus Lemon - Keharuman lemon segar mediterania pembasmi bau amis ikan & minyak membandel.',
+                            image: cmsConfig.categoryImages?.['Varian Lemon'] || 'https://images.unsplash.com/photo-1534531141161-e41d133a4be3?auto=format&fit=crop&q=80&w=600',
+                            count: 'Coming Soon'
+                          }
+                        ];
+
+                    return (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {currentItems.map((item, index) => (
+                          <div
+                            key={item.id || index}
+                            className="bg-[#192118] p-5 rounded-2xl border border-[#2E3B2B] hover:border-[#239B4C] transition flex flex-col justify-between space-y-4 relative group"
+                          >
+                            {/* Top row image & delete button */}
+                            <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-black border border-[#2E3B2B]">
+                              <img
+                                src={cmsConfig.categoryImages?.[item.name] || item.image}
+                                alt={item.name}
+                                className="w-full h-full object-cover"
+                              />
+                              <span className="absolute top-2 left-2 bg-black/80 text-[#FFD000] text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                {item.count || 'Produk'}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = currentItems.filter((_, i) => i !== index);
+                                  updateCMSConfig((prev) => ({
+                                    ...prev,
+                                    categoryShowcase: {
+                                      headline: prev.categoryShowcase?.headline || 'Pilihan Kemasan Cleanza Pencuci Piring',
+                                      description: prev.categoryShowcase?.description || 'Tersedia ukuran konsumsi harian keluarga...',
+                                      items: updated
+                                    }
+                                  }));
+                                }}
+                                className="absolute top-2 right-2 bg-red-600/90 hover:bg-red-700 text-white p-1.5 rounded-lg text-xs transition"
+                                title="Hapus Kemasan Ini"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+
+                            {/* Inputs */}
+                            <div className="space-y-3">
+                              <div>
+                                <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                                  Nama Kemasan / Varian
+                                </label>
+                                <input
+                                  type="text"
+                                  value={item.name}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    const updated = [...currentItems];
+                                    updated[index] = { ...updated[index], name: val };
+                                    updateCMSConfig((prev) => ({
+                                      ...prev,
+                                      categoryShowcase: {
+                                        headline: prev.categoryShowcase?.headline || 'Pilihan Kemasan Cleanza Pencuci Piring',
+                                        description: prev.categoryShowcase?.description || '',
+                                        items: updated
+                                      }
+                                    }));
+                                  }}
+                                  className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                                  Deskripsi Penjelas Kemasan (Bisa Dicustom & Ditambah)
+                                </label>
+                                <textarea
+                                  rows={3}
+                                  value={item.titleIndo}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    const updated = [...currentItems];
+                                    updated[index] = { ...updated[index], titleIndo: val };
+                                    updateCMSConfig((prev) => ({
+                                      ...prev,
+                                      categoryShowcase: {
+                                        headline: prev.categoryShowcase?.headline || 'Pilihan Kemasan Cleanza Pencuci Piring',
+                                        description: prev.categoryShowcase?.description || '',
+                                        items: updated
+                                      }
+                                    }));
+                                  }}
+                                  className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                                  placeholder="Tulis deskripsi rinci kemasan produk di sini..."
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                                  Badge Label Jumlah (misal: "2 Produk", "Jeriken 5L")
+                                </label>
+                                <input
+                                  type="text"
+                                  value={item.count || ''}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    const updated = [...currentItems];
+                                    updated[index] = { ...updated[index], count: val };
+                                    updateCMSConfig((prev) => ({
+                                      ...prev,
+                                      categoryShowcase: {
+                                        headline: prev.categoryShowcase?.headline || 'Pilihan Kemasan Cleanza Pencuci Piring',
+                                        description: prev.categoryShowcase?.description || '',
+                                        items: updated
+                                      }
+                                    }));
+                                  }}
+                                  className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="cursor-pointer bg-[#239B4C] hover:bg-[#165B2D] text-white w-full py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2">
+                                  <Upload className="w-4 h-4 text-[#FFD000]" />
+                                  <span>Upload Gambar 1:1</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) =>
+                                      handleFileUpload(e, (dataUrl) => {
+                                        handleCategoryImgUpload(item.name, dataUrl);
+                                        const updated = [...currentItems];
+                                        updated[index] = { ...updated[index], image: dataUrl };
+                                        updateCMSConfig((prev) => ({
+                                          ...prev,
+                                          categoryShowcase: {
+                                            headline: prev.categoryShowcase?.headline || 'Pilihan Kemasan Cleanza Pencuci Piring',
+                                            description: prev.categoryShowcase?.description || '',
+                                            items: updated
+                                          }
+                                        }));
+                                      })
+                                    }
+                                  />
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             )}

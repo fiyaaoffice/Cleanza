@@ -216,7 +216,30 @@ export const DEFAULT_CMS_CONFIG: CMSConfig = {
   },
   categoryShowcase: {
     headline: 'Pilihan Kemasan Cleanza Pencuci Piring',
-    description: 'Tersedia ukuran konsumsi harian keluarga hingga ukuran ekonomis 5000ml untuk usaha kuliner.'
+    description: 'Tersedia ukuran konsumsi harian keluarga hingga ukuran ekonomis 5000ml untuk usaha kuliner.',
+    items: [
+      {
+        id: 'cat-1',
+        name: 'Kemasan Rumah Tangga',
+        titleIndo: 'Refill 450ml & Botol 1000ml - Solusi praktis cuci piring harian keluarga dengan formula ekstrak jeruk nipis alami yang lembut di tangan.',
+        image: 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=600',
+        count: '2 Produk'
+      },
+      {
+        id: 'cat-2',
+        name: 'Cleanza Profesional',
+        titleIndo: 'Jeriken 5000ml (5 Liter) - Pilihan hemat resto & katering berdaya angkat lemak pekat instan untuk usaha kuliner.',
+        image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=600',
+        count: '1 Produk'
+      },
+      {
+        id: 'cat-3',
+        name: 'Varian Lemon',
+        titleIndo: 'Ekstra Citrus Lemon - Keharuman lemon segar mediterania pembasmi bau amis ikan & minyak membandel.',
+        image: 'https://images.unsplash.com/photo-1534531141161-e41d133a4be3?auto=format&fit=crop&q=80&w=600',
+        count: 'Coming Soon'
+      }
+    ]
   },
   popularSection: {
     headline: 'Produk Unggulan Cleanza',
