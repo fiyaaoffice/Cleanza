@@ -3,6 +3,7 @@ import { Product, CartItem, CMSConfig, PageView, NewsArticle } from '../types';
 import { INITIAL_PRODUCTS, INITIAL_NEWS, DEFAULT_CMS_CONFIG } from '../data/initialData';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc } from 'firebase/firestore';
+import { safeGetItem, safeSetItem } from '../utils/safeStorage';
 
 interface StoreContextType {
   products: Product[];
@@ -53,41 +54,21 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Load initial state from LocalStorage if present
-  const [products, setProducts] = useState<Product[]>(() => {
-    try {
-      const saved = localStorage.getItem('cleanza_products');
-      return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-    } catch {
-      return INITIAL_PRODUCTS;
-    }
-  });
+  const [products, setProducts] = useState<Product[]>(() =>
+    safeGetItem('cleanza_products', INITIAL_PRODUCTS)
+  );
 
-  const [cmsConfig, setCmsConfig] = useState<CMSConfig>(() => {
-    try {
-      const saved = localStorage.getItem('cleanza_cms_config');
-      return saved ? JSON.parse(saved) : DEFAULT_CMS_CONFIG;
-    } catch {
-      return DEFAULT_CMS_CONFIG;
-    }
-  });
+  const [cmsConfig, setCmsConfig] = useState<CMSConfig>(() =>
+    safeGetItem('cleanza_cms_config', DEFAULT_CMS_CONFIG)
+  );
 
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    try {
-      const saved = localStorage.getItem('cleanza_cart');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [cart, setCart] = useState<CartItem[]>(() =>
+    safeGetItem('cleanza_cart', [])
+  );
 
-  const [news, setNews] = useState<NewsArticle[]>(() => {
-    try {
-      const saved = localStorage.getItem('cleanza_news');
-      return saved ? JSON.parse(saved) : INITIAL_NEWS;
-    } catch {
-      return INITIAL_NEWS;
-    }
-  });
+  const [news, setNews] = useState<NewsArticle[]>(() =>
+    safeGetItem('cleanza_news', INITIAL_NEWS)
+  );
   const [activePage, setActivePage] = useState<PageView>('home');
   const [selectedProductSlug, setSelectedProductSlug] = useState<string>('cleanza-cairan-pencuci-piring-jeruk-nipis-450ml');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -152,28 +133,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('cleanza_products', JSON.stringify(products));
-    } catch (e) {
-      console.error('Failed to save products to localStorage', e);
-    }
+    safeSetItem('cleanza_products', products);
   }, [products]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('cleanza_cms_config', JSON.stringify(cmsConfig));
-    } catch (e) {
-      console.error('Failed to save CMS config to localStorage', e);
-    }
+    safeSetItem('cleanza_cms_config', cmsConfig);
   }, [cmsConfig]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('cleanza_cart', JSON.stringify(cart));
-    } catch (e) {
-      console.error('Failed to save cart to localStorage', e);
-    }
+    safeSetItem('cleanza_cart', cart);
   }, [cart]);
+
+  useEffect(() => {
+    safeSetItem('cleanza_news', news);
+  }, [news]);
 
   // Toast notification helper
   const showToast = (msg: string) => {

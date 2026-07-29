@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { Product, ProductBadge, ProductCategory, NewsArticle } from '../types';
 import { DEFAULT_CLEANZA_LOGO } from '../data/initialData';
+import { compressImageFile } from '../utils/imageCompressor';
 import {
   Layout,
   Type,
@@ -90,21 +91,27 @@ export const AdminDashboard: React.FC = () => {
     content: 'Tuliskan deskripsi lengkap dan panduan di sini...'
   });
 
-  // Helper for file upload from device
-  const handleFileUpload = (
+  // Helper for file upload from device with automatic compression
+  const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
     callback: (dataUrl: string) => void
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        if (result) {
-          callback(result);
+      try {
+        const compressed = await compressImageFile(file, 900, 900, 0.75);
+        if (compressed) {
+          callback(compressed);
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.error('File compression error:', err);
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const result = event.target?.result as string;
+          if (result) callback(result);
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
 
