@@ -46,6 +46,7 @@ interface StoreContextType {
   verifyAdminPin: (pin: string) => boolean;
   handleLogoClickAdmin: () => void;
   resetCMSAndProducts: () => void;
+  publishAllToCloud: () => Promise<boolean>;
   showToast: (msg: string) => void;
   lockAdmin: () => void;
 }
@@ -374,6 +375,33 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     showToast('Data CMS & Katalog Cleanza telah direset!');
   };
 
+  const publishAllToCloud = async (): Promise<boolean> => {
+    try {
+      showToast('Sedang mempublikasikan data ke Cloud Firestore...');
+      
+      // 1. Publish CMS Config
+      await setDoc(doc(db, 'cmsConfig', 'defaultConfig'), cmsConfig);
+      
+      // 2. Publish Products
+      for (const prod of products) {
+        await setDoc(doc(db, 'products', prod.id), prod);
+      }
+      
+      // 3. Publish News Articles
+      for (const article of news) {
+        await setDoc(doc(db, 'news', article.id), article);
+      }
+
+      showToast('✅ Berhasil Mempublikasikan ke Firestore Cloud! Semua Perangkat Lain Dapat Melihat Perubahan.');
+      return true;
+    } catch (error: any) {
+      console.error('Failed to sync to cloud:', error);
+      const errMsg = error?.message || 'Gagal menyimpan ke cloud';
+      showToast(`⚠️ Gagal Sync ke Cloud: ${errMsg}`);
+      return false;
+    }
+  };
+
   return (
     <StoreContext.Provider
       value={{
@@ -415,6 +443,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         verifyAdminPin,
         handleLogoClickAdmin,
         resetCMSAndProducts,
+        publishAllToCloud,
         showToast,
         lockAdmin,
       }}

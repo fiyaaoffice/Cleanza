@@ -46,8 +46,11 @@ export const AdminDashboard: React.FC = () => {
     deleteNewsArticle,
     navigateTo,
     resetCMSAndProducts,
+    publishAllToCloud,
     lockAdmin
   } = useStore();
+
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const [activeTab, setActiveTab] = useState<
     'overview' | 'branding' | 'descriptions' | 'hero' | 'categories' | 'products' | 'ourStory' | 'news' | 'contact' | 'sections'
@@ -246,10 +249,23 @@ export const AdminDashboard: React.FC = () => {
 
           <div className="flex items-center space-x-2.5 w-full md:w-auto justify-end">
             <button
-              onClick={() => navigateTo('home')}
-              className="bg-[#239B4C] hover:bg-[#1C843F] text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-[#FFD000]/30 shadow-md"
+              onClick={async () => {
+                setIsPublishing(true);
+                await publishAllToCloud();
+                setIsPublishing(false);
+              }}
+              disabled={isPublishing}
+              className="bg-[#239B4C] hover:bg-[#1C843F] text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-[#FFD000]/40 shadow-lg disabled:opacity-50"
+              title="Publish & Sync semua perubahan ke Cloud Firestore agar dapat dilihat di perangkat teman / perangkat lain"
             >
-              <Eye className="w-4 h-4 text-[#FFD000]" />
+              <UploadCloud className={`w-4 h-4 text-[#FFD000] ${isPublishing ? 'animate-bounce' : ''}`} />
+              <span>{isPublishing ? 'Memproses Sync...' : 'Publish Ke Cloud'}</span>
+            </button>
+            <button
+              onClick={() => navigateTo('home')}
+              className="bg-gray-800 hover:bg-gray-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 border border-gray-600 shadow-md"
+            >
+              <Eye className="w-4 h-4 text-emerald-400" />
               <span>Pratinjau Website</span>
             </button>
             <button

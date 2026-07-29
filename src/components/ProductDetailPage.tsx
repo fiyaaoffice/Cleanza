@@ -73,7 +73,7 @@ export const ProductDetailPage: React.FC = () => {
             )}
 
             {/* Main Product Image */}
-            <div className="flex-1 aspect-square rounded-2xl bg-[#F4F5F2] overflow-hidden relative flex items-center justify-center p-6 border border-gray-100">
+            <div className="flex-1 aspect-square rounded-2xl bg-white overflow-hidden relative flex items-center justify-center p-6 border border-gray-100">
               {product.badge && (
                 <span
                   className={`absolute top-4 left-4 text-[10px] font-bold tracking-wider uppercase px-3 py-1 rounded-sm text-white shadow-sm ${
@@ -91,7 +91,7 @@ export const ProductDetailPage: React.FC = () => {
               <img
                 src={activeImage || product.image}
                 alt={product.name}
-                className="w-full h-full object-contain drop-shadow-xl hover:scale-105 transition-transform duration-500"
+                className="w-full h-full object-contain hover:scale-105 transition-transform duration-500"
               />
             </div>
           </div>

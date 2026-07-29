@@ -6,9 +6,9 @@
 
 export async function compressImageFile(
   file: File,
-  maxWidth = 1000,
-  maxHeight = 1000,
-  quality = 0.75
+  maxWidth = 650,
+  maxHeight = 650,
+  quality = 0.65
 ): Promise<string> {
   // If it's not an image (e.g. video), read directly
   if (!file.type.startsWith('image/')) {
