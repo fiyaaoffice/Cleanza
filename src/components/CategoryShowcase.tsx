@@ -75,7 +75,7 @@ export const CategoryShowcase: React.FC = () => {
               onClick={() => handleCategorySelect(cat.name)}
               className="group cursor-pointer bg-white rounded-2xl p-5 border border-[#E5E8E2] hover:border-[#239B4C] hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
             >
-              <div className="aspect-[4/3] w-full rounded-xl overflow-hidden bg-[#F2F4F0] mb-4 relative">
+              <div className="aspect-square w-full rounded-xl overflow-hidden bg-[#F2F4F0] mb-4 relative">
                 <img
                   src={cat.image}
                   alt={cat.name}

@@ -709,7 +709,7 @@ export const AdminDashboard: React.FC = () => {
                   const currentImg = cmsConfig.categoryImages?.[cat.key] || cat.def;
                   return (
                     <div key={cat.key} className="bg-[#151B14] p-4 rounded-xl border border-[#2E3B2B] space-y-3">
-                      <div className="aspect-video w-full rounded-lg overflow-hidden bg-black relative">
+                      <div className="aspect-square w-full rounded-lg overflow-hidden bg-black relative">
                         <img src={currentImg} alt={cat.key} className="w-full h-full object-cover" />
                       </div>
                       <p className="text-xs font-bold text-white">{cat.key}</p>
@@ -869,7 +869,7 @@ export const AdminDashboard: React.FC = () => {
                             const currentImg = cmsConfig.categoryImages?.[cat.key] || cat.def;
                             return (
                               <div key={cat.key} className="bg-[#1D241B] p-3 rounded-xl border border-[#2E3B2B] flex flex-col justify-between space-y-2">
-                                <div className="aspect-video w-full rounded-lg overflow-hidden bg-black relative">
+                                <div className="aspect-square w-full rounded-lg overflow-hidden bg-black relative">
                                   <img src={currentImg} alt={cat.key} className="w-full h-full object-cover" />
                                 </div>
                                 <div>
