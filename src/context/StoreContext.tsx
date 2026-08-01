@@ -54,6 +54,13 @@ interface StoreContextType {
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
+export function sanitizeForFirestore<T>(data: T): T {
+  if (data === undefined || data === null) return null as unknown as T;
+  return JSON.parse(
+    JSON.stringify(data, (_, value) => (value === undefined ? null : value))
+  );
+}
+
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Load initial state from LocalStorage if present
   const [products, setProducts] = useState<Product[]>(() =>
@@ -94,9 +101,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (snapshot.exists()) {
           const data = snapshot.data() as CMSConfig;
           setCmsConfig(data);
+          safeSetItem('cleanza_cms_config', data);
         } else {
           // Initialize in Firestore if empty
-          setDoc(cmsDocRef, DEFAULT_CMS_CONFIG).catch((err) =>
+          setDoc(cmsDocRef, sanitizeForFirestore(DEFAULT_CMS_CONFIG)).catch((err) =>
             console.error('Failed to init Firestore CMS config', err)
           );
         }
@@ -114,10 +122,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (!snapshot.empty) {
           const loadedProducts = snapshot.docs.map((docSnap) => docSnap.data() as Product);
           setProducts(loadedProducts);
+          safeSetItem('cleanza_products', loadedProducts);
         } else {
           // Seed initial products to Firestore
           INITIAL_PRODUCTS.forEach((prod) => {
-            setDoc(doc(db, 'products', prod.id), prod).catch((err) =>
+            setDoc(doc(db, 'products', prod.id), sanitizeForFirestore(prod)).catch((err) =>
               console.error('Failed seeding product to Firestore', err)
             );
           });
@@ -136,10 +145,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (!snapshot.empty) {
           const loadedNews = snapshot.docs.map((docSnap) => docSnap.data() as NewsArticle);
           setNews(loadedNews);
+          safeSetItem('cleanza_news', loadedNews);
         } else {
           // Seed initial news to Firestore
           INITIAL_NEWS.forEach((article) => {
-            setDoc(doc(db, 'news', article.id), article).catch((err) =>
+            setDoc(doc(db, 'news', article.id), sanitizeForFirestore(article)).catch((err) =>
               console.error('Failed seeding news article to Firestore', err)
             );
           });
@@ -250,7 +260,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const updateCMSConfig = (updater: (prev: CMSConfig) => CMSConfig) => {
     setCmsConfig((prev) => {
       const updated = updater(prev);
-      setDoc(doc(db, 'cmsConfig', 'defaultConfig'), updated).catch((error) =>
+      const sanitized = sanitizeForFirestore(updated);
+      setDoc(doc(db, 'cmsConfig', 'defaultConfig'), sanitized).catch((error) =>
         handleFirestoreError(error, OperationType.WRITE, 'cmsConfig/defaultConfig')
       );
       return updated;
@@ -262,7 +273,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setProducts((prev) =>
       prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
     );
-    setDoc(doc(db, 'products', updatedProduct.id), updatedProduct).catch((error) =>
+    const sanitized = sanitizeForFirestore(updatedProduct);
+    setDoc(doc(db, 'products', updatedProduct.id), sanitized).catch((error) =>
       handleFirestoreError(error, OperationType.WRITE, `products/${updatedProduct.id}`)
     );
     showToast(`Produk "${updatedProduct.name}" berhasil diperbarui!`);
@@ -270,7 +282,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const addProduct = (newProduct: Product) => {
     setProducts((prev) => [newProduct, ...prev]);
-    setDoc(doc(db, 'products', newProduct.id), newProduct).catch((error) =>
+    const sanitized = sanitizeForFirestore(newProduct);
+    setDoc(doc(db, 'products', newProduct.id), sanitized).catch((error) =>
       handleFirestoreError(error, OperationType.WRITE, `products/${newProduct.id}`)
     );
     showToast(`Produk baru "${newProduct.name}" berhasil ditambahkan!`);
@@ -286,7 +299,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const addNewsArticle = (article: NewsArticle) => {
     setNews((prev) => [article, ...prev]);
-    setDoc(doc(db, 'news', article.id), article).catch((error) =>
+    const sanitized = sanitizeForFirestore(article);
+    setDoc(doc(db, 'news', article.id), sanitized).catch((error) =>
       handleFirestoreError(error, OperationType.WRITE, `news/${article.id}`)
     );
     showToast(`Artikel "${article.title}" berhasil ditambahkan!`);
@@ -294,7 +308,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const updateNewsArticle = (article: NewsArticle) => {
     setNews((prev) => prev.map((item) => (item.id === article.id ? article : item)));
-    setDoc(doc(db, 'news', article.id), article).catch((error) =>
+    const sanitized = sanitizeForFirestore(article);
+    setDoc(doc(db, 'news', article.id), sanitized).catch((error) =>
       handleFirestoreError(error, OperationType.WRITE, `news/${article.id}`)
     );
     showToast(`Artikel "${article.title}" berhasil diperbarui!`);
@@ -359,16 +374,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.removeItem('cleanza_news');
 
     // Reset Firestore collections
-    setDoc(doc(db, 'cmsConfig', 'defaultConfig'), DEFAULT_CMS_CONFIG).catch((err) =>
+    setDoc(doc(db, 'cmsConfig', 'defaultConfig'), sanitizeForFirestore(DEFAULT_CMS_CONFIG)).catch((err) =>
       console.error('Failed to reset Firestore cmsConfig', err)
     );
     INITIAL_PRODUCTS.forEach((prod) => {
-      setDoc(doc(db, 'products', prod.id), prod).catch((err) =>
+      setDoc(doc(db, 'products', prod.id), sanitizeForFirestore(prod)).catch((err) =>
         console.error('Failed resetting product in Firestore', err)
       );
     });
     INITIAL_NEWS.forEach((article) => {
-      setDoc(doc(db, 'news', article.id), article).catch((err) =>
+      setDoc(doc(db, 'news', article.id), sanitizeForFirestore(article)).catch((err) =>
         console.error('Failed resetting news article in Firestore', err)
       );
     });
@@ -381,16 +396,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       showToast('Sedang mempublikasikan data ke Cloud Firestore...');
       
       // 1. Publish CMS Config
-      await setDoc(doc(db, 'cmsConfig', 'defaultConfig'), cmsConfig);
+      await setDoc(doc(db, 'cmsConfig', 'defaultConfig'), sanitizeForFirestore(cmsConfig));
       
       // 2. Publish Products
       for (const prod of products) {
-        await setDoc(doc(db, 'products', prod.id), prod);
+        await setDoc(doc(db, 'products', prod.id), sanitizeForFirestore(prod));
       }
       
       // 3. Publish News Articles
       for (const article of news) {
-        await setDoc(doc(db, 'news', article.id), article);
+        await setDoc(doc(db, 'news', article.id), sanitizeForFirestore(article));
       }
 
       // Sync local cache

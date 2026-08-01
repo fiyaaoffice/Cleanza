@@ -6,19 +6,27 @@
 
 export async function compressImageFile(
   file: File,
-  maxWidth = 650,
-  maxHeight = 650,
+  maxWidth = 600,
+  maxHeight = 600,
   quality = 0.65
 ): Promise<string> {
   // If it's not an image (e.g. video), read directly
   if (!file.type.startsWith('image/')) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target?.result as string || '');
+      reader.onload = (e) => resolve((e.target?.result as string) || '');
       reader.onerror = (err) => reject(err);
       reader.readAsDataURL(file);
     });
   }
+
+  const isPngOrTransparent =
+    file.type.includes('png') ||
+    file.type.includes('svg') ||
+    file.type.includes('webp') ||
+    file.name.toLowerCase().endsWith('.png') ||
+    file.name.toLowerCase().endsWith('.svg') ||
+    file.name.toLowerCase().endsWith('.webp');
 
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -39,25 +47,35 @@ export async function compressImageFile(
         }
 
         const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = Math.max(1, width);
+        canvas.height = Math.max(1, height);
 
         const ctx = canvas.getContext('2d');
         if (!ctx) {
-          resolve(e.target?.result as string || '');
+          resolve((e.target?.result as string) || '');
           return;
+        }
+
+        if (isPngOrTransparent) {
+          // Clear rect for transparent background
+          ctx.clearRect(0, 0, width, height);
+        } else {
+          // Fill white background for JPEG so transparent corners never turn black
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, width, height);
         }
 
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Convert to webp if supported, else jpeg
-        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        // Convert to png if PNG/transparent to retain 100% transparency, else jpeg
+        const mimeType = isPngOrTransparent ? 'image/png' : 'image/jpeg';
+        const compressedDataUrl = canvas.toDataURL(mimeType, isPngOrTransparent ? undefined : quality);
         resolve(compressedDataUrl);
       };
 
       img.onerror = () => {
         // Fallback to uncompressed if image loading fails
-        resolve(e.target?.result as string || '');
+        resolve((e.target?.result as string) || '');
       };
 
       img.src = e.target?.result as string;
