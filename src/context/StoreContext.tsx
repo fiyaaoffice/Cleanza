@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Product, CartItem, CMSConfig, PageView, NewsArticle } from '../types';
 import { INITIAL_PRODUCTS, INITIAL_NEWS, DEFAULT_CMS_CONFIG, DEFAULT_CLEANZA_LOGO } from '../data/initialData';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
@@ -91,6 +91,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [adminClicks, setAdminClicks] = useState<number>(0);
 
+  const cmsDebounceTimer = useRef<NodeJS.Timeout | null>(null);
+
   // Sync to Firestore & local storage
   useEffect(() => {
     // 1. Subscribe to CMS Config document
@@ -102,11 +104,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const data = snapshot.data() as CMSConfig;
           setCmsConfig(data);
           safeSetItem('cleanza_cms_config', data);
-        } else {
-          // Initialize in Firestore if empty
-          setDoc(cmsDocRef, sanitizeForFirestore(DEFAULT_CMS_CONFIG)).catch((err) =>
-            console.error('Failed to init Firestore CMS config', err)
-          );
         }
       },
       (error) => {
@@ -123,13 +120,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const loadedProducts = snapshot.docs.map((docSnap) => docSnap.data() as Product);
           setProducts(loadedProducts);
           safeSetItem('cleanza_products', loadedProducts);
-        } else {
-          // Seed initial products to Firestore
-          INITIAL_PRODUCTS.forEach((prod) => {
-            setDoc(doc(db, 'products', prod.id), sanitizeForFirestore(prod)).catch((err) =>
-              console.error('Failed seeding product to Firestore', err)
-            );
-          });
         }
       },
       (error) => {
@@ -146,13 +136,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const loadedNews = snapshot.docs.map((docSnap) => docSnap.data() as NewsArticle);
           setNews(loadedNews);
           safeSetItem('cleanza_news', loadedNews);
-        } else {
-          // Seed initial news to Firestore
-          INITIAL_NEWS.forEach((article) => {
-            setDoc(doc(db, 'news', article.id), sanitizeForFirestore(article)).catch((err) =>
-              console.error('Failed seeding news article to Firestore', err)
-            );
-          });
         }
       },
       (error) => {
@@ -260,19 +243,28 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const updateCMSConfig = (updater: (prev: CMSConfig) => CMSConfig) => {
     setCmsConfig((prev) => {
       const updated = updater(prev);
-      const sanitized = sanitizeForFirestore(updated);
-      setDoc(doc(db, 'cmsConfig', 'defaultConfig'), sanitized).catch((error) =>
-        handleFirestoreError(error, OperationType.WRITE, 'cmsConfig/defaultConfig')
-      );
+      safeSetItem('cleanza_cms_config', updated);
+
+      if (cmsDebounceTimer.current) {
+        clearTimeout(cmsDebounceTimer.current);
+      }
+      cmsDebounceTimer.current = setTimeout(() => {
+        const sanitized = sanitizeForFirestore(updated);
+        setDoc(doc(db, 'cmsConfig', 'defaultConfig'), sanitized).catch((error) =>
+          handleFirestoreError(error, OperationType.WRITE, 'cmsConfig/defaultConfig')
+        );
+      }, 800);
+
       return updated;
     });
-    showToast('Konfigurasi CMS Berhasil Diperbarui!');
   };
 
   const updateProduct = (updatedProduct: Product) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
-    );
+    setProducts((prev) => {
+      const next = prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p));
+      safeSetItem('cleanza_products', next);
+      return next;
+    });
     const sanitized = sanitizeForFirestore(updatedProduct);
     setDoc(doc(db, 'products', updatedProduct.id), sanitized).catch((error) =>
       handleFirestoreError(error, OperationType.WRITE, `products/${updatedProduct.id}`)
@@ -281,7 +273,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const addProduct = (newProduct: Product) => {
-    setProducts((prev) => [newProduct, ...prev]);
+    setProducts((prev) => {
+      const next = [newProduct, ...prev];
+      safeSetItem('cleanza_products', next);
+      return next;
+    });
     const sanitized = sanitizeForFirestore(newProduct);
     setDoc(doc(db, 'products', newProduct.id), sanitized).catch((error) =>
       handleFirestoreError(error, OperationType.WRITE, `products/${newProduct.id}`)
@@ -290,7 +286,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const deleteProduct = (id: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+    setProducts((prev) => {
+      const next = prev.filter((p) => p.id !== id);
+      safeSetItem('cleanza_products', next);
+      return next;
+    });
     deleteDoc(doc(db, 'products', id)).catch((error) =>
       handleFirestoreError(error, OperationType.DELETE, `products/${id}`)
     );
@@ -298,7 +298,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const addNewsArticle = (article: NewsArticle) => {
-    setNews((prev) => [article, ...prev]);
+    setNews((prev) => {
+      const next = [article, ...prev];
+      safeSetItem('cleanza_news', next);
+      return next;
+    });
     const sanitized = sanitizeForFirestore(article);
     setDoc(doc(db, 'news', article.id), sanitized).catch((error) =>
       handleFirestoreError(error, OperationType.WRITE, `news/${article.id}`)
@@ -307,7 +311,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const updateNewsArticle = (article: NewsArticle) => {
-    setNews((prev) => prev.map((item) => (item.id === article.id ? article : item)));
+    setNews((prev) => {
+      const next = prev.map((item) => (item.id === article.id ? article : item));
+      safeSetItem('cleanza_news', next);
+      return next;
+    });
     const sanitized = sanitizeForFirestore(article);
     setDoc(doc(db, 'news', article.id), sanitized).catch((error) =>
       handleFirestoreError(error, OperationType.WRITE, `news/${article.id}`)
@@ -316,7 +324,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const deleteNewsArticle = (id: string) => {
-    setNews((prev) => prev.filter((item) => item.id !== id));
+    setNews((prev) => {
+      const next = prev.filter((item) => item.id !== id);
+      safeSetItem('cleanza_news', next);
+      return next;
+    });
     deleteDoc(doc(db, 'news', id)).catch((error) =>
       handleFirestoreError(error, OperationType.DELETE, `news/${id}`)
     );
@@ -393,6 +405,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const publishAllToCloud = async (): Promise<boolean> => {
     try {
+      if (cmsDebounceTimer.current) {
+        clearTimeout(cmsDebounceTimer.current);
+      }
       showToast('Sedang mempublikasikan data ke Cloud Firestore...');
       
       // 1. Publish CMS Config
