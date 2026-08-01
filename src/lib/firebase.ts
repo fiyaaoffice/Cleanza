@@ -44,6 +44,10 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
     console.info(`[Firestore] Backend unreachable (offline mode). Retrying automatically... Path: ${path}`);
     return;
   }
+  if (errCode === 'resource-exhausted' || errCode === 'resource_exhausted') {
+    console.info(`[Firestore] Free quota limit reached. Application functioning in local persistence mode. Path: ${path}`);
+    return;
+  }
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
     authInfo: {
