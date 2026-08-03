@@ -124,10 +124,6 @@ export const ProductDetailPage: React.FC = () => {
                 {product.formattedPrice}
               </div>
 
-              {/* Description */}
-              <p className="text-sm text-gray-600 leading-relaxed font-light mb-8">
-                {product.description}
-              </p>
 
               {/* Quantity & Buy Now Action */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-8">
