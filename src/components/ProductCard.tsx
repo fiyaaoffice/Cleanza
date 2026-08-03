@@ -18,7 +18,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       className="group bg-white rounded-2xl border border-[#E5E8E2] hover:border-[#239B4C]/50 hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden p-3 sm:p-4 h-full"
     >
       {/* Upper image container */}
-      <div className="relative aspect-square w-full rounded-xl bg-[#F2F9F3] overflow-hidden mb-3 sm:mb-4 flex items-center justify-center">
+      <div
+        onClick={() => navigateTo('product-detail', product.slug)}
+        className="relative aspect-square w-full rounded-xl bg-[#F2F9F3] overflow-hidden mb-3 sm:mb-4 flex items-center justify-center cursor-pointer"
+      >
         {/* Badge */}
         {product.badge && (
           <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10">

@@ -97,11 +97,14 @@ export const PopularProductsCarousel: React.FC = () => {
           </div>
 
           {/* Right Product Showcase Image */}
-          <div className="relative min-h-[320px] lg:min-h-[500px] bg-white flex items-center justify-center p-8 sm:p-12">
+          <div
+            onClick={() => navigateTo('product-detail', currentProduct.slug)}
+            className="relative min-h-[320px] lg:min-h-[500px] bg-white flex items-center justify-center p-8 sm:p-12 cursor-pointer group"
+          >
             <img
               src={currentProduct.image}
               alt={currentProduct.name}
-              className="max-h-[380px] lg:max-h-[420px] w-auto object-contain hover:scale-105 transition-transform duration-700"
+              className="max-h-[380px] lg:max-h-[420px] w-auto object-contain group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute bottom-4 right-4 bg-gray-900 text-white px-3.5 py-1.5 rounded-full text-[11px] font-medium shadow-lg">
               Cleanza Ultra Degreaser™ Formula

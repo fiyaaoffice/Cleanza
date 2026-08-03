@@ -128,7 +128,8 @@ export const ShopAllPage: React.FC = () => {
                   <img
                     src={p.image}
                     alt={p.name}
-                    className="w-24 h-24 object-contain rounded-xl bg-[#F4F5F2] p-2 shrink-0"
+                    onClick={() => navigateTo('product-detail', p.slug)}
+                    className="w-24 h-24 object-contain rounded-xl bg-[#F4F5F2] p-2 shrink-0 cursor-pointer hover:opacity-90 transition"
                   />
                   <div>
                     <span className="text-[10px] font-bold text-[#239B4C] uppercase tracking-wider block">
