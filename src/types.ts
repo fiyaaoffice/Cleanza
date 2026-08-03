@@ -2,6 +2,14 @@ export type ProductCategory = 'Cairan Pencuci Piring' | 'Kemasan Rumah Tangga' |
 
 export type ProductBadge = 'NEW PRODUCT' | 'BEST SELLER' | 'COMING SOON' | null;
 
+export interface NavMenuItem {
+  id: string;
+  label: string;
+  labelEn?: string;
+  page: PageView;
+  published: boolean;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -12,6 +20,7 @@ export interface Product {
   formattedPrice: string;
   rating: number;
   reviewsCount: number;
+  stock?: number;
   badge: ProductBadge;
   image: string;
   galleryImages?: string[];
@@ -60,6 +69,7 @@ export interface CMSConfig {
   faviconUrl?: string;
   promoText: string;
   promoTextId: string;
+  navMenuItems?: NavMenuItem[];
   hero: {
     tagline: string;
     subtext: string;

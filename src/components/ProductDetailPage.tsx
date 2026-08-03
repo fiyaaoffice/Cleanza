@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from './ProductCard';
-import { ChevronDown, ChevronUp, ShieldCheck, Truck, RotateCcw, Plus, Minus, CheckCircle2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, ShieldCheck, Truck, RotateCcw, Plus, Minus, PackageCheck } from 'lucide-react';
 
 export const ProductDetailPage: React.FC = () => {
   const { products, selectedProductSlug, addToCart, navigateTo, language } = useStore();
@@ -111,9 +111,9 @@ export const ProductDetailPage: React.FC = () => {
 
               {/* Rating & Volume */}
               <div className="flex items-center space-x-4 mb-4 text-xs">
-                <div className="flex items-center space-x-1 font-bold text-[#239B4C] bg-[#F2F9F3] px-2.5 py-1 rounded-md border border-gray-200">
-                  <CheckCircle2 className="w-4 h-4 text-[#239B4C]" />
-                  <span>{product.reviewsCount > 0 ? `${product.reviewsCount} Ulasan Terverifikasi` : 'Segera Peluncuran'}</span>
+                <div className="flex items-center space-x-1.5 font-bold text-[#239B4C] bg-[#F2F9F3] px-2.5 py-1 rounded-md border border-[#239B4C]/20">
+                  <PackageCheck className="w-4 h-4 text-[#239B4C]" />
+                  <span>Stok Tersedia: {product.stock !== undefined ? product.stock : 100} unit</span>
                 </div>
                 <span className="text-gray-400">|</span>
                 <span className="font-semibold text-gray-700 bg-gray-100 px-2 py-0.5 rounded">Volume: {product.volume}</span>

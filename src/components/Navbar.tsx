@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
-import { DEFAULT_CLEANZA_LOGO } from '../data/initialData';
-import { Search, ShoppingBag, User, Shield, ChevronDown, Menu, X, Droplets, Zap } from 'lucide-react';
+import { DEFAULT_CLEANZA_LOGO, DEFAULT_NAV_MENU_ITEMS } from '../data/initialData';
+import { Search, ShoppingBag, Shield, ChevronDown, Menu, X } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const {
@@ -13,7 +13,6 @@ export const Navbar: React.FC = () => {
     setIsSearchOpen,
     setIsCartOpen,
     cart,
-    handleLogoClickAdmin,
     setSelectedCategory
   } = useStore();
 
@@ -21,6 +20,22 @@ export const Navbar: React.FC = () => {
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
 
   const cartItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+  const navItems = cmsConfig.navMenuItems && cmsConfig.navMenuItems.length > 0
+    ? cmsConfig.navMenuItems
+    : DEFAULT_NAV_MENU_ITEMS;
+
+  const isMenuItemPublished = (id: string) => {
+    const item = navItems.find((n) => n.id === id);
+    return item ? item.published : true;
+  };
+
+  const getMenuItemLabel = (id: string, defaultLabel: string) => {
+    const item = navItems.find((n) => n.id === id);
+    if (!item) return defaultLabel;
+    if (language === 'EN' && item.labelEn) return item.labelEn;
+    return item.label || defaultLabel;
+  };
 
   const handleShopCategoryClick = (cat: string) => {
     setSelectedCategory(cat);
@@ -97,97 +112,100 @@ export const Navbar: React.FC = () => {
 
         {/* Middle Navigation Menu */}
         <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-700">
-          <button
-            onClick={() => navigateTo('shop')}
-            className="bg-[#239B4C] hover:bg-[#165B2D] text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition shadow-sm flex items-center space-x-1"
-          >
-            <span>Cleanza Catalog</span>
-          </button>
-
           {/* Shop with Dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={() => setShopDropdownOpen(true)}
-            onMouseLeave={() => setShopDropdownOpen(false)}
-          >
+          {isMenuItemPublished('shop') && (
+            <div
+              className="relative"
+              onMouseEnter={() => setShopDropdownOpen(true)}
+              onMouseLeave={() => setShopDropdownOpen(false)}
+            >
+              <button
+                onClick={() => navigateTo('shop')}
+                className={`flex items-center space-x-1 py-5 hover:text-[#239B4C] transition ${
+                  activePage === 'shop' ? 'text-[#239B4C] font-bold border-b-2 border-[#239B4C]' : ''
+                }`}
+              >
+                <span>{getMenuItemLabel('shop', 'Produk Cleanza')}</span>
+                <ChevronDown className="w-4 h-4 text-gray-500" />
+              </button>
+
+              {shopDropdownOpen && (
+                <div className="absolute top-full left-0 w-64 bg-white border border-gray-100 shadow-xl rounded-b-xl py-3 z-50 text-xs animate-in fade-in slide-in-from-top-1 duration-150">
+                  <div className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                    {language === 'ID' ? 'Kategori Produk' : 'Product Categories'}
+                  </div>
+                  <button
+                    onClick={() => handleShopCategoryClick('All')}
+                    className="w-full text-left px-4 py-2 hover:bg-[#F2F9F3] hover:text-[#239B4C] font-medium"
+                  >
+                    {language === 'ID' ? 'Semua Produk (Shop All)' : 'All Products'}
+                  </button>
+                  <button
+                    onClick={() => handleShopCategoryClick('Kemasan Rumah Tangga')}
+                    className="w-full text-left px-4 py-2 hover:bg-[#F2F9F3] hover:text-[#239B4C]"
+                  >
+                    Kemasan Rumah Tangga (450ml & 1000ml)
+                  </button>
+                  <button
+                    onClick={() => handleShopCategoryClick('Cleanza Profesional')}
+                    className="w-full text-left px-4 py-2 hover:bg-[#F2F9F3] hover:text-[#239B4C]"
+                  >
+                    Cleanza Profesional (5000ml)
+                  </button>
+                  <button
+                    onClick={() => handleShopCategoryClick('Varian Lemon')}
+                    className="w-full text-left px-4 py-2 hover:bg-[#F2F9F3] hover:text-[#239B4C]"
+                  >
+                    Varian Lemon (Coming Soon)
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {isMenuItemPublished('our-story') && (
             <button
-              onClick={() => navigateTo('shop')}
-              className={`flex items-center space-x-1 py-5 hover:text-[#239B4C] transition ${
-                activePage === 'shop' ? 'text-[#239B4C] font-bold border-b-2 border-[#239B4C]' : ''
+              onClick={() => navigateTo('our-story')}
+              className={`hover:text-[#239B4C] transition ${
+                activePage === 'our-story' ? 'text-[#239B4C] font-bold border-b-2 border-[#239B4C] py-5' : ''
               }`}
             >
-              <span>{language === 'ID' ? 'Produk Cleanza' : 'Products'}</span>
-              <ChevronDown className="w-4 h-4 text-gray-500" />
+              {getMenuItemLabel('our-story', 'Tentang Cleanza')}
             </button>
+          )}
 
-            {shopDropdownOpen && (
-              <div className="absolute top-full left-0 w-64 bg-white border border-gray-100 shadow-xl rounded-b-xl py-3 z-50 text-xs animate-in fade-in slide-in-from-top-1 duration-150">
-                <div className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                  {language === 'ID' ? 'Kategori Produk' : 'Product Categories'}
-                </div>
-                <button
-                  onClick={() => handleShopCategoryClick('All')}
-                  className="w-full text-left px-4 py-2 hover:bg-[#F2F9F3] hover:text-[#239B4C] font-medium"
-                >
-                  {language === 'ID' ? 'Semua Produk (Shop All)' : 'All Products'}
-                </button>
-                <button
-                  onClick={() => handleShopCategoryClick('Kemasan Rumah Tangga')}
-                  className="w-full text-left px-4 py-2 hover:bg-[#F2F9F3] hover:text-[#239B4C]"
-                >
-                  Kemasan Rumah Tangga (450ml & 1000ml)
-                </button>
-                <button
-                  onClick={() => handleShopCategoryClick('Cleanza Profesional')}
-                  className="w-full text-left px-4 py-2 hover:bg-[#F2F9F3] hover:text-[#239B4C]"
-                >
-                  Cleanza Profesional (5000ml)
-                </button>
-                <button
-                  onClick={() => handleShopCategoryClick('Varian Lemon')}
-                  className="w-full text-left px-4 py-2 hover:bg-[#F2F9F3] hover:text-[#239B4C]"
-                >
-                  Varian Lemon (Coming Soon)
-                </button>
-              </div>
-            )}
-          </div>
+          {isMenuItemPublished('news') && (
+            <button
+              onClick={() => navigateTo('news')}
+              className={`hover:text-[#239B4C] transition ${
+                activePage === 'news' ? 'text-[#239B4C] font-bold border-b-2 border-[#239B4C] py-5' : ''
+              }`}
+            >
+              {getMenuItemLabel('news', 'Tips & Berita')}
+            </button>
+          )}
 
-          <button
-            onClick={() => navigateTo('our-story')}
-            className={`hover:text-[#239B4C] transition ${
-              activePage === 'our-story' ? 'text-[#239B4C] font-bold border-b-2 border-[#239B4C] py-5' : ''
-            }`}
-          >
-            Tentang Cleanza
-          </button>
+          {isMenuItemPublished('community') && (
+            <button
+              onClick={() => navigateTo('community')}
+              className={`hover:text-[#239B4C] transition ${
+                activePage === 'community' ? 'text-[#239B4C] font-bold border-b-2 border-[#239B4C] py-5' : ''
+              }`}
+            >
+              {getMenuItemLabel('community', 'Cleanza Profesional')}
+            </button>
+          )}
 
-          <button
-            onClick={() => navigateTo('news')}
-            className={`hover:text-[#239B4C] transition ${
-              activePage === 'news' ? 'text-[#239B4C] font-bold border-b-2 border-[#239B4C] py-5' : ''
-            }`}
-          >
-            Tips & Berita
-          </button>
-
-          <button
-            onClick={() => navigateTo('community')}
-            className={`hover:text-[#239B4C] transition ${
-              activePage === 'community' ? 'text-[#239B4C] font-bold border-b-2 border-[#239B4C] py-5' : ''
-            }`}
-          >
-            Cleanza Profesional
-          </button>
-
-          <button
-            onClick={() => navigateTo('ingredients')}
-            className={`hover:text-[#239B4C] transition ${
-              activePage === 'ingredients' ? 'text-[#239B4C] font-bold border-b-2 border-[#239B4C] py-5' : ''
-            }`}
-          >
-            Formula & Kualitas
-          </button>
+          {isMenuItemPublished('ingredients') && (
+            <button
+              onClick={() => navigateTo('ingredients')}
+              className={`hover:text-[#239B4C] transition ${
+                activePage === 'ingredients' ? 'text-[#239B4C] font-bold border-b-2 border-[#239B4C] py-5' : ''
+              }`}
+            >
+              {getMenuItemLabel('ingredients', 'Formula & Kualitas')}
+            </button>
+          )}
         </nav>
 
         {/* Right Tools: Search, Cart, Admin */}
@@ -246,60 +264,75 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
 
-          <button
-            onClick={() => handleShopCategoryClick('All')}
-            className="w-full text-left py-2 font-semibold text-[#3d4d38] border-b border-gray-100"
-          >
-            Semua Produk Cleanza
-          </button>
-          <div className="pl-3 space-y-2 text-xs text-gray-600 border-b border-gray-100 pb-2">
-            <button onClick={() => handleShopCategoryClick('Kemasan Rumah Tangga')} className="block py-1">
-              Kemasan Rumah Tangga (450ml & 1000ml)
-            </button>
-            <button onClick={() => handleShopCategoryClick('Cleanza Profesional')} className="block py-1">
-              Cleanza Profesional (5000ml)
-            </button>
-            <button onClick={() => handleShopCategoryClick('Varian Lemon')} className="block py-1">
-              Varian Lemon (Coming Soon)
-            </button>
-          </div>
+          {isMenuItemPublished('shop') && (
+            <>
+              <button
+                onClick={() => handleShopCategoryClick('All')}
+                className="w-full text-left py-2 font-semibold text-[#3d4d38] border-b border-gray-100"
+              >
+                {getMenuItemLabel('shop', 'Produk Cleanza')}
+              </button>
+              <div className="pl-3 space-y-2 text-xs text-gray-600 border-b border-gray-100 pb-2">
+                <button onClick={() => handleShopCategoryClick('Kemasan Rumah Tangga')} className="block py-1">
+                  Kemasan Rumah Tangga (450ml & 1000ml)
+                </button>
+                <button onClick={() => handleShopCategoryClick('Cleanza Profesional')} className="block py-1">
+                  Cleanza Profesional (5000ml)
+                </button>
+                <button onClick={() => handleShopCategoryClick('Varian Lemon')} className="block py-1">
+                  Varian Lemon (Coming Soon)
+                </button>
+              </div>
+            </>
+          )}
 
-          <button
-            onClick={() => {
-              navigateTo('our-story');
-              setMobileMenuOpen(false);
-            }}
-            className="block w-full text-left py-2"
-          >
-            Tentang Cleanza
-          </button>
-          <button
-            onClick={() => {
-              navigateTo('news');
-              setMobileMenuOpen(false);
-            }}
-            className="block w-full text-left py-2"
-          >
-            Tips & Berita
-          </button>
-          <button
-            onClick={() => {
-              navigateTo('community');
-              setMobileMenuOpen(false);
-            }}
-            className="block w-full text-left py-2"
-          >
-            Cleanza Profesional
-          </button>
-          <button
-            onClick={() => {
-              navigateTo('ingredients');
-              setMobileMenuOpen(false);
-            }}
-            className="block w-full text-left py-2"
-          >
-            Formula & Kualitas
-          </button>
+          {isMenuItemPublished('our-story') && (
+            <button
+              onClick={() => {
+                navigateTo('our-story');
+                setMobileMenuOpen(false);
+              }}
+              className="block w-full text-left py-2"
+            >
+              {getMenuItemLabel('our-story', 'Tentang Cleanza')}
+            </button>
+          )}
+
+          {isMenuItemPublished('news') && (
+            <button
+              onClick={() => {
+                navigateTo('news');
+                setMobileMenuOpen(false);
+              }}
+              className="block w-full text-left py-2"
+            >
+              {getMenuItemLabel('news', 'Tips & Berita')}
+            </button>
+          )}
+
+          {isMenuItemPublished('community') && (
+            <button
+              onClick={() => {
+                navigateTo('community');
+                setMobileMenuOpen(false);
+              }}
+              className="block w-full text-left py-2"
+            >
+              {getMenuItemLabel('community', 'Cleanza Profesional')}
+            </button>
+          )}
+
+          {isMenuItemPublished('ingredients') && (
+            <button
+              onClick={() => {
+                navigateTo('ingredients');
+                setMobileMenuOpen(false);
+              }}
+              className="block w-full text-left py-2"
+            >
+              {getMenuItemLabel('ingredients', 'Formula & Kualitas')}
+            </button>
+          )}
         </div>
       )}
     </header>

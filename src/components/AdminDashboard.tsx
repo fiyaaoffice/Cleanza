@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { Product, ProductBadge, ProductCategory, NewsArticle } from '../types';
-import { DEFAULT_CLEANZA_LOGO } from '../data/initialData';
+import { DEFAULT_CLEANZA_LOGO, DEFAULT_NAV_MENU_ITEMS } from '../data/initialData';
 import { compressImageFile } from '../utils/imageCompressor';
 import {
   Layout,
@@ -9,6 +9,8 @@ import {
   Image as ImageIcon,
   Package,
   Eye,
+  EyeOff,
+  Menu,
   RotateCcw,
   Plus,
   Trash2,
@@ -55,7 +57,7 @@ export const AdminDashboard: React.FC = () => {
   const [isRefreshingCache, setIsRefreshingCache] = useState(false);
 
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'branding' | 'descriptions' | 'hero' | 'categories' | 'products' | 'ourStory' | 'news' | 'contact' | 'sections'
+    'overview' | 'branding' | 'navigation' | 'descriptions' | 'hero' | 'categories' | 'products' | 'ourStory' | 'news' | 'contact' | 'sections'
   >('overview');
 
   // Search and Filter State for Products
@@ -154,6 +156,7 @@ export const AdminDashboard: React.FC = () => {
       formattedPrice: `Rp${(Number(newProd.price) || 12000).toLocaleString('id-ID')}`,
       rating: newProd.rating || 5.0,
       reviewsCount: newProd.reviewsCount || 1,
+      stock: Number(newProd.stock) || 100,
       badge: (newProd.badge as ProductBadge) || null,
       image: newProd.image || 'https://images.unsplash.com/photo-1585842378054-ee2e52f94ba2?auto=format&fit=crop&q=80&w=800',
       description: newProd.description || '',
@@ -201,6 +204,7 @@ export const AdminDashboard: React.FC = () => {
   const menuItems = [
     { id: 'overview', label: 'Ringkasan & Stats', icon: Sparkles, badge: null },
     { id: 'branding', label: 'Logo, Favicon & Banner', icon: Globe, badge: 'Favicon' },
+    { id: 'navigation', label: 'Menu Navigasi Header', icon: Menu, badge: 'Publish/Hide' },
     { id: 'descriptions', label: 'Custom Deskripsi Teks', icon: Type, badge: 'Full Text' },
     { id: 'hero', label: 'Hero Banner Beranda', icon: Droplets, badge: 'Media' },
     { id: 'categories', label: 'Pilihan Kemasan', icon: Layers, badge: 'Card 1:1' },
@@ -664,6 +668,138 @@ export const AdminDashboard: React.FC = () => {
                       />
                     </div>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: ATUR MENU NAVIGASI HEADER (PUBLISH / NON-PUBLISH) */}
+            {activeTab === 'navigation' && (
+              <div className="bg-[#192118] border border-[#2E3B2B] rounded-2xl p-6 space-y-6 animate-in fade-in duration-300">
+                <div className="border-b border-[#2E3B2B] pb-4 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-lg font-bold text-white flex items-center space-x-2">
+                      <Menu className="w-5 h-5 text-[#239B4C]" />
+                      <span>Atur Menu Navigasi Header (Publish & Non-Publish)</span>
+                    </h3>
+                    <p className="text-xs text-gray-400 font-light mt-1">
+                      Pilih menu mana saja yang ingin dipublikasikan atau disembunyikan dari bilah navigasi utama website Cleanza.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      updateCMSConfig((prev) => ({
+                        ...prev,
+                        navMenuItems: DEFAULT_NAV_MENU_ITEMS
+                      }));
+                    }}
+                    className="px-3 py-1.5 bg-[#2E3B2B] hover:bg-[#3E4E3B] text-xs text-gray-200 rounded-lg transition shrink-0 flex items-center space-x-1"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-[#FFD000]" />
+                    <span>Reset Navigasi Default</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {(cmsConfig.navMenuItems && cmsConfig.navMenuItems.length > 0
+                    ? cmsConfig.navMenuItems
+                    : DEFAULT_NAV_MENU_ITEMS
+                  ).map((item, index) => (
+                    <div
+                      key={item.id}
+                      className={`p-4 rounded-xl border transition flex flex-col justify-between space-y-3 ${
+                        item.published
+                          ? 'bg-[#141A13] border-[#239B4C]/50 shadow-md'
+                          : 'bg-[#141A13]/60 border-red-900/30 opacity-75'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                          Menu #{index + 1} • {item.id}
+                        </span>
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center space-x-1 ${
+                            item.published
+                              ? 'bg-[#239B4C]/20 text-[#239B4C] border border-[#239B4C]/40'
+                              : 'bg-red-950/40 text-red-400 border border-red-800/40'
+                          }`}
+                        >
+                          {item.published ? (
+                            <>
+                              <Eye className="w-3 h-3" />
+                              <span>DIPUBLIKASI</span>
+                            </>
+                          ) : (
+                            <>
+                              <EyeOff className="w-3 h-3" />
+                              <span>NON-PUBLISH</span>
+                            </>
+                          )}
+                        </span>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-300 mb-1">
+                          Label Nama Menu Navigasi
+                        </label>
+                        <input
+                          type="text"
+                          value={item.label}
+                          onChange={(e) => {
+                            const newLabel = e.target.value;
+                            updateCMSConfig((prev) => {
+                              const currentItems = prev.navMenuItems && prev.navMenuItems.length > 0
+                                ? [...prev.navMenuItems]
+                                : [...DEFAULT_NAV_MENU_ITEMS];
+                              const idx = currentItems.findIndex((n) => n.id === item.id);
+                              if (idx !== -1) {
+                                currentItems[idx] = { ...currentItems[idx], label: newLabel };
+                              }
+                              return { ...prev, navMenuItems: currentItems };
+                            });
+                          }}
+                          className="w-full bg-[#1A2219] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#239B4C]"
+                        />
+                      </div>
+
+                      <div className="pt-2 border-t border-[#2E3B2B] flex items-center justify-between">
+                        <span className="text-xs text-gray-400 font-light">
+                          Status Navigasi: <strong className="text-white">{item.published ? 'Terlihat di Header' : 'Sembunyi'}</strong>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateCMSConfig((prev) => {
+                              const currentItems = prev.navMenuItems && prev.navMenuItems.length > 0
+                                ? [...prev.navMenuItems]
+                                : [...DEFAULT_NAV_MENU_ITEMS];
+                              const idx = currentItems.findIndex((n) => n.id === item.id);
+                              if (idx !== -1) {
+                                currentItems[idx] = { ...currentItems[idx], published: !currentItems[idx].published };
+                              }
+                              return { ...prev, navMenuItems: currentItems };
+                            });
+                          }}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 ${
+                            item.published
+                              ? 'bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border border-amber-600/40'
+                              : 'bg-[#239B4C] hover:bg-[#165B2D] text-white border border-[#FFD000]/30'
+                          }`}
+                        >
+                          {item.published ? (
+                            <>
+                              <EyeOff className="w-3.5 h-3.5" />
+                              <span>Sembunyikan (Non-Publish)</span>
+                            </>
+                          ) : (
+                            <>
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>Publikasikan Menu</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -1793,7 +1929,7 @@ export const AdminDashboard: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-3 gap-3">
                         <div>
                           <label className="block text-xs text-gray-300 mb-1">Ukuran / Volume</label>
                           <input
@@ -1803,6 +1939,21 @@ export const AdminDashboard: React.FC = () => {
                               setEditingProduct({ ...editingProduct, volume: e.target.value })
                             }
                             placeholder="e.g. 450ml"
+                            className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-300 mb-1">Jumlah Stok (Unit)</label>
+                          <input
+                            type="number"
+                            value={editingProduct.stock !== undefined ? editingProduct.stock : 100}
+                            onChange={(e) =>
+                              setEditingProduct({
+                                ...editingProduct,
+                                stock: Number(e.target.value)
+                              })
+                            }
+                            placeholder="100"
                             className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
                           />
                         </div>

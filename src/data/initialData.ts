@@ -1,4 +1,12 @@
-import { Product, NewsArticle, CMSConfig } from '../types';
+import { Product, NewsArticle, CMSConfig, NavMenuItem } from '../types';
+
+export const DEFAULT_NAV_MENU_ITEMS: NavMenuItem[] = [
+  { id: 'shop', label: 'Produk Cleanza', labelEn: 'Products', page: 'shop', published: true },
+  { id: 'our-story', label: 'Tentang Cleanza', labelEn: 'About Cleanza', page: 'our-story', published: true },
+  { id: 'news', label: 'Tips & Berita', labelEn: 'Tips & News', page: 'news', published: true },
+  { id: 'community', label: 'Cleanza Profesional', labelEn: 'Cleanza Professional', page: 'community', published: true },
+  { id: 'ingredients', label: 'Formula & Kualitas', labelEn: 'Formula & Quality', page: 'ingredients', published: true },
+];
 
 export const INITIAL_PRODUCTS: Product[] = [
   {
@@ -11,6 +19,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     formattedPrice: 'Rp11.500',
     rating: 4.9,
     reviewsCount: 428,
+    stock: 250,
     badge: 'BEST SELLER',
     image: 'https://images.unsplash.com/photo-1585837575652-267c041d77d4?auto=format&fit=crop&q=80&w=800',
     galleryImages: [
@@ -45,6 +54,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     formattedPrice: 'Rp22.500',
     rating: 5.0,
     reviewsCount: 890,
+    stock: 180,
     badge: 'BEST SELLER',
     image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=800',
     galleryImages: [
@@ -77,6 +87,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     formattedPrice: 'Rp79.000',
     rating: 4.9,
     reviewsCount: 312,
+    stock: 75,
     badge: 'NEW PRODUCT',
     image: 'https://images.unsplash.com/photo-1532635241-17e820acc59f?auto=format&fit=crop&q=80&w=800',
     galleryImages: [
@@ -109,6 +120,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     formattedPrice: 'Rp12.000',
     rating: 5.0,
     reviewsCount: 0,
+    stock: 0,
     badge: 'COMING SOON',
     image: 'https://images.unsplash.com/photo-1534531141161-e41d133a8bfd?auto=format&fit=crop&q=80&w=800',
     description: 'Varian baru Cleanza Lemon dengan kesegaran ekstrak lemon Mediterania. Segera hadir untuk memberikan pilihan aroma citrus yang menyegarkan dan meluruhkan lemak minyak dengan bersih cemerlang.',
@@ -205,6 +217,7 @@ export const DEFAULT_CMS_CONFIG: CMSConfig = {
   faviconUrl: DEFAULT_CLEANZA_LOGO,
   promoText: 'PROMO CLEANZA! Gratis Ongkir & Diskon Kebutuhan Dapur Rumah & Resto',
   promoTextId: 'PROMO CLEANZA! Gratis Ongkir & Diskon Kebutuhan Dapur Rumah & Resto',
+  navMenuItems: DEFAULT_NAV_MENU_ITEMS,
   hero: {
     tagline: 'Bersih Mengkilap, Bebas Lemak & Bau Amis Seketika',
     subtext: 'Cleanza hadir dengan formulasi cairan pencuci piring konsentrat tinggi. Varian Jeruk Nipis segar dan Lemon coming soon dalam ukuran 450ml, 1000ml, hingga 5000ml Cleanza Profesional.',

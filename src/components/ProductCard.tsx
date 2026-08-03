@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Product } from '../types';
 import { useStore } from '../context/StoreContext';
-import { ShoppingBag, Eye, CheckCircle2 } from 'lucide-react';
+import { ShoppingBag, Eye, PackageCheck } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -81,9 +81,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <span className="uppercase tracking-wider font-semibold text-[#239B4C] truncate max-w-[90px] sm:max-w-none">
               {product.category}
             </span>
-            <div className="flex items-center space-x-0.5 sm:space-x-1 text-gray-600 font-medium shrink-0">
-              <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#239B4C]" />
-              <span className="text-[10px] sm:text-xs">{product.reviewsCount > 0 ? `${product.reviewsCount}` : 'Hadir'}</span>
+            <div className="flex items-center space-x-1 text-gray-600 font-medium shrink-0 bg-[#F2F9F3] px-1.5 py-0.5 rounded text-[10px] sm:text-xs border border-[#239B4C]/20">
+              <PackageCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#239B4C]" />
+              <span className="text-[10px] sm:text-xs font-semibold text-[#165B2D]">Stok: {product.stock !== undefined ? product.stock : 100}</span>
             </div>
           </div>
 
