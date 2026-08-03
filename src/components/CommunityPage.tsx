@@ -54,7 +54,7 @@ export const CommunityPage: React.FC = () => {
               <ArrowRight className="w-4 h-4" />
             </button>
             <a
-              href="https://wa.me/6281234567890?text=Halo%20Admin%20Cleanza,%20saya%20tertarik%20pemesanan%20Cleanza%20Profesional%205L"
+              href="https://wa.me/6282311410313?text=Halo%20Admin%20Cleanza,%20saya%20tertarik%20pemesanan%20Cleanza%20Profesional%205L"
               target="_blank"
               rel="noreferrer"
               className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-lg inline-flex items-center space-x-2 border border-white/20 transition"

@@ -1793,6 +1793,53 @@ export const AdminDashboard: React.FC = () => {
                         </div>
                       </div>
 
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-300 mb-1">Ukuran / Volume</label>
+                          <input
+                            type="text"
+                            value={editingProduct.volume || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, volume: e.target.value })
+                            }
+                            placeholder="e.g. 450ml"
+                            className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-300 mb-1">Badge Label</label>
+                          <select
+                            value={editingProduct.badge || ''}
+                            onChange={(e) =>
+                              setEditingProduct({
+                                ...editingProduct,
+                                badge: (e.target.value as ProductBadge) || null
+                              })
+                            }
+                            className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                          >
+                            <option value="">Tidak ada Badge</option>
+                            <option value="NEW PRODUCT">NEW PRODUCT</option>
+                            <option value="BEST SELLER">BEST SELLER</option>
+                            <option value="COMING SOON">COMING SOON</option>
+                            <option value="LIMITED">LIMITED</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-300 mb-1">Deskripsi Produk (Custom)</label>
+                        <textarea
+                          rows={4}
+                          value={editingProduct.description || ''}
+                          onChange={(e) =>
+                            setEditingProduct({ ...editingProduct, description: e.target.value })
+                          }
+                          placeholder="Tuliskan deskripsi lengkap produk yang dapat dicustom..."
+                          className="w-full bg-[#141A13] border border-[#3E4E3B] rounded-xl p-2.5 text-xs text-white"
+                        />
+                      </div>
+
                       <div>
                         <label className="block text-xs text-gray-300 mb-1">Upload Foto Kemasan Produk</label>
                         <div className="flex gap-3 items-center">

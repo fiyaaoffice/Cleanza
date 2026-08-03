@@ -4,19 +4,39 @@ import { useStore } from '../context/StoreContext';
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 export const CartDrawer: React.FC = () => {
-  const { isCartOpen, setIsCartOpen, cart, updateCartQuantity, removeFromCart, clearCart } = useStore();
+  const { isCartOpen, setIsCartOpen, cart, updateCartQuantity, removeFromCart, clearCart, cmsConfig } = useStore();
   const [isCheckoutSuccess, setIsCheckoutSuccess] = useState(false);
 
   const subtotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
   const formattedSubtotal = `Rp${subtotal.toLocaleString('id-ID')}`;
 
   const handleCheckout = () => {
+    if (cart.length === 0) return;
+
+    const rawPhone = cmsConfig?.contact?.whatsapp || '+62 823-1141-0313';
+    const cleanPhone = rawPhone.replace(/[^0-9]/g, '');
+    const targetPhone = cleanPhone.length > 0 ? cleanPhone : '6282311410313';
+
+    let message = `*HALO CLEANZA, SAYA INGIN MEMESAN PRODUK:* \n\n`;
+    cart.forEach((item, index) => {
+      const itemSubtotal = item.product.price * item.quantity;
+      message += `${index + 1}. *${item.product.name}*\n`;
+      message += `   • Ukuran: ${item.product.volume}\n`;
+      message += `   • Jumlah: ${item.quantity} x ${item.product.formattedPrice} = Rp${itemSubtotal.toLocaleString('id-ID')}\n\n`;
+    });
+    message += `*TOTAL PEMBAYARAN:* Rp${subtotal.toLocaleString('id-ID')}\n\n`;
+    message += `Mohon informasi ketersediaan stok dan rekening pembayaran. Terima kasih!`;
+
+    const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(message)}`;
+
+    window.open(waUrl, '_blank');
+
     setIsCheckoutSuccess(true);
     setTimeout(() => {
       clearCart();
       setIsCheckoutSuccess(false);
       setIsCartOpen(false);
-    }, 3500);
+    }, 4000);
   };
 
   return (
@@ -68,10 +88,10 @@ export const CartDrawer: React.FC = () => {
                   >
                     <CheckCircle2 className="w-16 h-16 text-[#239B4C] mx-auto animate-bounce" />
                     <h3 className="text-2xl font-bold text-[#1D241B]">
-                      Pesanan Berhasil!
+                      Pesanan Terkirim ke WhatsApp!
                     </h3>
                     <p className="text-xs text-gray-600 max-w-xs mx-auto leading-relaxed">
-                      Terima kasih telah berbelanja produk Cleanza. Konfirmasi pesanan dan nomor resi pengiriman telah dikirim ke WhatsApp Anda.
+                      Terima kasih telah berbelanja produk Cleanza. Rincian pesanan Anda telah dibuka di aplikasi WhatsApp ke nomor penjual (+62 823-1141-0313).
                     </p>
                   </motion.div>
                 ) : cart.length === 0 ? (
@@ -154,7 +174,7 @@ export const CartDrawer: React.FC = () => {
                     onClick={handleCheckout}
                     className="w-full bg-[#239B4C] hover:bg-[#165B2D] text-white font-bold text-xs uppercase tracking-widest py-3.5 px-6 rounded-lg shadow-md transition flex items-center justify-center space-x-2"
                   >
-                    <span>PROSES CHECKOUT (SIMULASI)</span>
+                    <span>KIRIM PESANAN KE PENJUAL</span>
                     <ArrowRight className="w-4 h-4" />
                   </motion.button>
                 </div>

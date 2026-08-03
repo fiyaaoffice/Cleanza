@@ -14,7 +14,7 @@ export const ProductDetailPage: React.FC = () => {
 
   const [activeImage, setActiveImage] = useState<string>(product.image);
   const [quantity, setQuantity] = useState<number>(1);
-  const [openAccordion, setOpenAccordion] = useState<'use' | 'ingredients' | 'benefits' | null>('use');
+  const [openAccordion, setOpenAccordion] = useState<'description' | 'benefits' | null>('description');
 
   // Related products
   const relatedProducts = products
@@ -185,30 +185,15 @@ export const ProductDetailPage: React.FC = () => {
               <div className="space-y-3">
                 <div className="border-b border-gray-200 pb-3">
                   <button
-                    onClick={() => setOpenAccordion(openAccordion === 'use' ? null : 'use')}
+                    onClick={() => setOpenAccordion(openAccordion === 'description' ? null : 'description')}
                     className="w-full flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider text-[#1D241B] py-2 hover:text-[#239B4C] transition"
                   >
-                    <span>CARA PEMAKAIAN</span>
-                    {openAccordion === 'use' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    <span>DESKRIPSI</span>
+                    {openAccordion === 'description' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </button>
-                  {openAccordion === 'use' && (
-                    <div className="text-xs text-gray-600 pt-2 font-light leading-relaxed animate-in fade-in duration-200">
-                      {product.howToUse}
-                    </div>
-                  )}
-                </div>
-
-                <div className="border-b border-gray-200 pb-3">
-                  <button
-                    onClick={() => setOpenAccordion(openAccordion === 'ingredients' ? null : 'ingredients')}
-                    className="w-full flex items-center justify-between text-left font-bold text-xs uppercase tracking-wider text-[#1D241B] py-2 hover:text-[#239B4C] transition"
-                  >
-                    <span>KOMPOSISI & KANDUNGAN</span>
-                    {openAccordion === 'ingredients' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  </button>
-                  {openAccordion === 'ingredients' && (
-                    <div className="text-xs text-gray-600 pt-2 font-light leading-relaxed animate-in fade-in duration-200">
-                      {product.ingredients}
+                  {openAccordion === 'description' && (
+                    <div className="text-xs text-gray-600 pt-2 font-light leading-relaxed whitespace-pre-line animate-in fade-in duration-200">
+                      {product.description}
                     </div>
                   )}
                 </div>

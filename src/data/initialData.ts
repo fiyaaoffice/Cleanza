@@ -275,9 +275,9 @@ export const DEFAULT_CMS_CONFIG: CMSConfig = {
     description: 'Solusi ekonomis pencuci piring jeriken 5000ml berdaya angkat minyak tinggi untuk katering, kafe, rumah makan, hotel, dan instansi.'
   },
   contact: {
-    callCenter: '+62 812 3456 7890',
+    callCenter: '+62 823-1141-0313',
     email: 'info@cleanza.co.id',
-    whatsapp: '+62 812 3456 7890',
+    whatsapp: '+62 823-1141-0313',
     footerDescription: 'Cairan pencuci piring konsentrat tinggi dengan kesegaran Jeruk Nipis alami & varian Lemon. Meluruhkan minyak membandel dan bau amis seketika.',
     address: 'Jl. Kebersihan Raya No. 88, Jakarta Selatan, Indonesia',
     copyright: '© 2026 Cleanza Indonesia. All Rights Reserved.'
