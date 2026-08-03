@@ -89,10 +89,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     reviewsCount: 312,
     stock: 75,
     badge: 'NEW PRODUCT',
-    image: 'https://images.unsplash.com/photo-1532635241-17e820acc59f?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?auto=format&fit=crop&q=80&w=800',
     galleryImages: [
-      'https://images.unsplash.com/photo-1532635241-17e820acc59f?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1563170351-be82bc888aa4?auto=format&fit=crop&q=80&w=800'
     ],
     description: 'Cleanza Profesional kemasan galon jerigen 5 Liter (5000ml) dirancang khusus untuk kebutuhan bisnis kuliner, restoran, katering, kafe, dan hotel. Memberikan efisiensi biaya tertinggi dengan kualitas kebersihan bersertifikat.',
     howToUse: 'Encerkan Cleanza Profesional dengan air sesuai skala kebutuhan cuci dapur komersial. 1 Jerigen dapat digunakan hingga ribuan piring.',

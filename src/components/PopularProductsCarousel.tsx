@@ -57,7 +57,7 @@ export const PopularProductsCarousel: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-6 border-t border-white/10">
               <div className="flex items-center space-x-3">
                 <button
-                  onClick={() => navigateTo('product-detail', currentProduct.slug)}
+                  onClick={() => navigateTo('product-detail', currentProduct.slug || currentProduct.id)}
                   className="bg-[#239B4C] hover:bg-[#165B2D] text-white hover:text-[#FFD000] px-6 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition shadow-md"
                 >
                   {language === 'ID' ? 'LIHAT DETAIL' : 'DISCOVER MORE'}
@@ -98,7 +98,7 @@ export const PopularProductsCarousel: React.FC = () => {
 
           {/* Right Product Showcase Image */}
           <div
-            onClick={() => navigateTo('product-detail', currentProduct.slug)}
+            onClick={() => navigateTo('product-detail', currentProduct.slug || currentProduct.id)}
             className="relative min-h-[320px] lg:min-h-[500px] bg-white flex items-center justify-center p-8 sm:p-12 cursor-pointer group"
           >
             <img

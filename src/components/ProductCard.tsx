@@ -10,6 +10,7 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { navigateTo, addToCart } = useStore();
+  const targetSlug = product.slug || product.id;
 
   return (
     <motion.div
@@ -19,7 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     >
       {/* Upper image container */}
       <div
-        onClick={() => navigateTo('product-detail', product.slug)}
+        onClick={() => navigateTo('product-detail', targetSlug)}
         className="relative aspect-square w-full rounded-xl bg-[#F2F9F3] overflow-hidden mb-3 sm:mb-4 flex items-center justify-center cursor-pointer"
       >
         {/* Badge */}
@@ -53,7 +54,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             whileTap={{ scale: 0.9 }}
             onClick={(e) => {
               e.stopPropagation();
-              navigateTo('product-detail', product.slug);
+              navigateTo('product-detail', targetSlug);
             }}
             className="p-2.5 sm:p-3 bg-white text-gray-900 rounded-full hover:bg-[#239B4C] hover:text-white transition shadow-lg"
             title="Lihat Detail Produk"
@@ -91,7 +92,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
 
           <h3
-            onClick={() => navigateTo('product-detail', product.slug)}
+            onClick={() => navigateTo('product-detail', targetSlug)}
             className="font-bold text-xs sm:text-sm text-[#1D241B] hover:text-[#239B4C] cursor-pointer line-clamp-2 transition leading-snug mb-1.5"
           >
             {product.name}
@@ -111,7 +112,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => navigateTo('product-detail', product.slug)}
+              onClick={() => navigateTo('product-detail', targetSlug)}
               className="w-full bg-amber-700 hover:bg-amber-800 text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider py-2 sm:py-2.5 px-2 rounded-lg transition shadow-sm flex items-center justify-center"
             >
               <span>COMING SOON</span>
@@ -120,7 +121,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => navigateTo('product-detail', product.slug)}
+              onClick={() => navigateTo('product-detail', targetSlug)}
               className="w-full bg-[#239B4C] hover:bg-[#165B2D] text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider py-2 sm:py-2.5 px-2 rounded-lg transition shadow-sm flex items-center justify-center"
             >
               <span>LIHAT DETAIL</span>

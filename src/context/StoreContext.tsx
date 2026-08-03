@@ -117,7 +117,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       productsColRef,
       (snapshot) => {
         if (!snapshot.empty) {
-          const loadedProducts = snapshot.docs.map((docSnap) => docSnap.data() as Product);
+          const loadedProducts = snapshot.docs.map((docSnap) => {
+            const p = docSnap.data() as Product;
+            // Ensure 5L / 5000ml products don't accidentally use 450ml bottle image
+            if (p.volume === '5000ml' || (p.name && p.name.includes('5 Liter'))) {
+              if (!p.image || p.image.includes('1585837575652') || p.image.includes('1532635241')) {
+                p.image = 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?auto=format&fit=crop&q=80&w=800';
+              }
+              if (p.galleryImages && p.galleryImages.some((img) => img.includes('1585837575652') || img.includes('1532635241'))) {
+                p.galleryImages = [p.image];
+              }
+            }
+            return p;
+          });
           setProducts(loadedProducts);
           safeSetItem('cleanza_products', loadedProducts);
         }

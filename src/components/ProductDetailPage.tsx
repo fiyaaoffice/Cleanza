@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from './ProductCard';
 import { ChevronDown, ChevronUp, ShieldCheck, Truck, RotateCcw, Plus, Minus, PackageCheck } from 'lucide-react';
@@ -6,24 +6,120 @@ import { ChevronDown, ChevronUp, ShieldCheck, Truck, RotateCcw, Plus, Minus, Pac
 export const ProductDetailPage: React.FC = () => {
   const { products, selectedProductSlug, addToCart, navigateTo, language } = useStore();
 
-  // Find selected product or fallback
-  const product =
-    products.find((p) => p.slug === selectedProductSlug) ||
-    products.find((p) => p.slug === 'cleanza-cairan-pencuci-piring-jeruk-nipis-450ml') ||
-    products[0];
+  // Find selected product with resilient matching
+  const findSelectedProduct = () => {
+    if (!selectedProductSlug) return products[0];
 
-  const [activeImage, setActiveImage] = useState<string>(product.image);
+    const target = selectedProductSlug.trim();
+    const normTarget = target.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    // 1. Direct exact slug or ID match
+    let found = products.find(
+      (p) => p.slug === target || p.id === target || (p.name && p.name === target)
+    );
+    if (found) return found;
+
+    // 2. Normalized slug or ID or Name match
+    found = products.find(
+      (p) =>
+        (p.slug && p.slug.toLowerCase().replace(/[^a-z0-9]/g, '') === normTarget) ||
+        (p.id && p.id.toLowerCase().replace(/[^a-z0-9]/g, '') === normTarget) ||
+        (p.name && p.name.toLowerCase().replace(/[^a-z0-9]/g, '') === normTarget)
+    );
+    if (found) return found;
+
+    // 3. Check Volume/Size tokens FIRST before fuzzy string matching!
+    const is5L =
+      normTarget.includes('5000ml') ||
+      normTarget.includes('5liter') ||
+      normTarget.includes('5l') ||
+      normTarget.includes('jeriken5') ||
+      normTarget.includes('profesional');
+
+    const is1L =
+      normTarget.includes('1000ml') ||
+      normTarget.includes('1liter') ||
+      normTarget.includes('1l');
+
+    const is450 = normTarget.includes('450ml') || normTarget.includes('450');
+
+    if (is5L) {
+      found = products.find(
+        (p) =>
+          p.volume === '5000ml' ||
+          (p.name && (p.name.toLowerCase().includes('5 liter') || p.name.toLowerCase().includes('5000ml') || p.name.toLowerCase().includes('5l'))) ||
+          (p.id && p.id.includes('5000ml')) ||
+          (p.slug && p.slug.includes('5000ml'))
+      );
+      if (found) return found;
+    }
+
+    if (is1L) {
+      found = products.find(
+        (p) =>
+          p.volume === '1000ml' ||
+          (p.name && (p.name.toLowerCase().includes('1000ml') || p.name.toLowerCase().includes('1 liter'))) ||
+          (p.id && p.id.includes('1000ml')) ||
+          (p.slug && p.slug.includes('1000ml'))
+      );
+      if (found) return found;
+    }
+
+    if (is450) {
+      found = products.find(
+        (p) =>
+          p.volume === '450ml' ||
+          (p.name && p.name.toLowerCase().includes('450ml')) ||
+          (p.id && p.id.includes('450ml')) ||
+          (p.slug && p.slug.includes('450ml'))
+      );
+      if (found) return found;
+    }
+
+    // 4. Fallback partial matching with volume guard
+    found = products.find((p) => {
+      const pNormSlug = p.slug ? p.slug.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+      const pNormId = p.id ? p.id.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+
+      if (is5L && (p.volume === '450ml' || p.volume === '1000ml')) return false;
+      if (is1L && (p.volume === '450ml' || p.volume === '5000ml')) return false;
+      if (is450 && (p.volume === '1000ml' || p.volume === '5000ml')) return false;
+
+      return (
+        (pNormSlug && (normTarget.includes(pNormSlug) || pNormSlug.includes(normTarget))) ||
+        (pNormId && (normTarget.includes(pNormId) || pNormId.includes(normTarget)))
+      );
+    });
+    if (found) return found;
+
+    return products.find((p) => p.volume === '5000ml') || products[0];
+  };
+
+  const product = findSelectedProduct();
+
+  const [activeImage, setActiveImage] = useState<string>(product?.image || '');
   const [quantity, setQuantity] = useState<number>(1);
   const [openAccordion, setOpenAccordion] = useState<'description' | 'benefits' | null>('description');
 
+  // Reset active image, quantity and scroll to top whenever selected product changes
+  useEffect(() => {
+    if (product) {
+      setActiveImage(product.image);
+      setQuantity(1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [product?.id, product?.slug, product?.image]);
+
   // Related products
   const relatedProducts = products
-    .filter((p) => p.id !== product.id)
+    .filter((p) => p.id !== product?.id)
     .slice(0, 4);
 
-  const images = product.galleryImages && product.galleryImages.length > 0
+  const images = product?.galleryImages && product.galleryImages.length > 0
     ? product.galleryImages
-    : [product.image];
+    : product?.image ? [product.image] : [];
+
+  const displayImage = activeImage && images.includes(activeImage) ? activeImage : (product?.image || '');
 
   return (
     <div className="bg-[#F2F9F3] min-h-screen py-8 text-[#1D241B]">
@@ -89,7 +185,7 @@ export const ProductDetailPage: React.FC = () => {
               )}
 
               <img
-                src={activeImage || product.image}
+                src={displayImage}
                 alt={product.name}
                 className="w-full h-full object-contain hover:scale-105 transition-transform duration-500"
               />

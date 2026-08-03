@@ -128,7 +128,7 @@ export const ShopAllPage: React.FC = () => {
                   <img
                     src={p.image}
                     alt={p.name}
-                    onClick={() => navigateTo('product-detail', p.slug)}
+                    onClick={() => navigateTo('product-detail', p.slug || p.id)}
                     className="w-24 h-24 object-contain rounded-xl bg-[#F4F5F2] p-2 shrink-0 cursor-pointer hover:opacity-90 transition"
                   />
                   <div>
@@ -136,7 +136,7 @@ export const ShopAllPage: React.FC = () => {
                       {p.category} • {p.volume}
                     </span>
                     <h3
-                      onClick={() => navigateTo('product-detail', p.slug)}
+                      onClick={() => navigateTo('product-detail', p.slug || p.id)}
                       className="font-bold text-base text-[#1D241B] hover:text-[#239B4C] cursor-pointer transition"
                     >
                       {p.name}
@@ -153,7 +153,7 @@ export const ShopAllPage: React.FC = () => {
                   </span>
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => navigateTo('product-detail', p.slug)}
+                      onClick={() => navigateTo('product-detail', p.slug || p.id)}
                       className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold uppercase tracking-wider py-2.5 px-4 rounded-lg transition"
                     >
                       Detail

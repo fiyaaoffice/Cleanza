@@ -89,7 +89,7 @@ export const SearchModal: React.FC = () => {
                     key={p.id}
                     whileHover={{ x: 4 }}
                     onClick={() => {
-                      navigateTo('product-detail', p.slug);
+                      navigateTo('product-detail', p.slug || p.id);
                       setIsSearchOpen(false);
                     }}
                     className="flex items-center justify-between p-3 rounded-xl border border-gray-100 hover:border-[#239B4C] bg-[#F2F9F3] cursor-pointer transition shadow-sm"
