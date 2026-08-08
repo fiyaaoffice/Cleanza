@@ -93,6 +93,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const cmsDebounceTimer = useRef<NodeJS.Timeout | null>(null);
 
+  // Check URL query parameters for direct product deep-linking
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const productParam = params.get('product') || params.get('p');
+      if (productParam) {
+        setSelectedProductSlug(productParam);
+        setActivePage('product-detail');
+      }
+    } catch (e) {
+      console.error('Error reading URL params:', e);
+    }
+  }, []);
+
   // Sync to Firestore & local storage
   useEffect(() => {
     // 1. Subscribe to CMS Config document

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from './ProductCard';
-import { ChevronDown, ChevronUp, ShieldCheck, Truck, RotateCcw, Plus, Minus, PackageCheck } from 'lucide-react';
+import { ChevronDown, ChevronUp, ShieldCheck, Truck, RotateCcw, Plus, Minus, PackageCheck, Share2 } from 'lucide-react';
 
 export const ProductDetailPage: React.FC = () => {
-  const { products, selectedProductSlug, addToCart, navigateTo, language } = useStore();
+  const { products, selectedProductSlug, addToCart, navigateTo, language, showToast } = useStore();
+  const [copied, setCopied] = useState(false);
 
   // Find selected product with resilient matching
   const findSelectedProduct = () => {
@@ -101,6 +102,58 @@ export const ProductDetailPage: React.FC = () => {
   const [quantity, setQuantity] = useState<number>(1);
   const [openAccordion, setOpenAccordion] = useState<'description' | 'benefits' | null>('description');
 
+  const shareUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}${window.location.pathname}?product=${encodeURIComponent(product.slug || product.id)}`
+    : '';
+
+  const fallbackCopyTextToClipboard = (text: string) => {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+    } catch (err) {
+      console.error('Fallback copy failed', err);
+    }
+    document.body.removeChild(textArea);
+  };
+
+  const handleCopyLink = () => {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(shareUrl).catch(() => fallbackCopyTextToClipboard(shareUrl));
+    } else {
+      fallbackCopyTextToClipboard(shareUrl);
+    }
+    setCopied(true);
+    showToast('🔗 Link produk berhasil disalin!');
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleWhatsAppShare = () => {
+    const message = `Halo, lihat ${product.name} di Cleanza: ${shareUrl}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product.name,
+          text: `Lihat ${product.name} di Cleanza Indonesia!`,
+          url: shareUrl,
+        });
+      } catch (err) {
+        // user closed modal
+      }
+    } else {
+      handleCopyLink();
+    }
+  };
+
   // Reset active image, quantity and scroll to top whenever selected product changes
   useEffect(() => {
     if (product) {
@@ -195,10 +248,20 @@ export const ProductDetailPage: React.FC = () => {
           {/* Right Column: Detail Information (7 cols) */}
           <div className="lg:col-span-6 flex flex-col justify-between">
             <div>
-              {/* Category */}
-              <span className="text-xs font-bold uppercase tracking-widest text-[#239B4C] mb-2 block">
-                {product.category}
-              </span>
+              {/* Category & Share Header */}
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase tracking-widest text-[#239B4C] block">
+                  {product.category}
+                </span>
+                <button
+                  onClick={handleNativeShare}
+                  className="flex items-center space-x-2 text-xs font-semibold text-slate-700 bg-[#F0F3F6] hover:bg-[#E2E7ED] px-3.5 py-1.5 rounded-full transition border border-slate-200/80 shadow-2xs active:scale-95 cursor-pointer"
+                  title="Bagikan atau Salin Link Produk"
+                >
+                  <Share2 className="w-4 h-4 text-slate-600" />
+                  <span>{copied ? 'Tersalin' : 'Lainnya'}</span>
+                </button>
+              </div>
 
               {/* Title */}
               <h1 className="text-3xl sm:text-4xl font-bold text-[#1D241B] tracking-tight leading-tight mb-3">
